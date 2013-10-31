@@ -10,7 +10,7 @@ class JsonReader
     data = JSON.parse(serialized)
     name = File.basename(json_file,".json")
     app = convert_to_object(name, data)
-    app
+    app.to_json
   end
   
   private
