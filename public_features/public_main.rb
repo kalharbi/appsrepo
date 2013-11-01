@@ -32,7 +32,7 @@ class PublicMain
     json_reader = JsonReader.new
     app_info = json_reader.parse_json_data(json_file)
     id = insert_document(collection, app_info)
-    @@log.info("Inserted new document - #{id}")
+    @@log.info("Inserted a new document for apk #{app_info["name"]}, document id = #{id}")
   end
   
   def start_main(source)
@@ -62,14 +62,14 @@ class PublicMain
   def command_line(args)
     opt_parser = OptionParser.new do |opts|
       opts.banner = @@usage
-      opts.on('-h', '--help', 'Display help') do
+      opts.on('-h', '--help', 'Show this help message and exit') do
         puts opts
         exit
       end
       opts.on('-l', '--logfile FILE', 'Write log to the specified FILE') do |file_name|
-        file = File.open(file_name, File::WRONLY | File::APPEND | FILE::CREAT)
+        file = File.open(file_name, File::WRONLY | File::APPEND | File::CREAT)
         @@log = Logger.new(file)
-        @@log.level = LOGGER::INFO
+        @@log.level = Logger::INFO
       end
     end
     opt_parser.parse!
