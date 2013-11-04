@@ -28,7 +28,7 @@ class JsonReader
     app.contentRating = data["contentRating"]
     app.creator = data["creator"]
     app.creatorURL = data["creatorURL"]
-    app.installSize = convert_install_size_text_to_bytes(data["extendedInfo"]["installSize"])
+    app.installSize = convert_install_size_text_to_KBytes(data["extendedInfo"]["installSize"])
     app.installSizeText = data["extendedInfo"]["installSize"]
     app.downloadsCount = data["extendedInfo"]["downloadsCount"]
     app.downloadsCountText = data["extendedInfo"]["downloadsCountText"]
@@ -39,16 +39,16 @@ class JsonReader
   end
   
   private
-  def convert_install_size_text_to_bytes(sizeText)
-    unit = sizeText[-1]
+  def convert_install_size_text_to_KBytes(sizeText)
+    unit = sizeText[-1].downcase
     size = sizeText.to_f
     case unit
-    when "K"
+    when "k"
+      size
+    when "m"
       size *= 1024
-    when "M"
-      size *= 1024 * 1024
-    when "G"
-      size *= 1024*1024*1024
+    when "g"
+      size *= 1024*1024
     else
       unless(is_number?(size))
         abort("Unknown file size #{sizeText}")
