@@ -11,14 +11,14 @@ class App
   end
   
   def to_json
-    app_info = {'name' => @name, 'title' => @title, 'description' => @description, 
-        'playStoreURL' => @playStoreURL, 'category' => @category, 'price' => @price, 
-        'datePublished' => @datePublished, 'version' => @version, 
-        'operatingSystems' => @operatingSystems, 'ratingsCount' => @ratingsCount, 'rating' => @rating, 
-        'contentRating' => @contentRating, 'creator' => @creator, 'creatorURL' => @creatorURL, 
-        'installSize' => @installSize, 'installSizeText' => @installSizeText, 
-        'downloadsCount' => @downloadsCount, 'downloadsCountText' => @downloadsCountText, 
-        'permissions' => @permissions, 'reviews' => @reviews}
+    app_info = {'n' => @name, 't' => @title, 'desc' => @description, 
+        'url' => @playStoreURL, 'cat' => @category, 'pri' => @price, 
+        'dtp' => @datePublished, 'ver' => @version, 
+        'os' => @operatingSystems, 'rct' => @ratingsCount, 'rate' => @rating, 
+        'crat' => @contentRating, 'crt' => @creator, 'curl' => @creatorURL, 
+        'sz' => @installSize, 'sztxt' => @installSizeText, 
+        'dct' => @downloadsCount, 'dtxt' => @downloadsCountText, 
+        'per' => @permissions, 'rev' => @reviews}
     JSON.parse(app_info.to_json)
   end
 end
