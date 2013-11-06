@@ -11,13 +11,19 @@ require_relative 'json_reader'
 class PublicMain
   @@log = Logger.new(STDOUT)
   @@log.level = Logger::INFO
-  @@usage = "Usage: #{$PROGRAM_NAME} {json_file | json_directory}"
+  @@usage = "Usage: #{$PROGRAM_NAME} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
+  attr_reader :host, :port
+
+  def initialize
+    @host = "localhost"
+    @port = 27017
+  end
   
   private
   def connect_mongodb
-    mongo_client = Mongo::Connection.new
+    mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
     collection = db.collection(COLLECTION_NAME)
     @@log.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
@@ -60,20 +66,36 @@ class PublicMain
 
   public
   def command_line(args)
-    opt_parser = OptionParser.new do |opts|
-      opts.banner = @@usage
-      opts.on('-h', '--help', 'Show this help message and exit') do
-        puts opts
-        exit
+    begin
+      opt_parser = OptionParser.new do |opts|
+        opts.banner = @@usage
+        opts.on('-h','--help', 'Show this help message and exit.') do
+          puts opts
+          exit
+        end
+        opts.on('-l','--logfile <log_file>', 'Write log to the specified file.') do |file_name|
+          file = File.open(file_name, File::WRONLY | File::APPEND | File::CREAT)
+          @@log = Logger.new(file)
+          @@log.level = Logger::INFO
+        end
+        opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
+          @host = host_name
+        end
+        opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
+          @port = port_num
+        end
       end
-      opts.on('-l', '--logfile FILE', 'Write log to the specified FILE') do |file_name|
-        file = File.open(file_name, File::WRONLY | File::APPEND | File::CREAT)
-        @@log = Logger.new(file)
-        @@log.level = Logger::INFO
-      end
+      opt_parser.parse!
+    rescue OptionParser::AmbiguousArgument
+      puts "Error: illegal command line argument."
+      puts opt_parser.help()
+      exit
+    rescue OptionParser::InvalidOption
+      puts "Error: illegal command line option."
+      puts opt_parser.help()
+      exit
     end
-    opt_parser.parse!
-
+ 
     if(args[0].nil?)
       abort(@@usage)
     else
