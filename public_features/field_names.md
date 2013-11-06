@@ -2,26 +2,26 @@
 ###Fields Names:
 Field names consume disk space, so we should keep them short but still meaningful.
 
-|short name |  meaning           |
-|-----------|--------------------|
-| n         | name               |
-| t         | title              |
-| desc      | description        |
-| url       | playStoreURL       |
-| cat       | category           |
-| pr        | price              |
-| dp        | datePublished      |
-| ver       | version            |
-| os        | operatingSystems   |
-| ratc      | ratingsCount       |
-| rat       | rating             |
-| crat      | contentRating      |
-| cre       | creator            |
-| curl      | creatorURL         |
-| sz        | installSize        |
-| szt       | installSizeText    |
-| dowc      | downloadsCount     |
-| dowt      | downloadsCountText |
-| per       | permissions        |
-| rev       | reviews            |
+|short name |  meaning              |
+|-----------|-----------------------|
+| n         | apk name              |
+| t         | app title             |
+| desc      | description           |
+| url       | play store URL        |
+| cat       | category              |
+| pr        | price                 |
+| dp        | date published        |
+| ver       | version               |
+| os        | operating systems     |
+| ratc      | ratings count         |
+| rat       | rating                |
+| crat      | content rating        |
+| cre       | creator               |
+| curl      | creator URL           |
+| sz        | install size          |
+| szt       | install size text     |
+| dowc      | downloads count       |
+| dowt      | downloads count text  |
+| per       | permissions           |
+| rev       | reviews               |
 
