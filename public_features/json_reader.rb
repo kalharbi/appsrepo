@@ -1,6 +1,6 @@
 require 'json'
 require_relative 'app'
-
+require_relative 'app_review'
 class JsonReader
   attr_reader :json_file
   
@@ -33,12 +33,29 @@ class JsonReader
     app.downloadsCount = data["extendedInfo"]["downloadsCount"]
     app.downloadsCountText = data["extendedInfo"]["downloadsCountText"]
     app.description = data["extendedInfo"]["description"]
-    app.reviews = data["extendedInfo"]["reviews"]
+    app.reviews = get_app_review(data["extendedInfo"]["reviews"])
     app.permissions = data["extendedInfo"]["permissions"]
     app
   end
   
   private
+  def get_app_review(reviews)
+    new_review = []
+    reviews.each do |review|
+      app_review = AppReview.new
+      app_review.timestampMsec = review["timestampMsec"]
+      app_review.starRating = review["starRating"]
+      app_review.title = review["title"]
+      app_review.comment = review["comment"]
+      app_review.commentId = review["commentId"]
+      app_review.author = review["author"]
+      app_review.authorURL = review["authorURL"]
+      app_review.authorSecureURL = review["authorSecureURL"]
+      new_review << app_review.get_review
+    end
+    new_review
+  end
+
   def convert_install_size_text_to_KBytes(sizeText)
     unit = sizeText[-1].downcase
     size = sizeText.to_f
