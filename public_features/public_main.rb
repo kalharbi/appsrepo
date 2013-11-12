@@ -42,17 +42,19 @@ class PublicMain
   end
   
   def start_main(source)
+    puts source
     if(!File.exist? source)
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      if(Dir[source + '/*.json'].empty?)
+      json_files = File.join(source + "/**/*.json")
+      if(Dir.glob(json_files).nil?)
         puts "The specified directory does not contain .json file(s)."
         abort(@@usage)
       end
       collection = connect_mongodb
       # If the source is a directory that contains json file(s).
-      Dir.glob(source + '/*.json') do |json_file|
+      Dir.glob(json_files) do |json_file|
         document_reader(collection, json_file)
       end
      # If the source is a json file
