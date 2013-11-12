@@ -38,7 +38,7 @@ class PublicMain
     json_reader = JsonReader.new
     app_info = json_reader.parse_json_data(json_file)
     id = insert_document(collection, app_info)
-    @@log.info("Inserted a new document for apk #{app_info["name"]}, document id = #{id}")
+    @@log.info("Inserted a new document for apk #{app_info["n"]}, document id = #{id}")
   end
   
   def start_main(source)
