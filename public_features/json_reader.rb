@@ -41,6 +41,9 @@ class JsonReader
   private
   def get_app_review(reviews)
     new_review = []
+    if reviews.nil? || reviews.empty?
+      return new_review
+    end
     reviews.each do |review|
       app_review = AppReview.new
       app_review.timestampMsec = review["timestampMsec"]
