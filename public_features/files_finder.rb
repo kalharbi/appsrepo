@@ -2,7 +2,7 @@ class FilesFinder
   attr_accessor :absolute_path_name, :extension_name
   def initialize(absolute_path_name, extension_name)
     @absolute_path_name = absolute_path_name
-    @extension_name = extension_name
+    @extension_name = extension_name.downcase
     @files = Array.new
   end
 
