@@ -7,10 +7,12 @@ class FilesFinder
   end
 
   public
-  def find_files()
+  def find_files(verbose = false)
     if(!File.exist? @absolute_path_name)
-      abort('Error: No such file or directory')
+      puts 'Error: No such file or directory'
+      return nil
     end
+    @verbose = verbose
     files_listing(@absolute_path_name, @extension_name)
     return @files
   end
@@ -23,7 +25,10 @@ class FilesFinder
       if(File.directory?(file))
         files_listing(file, ext_name)
       elsif(File.extname(file).downcase.eql? ext_name)
-        @files << file
+	@files << file
+	if @verbose
+	  puts file
+	end
       end
     end
   end
