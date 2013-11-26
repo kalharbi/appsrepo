@@ -4,13 +4,13 @@ require 'rubygems'
 require 'json'
 require 'mongo'
 require 'optparse'
-require 'logger'
 require_relative 'app'
 require_relative 'json_reader'
+require_relative 'files_finder'
+require_relative 'logging'
 
 class PublicMain
-  @@log = Logger.new(STDOUT)
-  @@log.level = Logger::INFO
+
   @@usage = "Usage: #{$PROGRAM_NAME} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
@@ -26,7 +26,7 @@ class PublicMain
     mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
     collection = db.collection(COLLECTION_NAME)
-    @@log.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
+    Logging.logger.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
     collection
   end
 
@@ -36,10 +36,10 @@ class PublicMain
 
   def document_reader(collection, json_file)
     json_reader = JsonReader.new
-    @@log.info("processing #{json_file}")
+    Logging.logger.info("processing #{json_file}")
     app_info = json_reader.parse_json_data(json_file)
     id = insert_document(collection, app_info)
-    @@log.info("Inserted a new document for apk: #{app_info["n"]}, document id = #{id}")
+    Logging.logger.info("Inserted a new document for apk: #{app_info["n"]}, document id = #{id}")
   end
   
   def start_main(source)
@@ -48,14 +48,15 @@ class PublicMain
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      json_files = File.join(source + "/**/*.json")
-      if(Dir.glob(json_files).nil?)
+      puts "Searching for .json files at #{source}"
+      json_files = FilesFinder.new(source, '.json').find_files(true)
+      if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
         abort(@@usage)
       end
       collection = connect_mongodb
       # If the source is a directory that contains json file(s).
-      Dir.glob(json_files) do |json_file|
+      json_files.each do |json_file|
         document_reader(collection, json_file)
       end
      # If the source is a json file
@@ -77,9 +78,8 @@ class PublicMain
           exit
         end
         opts.on('-l','--logfile <log_file>', 'Write log to the specified file.') do |file_name|
-          file = File.open(file_name, File::WRONLY | File::APPEND | File::CREAT)
-          @@log = Logger.new(file)
-          @@log.level = Logger::INFO
+	  configuration = {"logdev"=> file_name}
+	  Logging.config_log(configuration)
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
           @host = host_name

@@ -1,16 +1,22 @@
 require 'json'
 require_relative 'app'
 require_relative 'app_review'
+require_relative 'logging'
+
 class JsonReader
   attr_reader :json_file
   
   public 
   def parse_json_data(json_file)
-    serialized = File.read(json_file)
-    data = JSON.parse(serialized)
-    name = File.basename(json_file,".json")
-    app = convert_to_object(name, data)
-    app.to_json
+    begin
+      serialized = File.read(json_file)
+      data = JSON.parse(serialized)
+      name = File.basename(json_file,".json")
+      app = convert_to_object(name, data)
+      app.to_json
+    rescue JSON::ParserError
+      Logging.logger.error("Error in file: #{json_file}")
+    end
   end
   
   private
