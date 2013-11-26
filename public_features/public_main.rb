@@ -14,11 +14,12 @@ class PublicMain
   @@usage = "Usage: #{$PROGRAM_NAME} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
-  attr_reader :host, :port
+  attr_reader :host, :port, :verbose
 
   def initialize
     @host = "localhost"
     @port = 27017
+    @verbose = false
   end
   
   private
@@ -38,8 +39,10 @@ class PublicMain
     json_reader = JsonReader.new
     Logging.logger.info("processing #{json_file}")
     app_info = json_reader.parse_json_data(json_file)
-    id = insert_document(collection, app_info)
-    Logging.logger.info("Inserted a new document for apk: #{app_info["n"]}, document id = #{id}")
+    if !app_info.nil?
+      id = insert_document(collection, app_info)
+      Logging.logger.info("Inserted a new document for apk: #{app_info["n"]}, document id = #{id}")
+    end
   end
   
   def start_main(source)
@@ -49,7 +52,7 @@ class PublicMain
       abort(@@usage)
     elsif(File.directory?(source))
       puts "Searching for .json files at #{source}"
-      json_files = FilesFinder.new(source, '.json').find_files(true)
+      json_files = FilesFinder.new(source, '.json').find_files(@verbose)
       if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
         abort(@@usage)
@@ -77,7 +80,7 @@ class PublicMain
           puts opts
           exit
         end
-        opts.on('-l','--logfile <log_file>', 'Write log to the specified file.') do |file_name|
+        opts.on('-l','--log <log_file>', 'Write log to the specified file.') do |file_name|
 	  configuration = {"logdev"=> file_name}
 	  Logging.config_log(configuration)
         end
@@ -87,6 +90,9 @@ class PublicMain
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
         end
+	opt.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done, showing .json files as they are processed') do
+	  @verbose = true
+	end
       end
       opt_parser.parse!
     rescue OptionParser::AmbiguousArgument
