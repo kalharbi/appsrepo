@@ -18,6 +18,7 @@ module Logging
   def self.logger
     @logger ||= Logger.new(@log_dev)
     @logger.level = Logger::INFO
+    @logger
   end
 
 end
