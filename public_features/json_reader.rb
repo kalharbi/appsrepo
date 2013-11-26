@@ -16,6 +16,7 @@ class JsonReader
       app.to_json
     rescue JSON::ParserError
       Logging.logger.error("Error in file: #{json_file}")
+      return nil
     end
   end
   
