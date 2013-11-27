@@ -17,8 +17,8 @@ Store apps' public features into Mongodb.
    Optional arguments: 
          -h, --help                       Show this help message and exit.
          -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
-	 -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
-	 -v, --verbose                    Causes the tool to be verbose to explain what is being done, showing .json files as they are processed.
+         -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
+         -v, --verbose                    Causes the tool to be verbose to explain what is being done, showing .json files as they are processed.
 ```
 
 ##Public Features Collection
