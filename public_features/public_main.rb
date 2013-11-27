@@ -46,7 +46,6 @@ class PublicMain
   end
   
   def start_main(source)
-    puts source
     if(!File.exist? source)
       puts "Error: No such file or directory"
       abort(@@usage)
@@ -80,9 +79,13 @@ class PublicMain
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file>', 'Write log to the specified file.') do |file_name|
-	  configuration = {"logdev"=> file_name}
-	  Logging.config_log(configuration)
+        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level such as error or info. The default logging level is info.') do |log_options|
+	  log_level = 'info'
+	  if(!log_options[1].nil?)
+	    log_level = log_options[1]
+	  end
+	  config = {"dev" => log_options[0], "level" => log_level}
+	  Logging.config_log(config)
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
           @host = host_name
@@ -90,7 +93,7 @@ class PublicMain
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
         end
-	opt.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done, showing .json files as they are processed') do
+	opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done, showing .json files as they are processed.') do
 	  @verbose = true
 	end
       end
