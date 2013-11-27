@@ -41,7 +41,11 @@ class PublicMain
     app_info = json_reader.parse_json_data(json_file)
     if !app_info.nil?
       id = insert_document(collection, app_info)
-      Logging.logger.info("Inserted a new document for apk: #{app_info["n"]}, document id = #{id}")
+      msg = "Inserted a new document for apk: #{app_info["n"]}, document id = #{id}"
+      if(@verbose)
+        puts msg
+      end
+      Logging.logger.info(msg)
     end
   end
   
