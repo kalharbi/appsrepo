@@ -46,11 +46,12 @@ class PublicMain
   end
   
   def start_main(source)
+    beginning_time = Time.now
     if(!File.exist? source)
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      puts "Searching for .json files at #{source}"
+      Logging.logger.info("Searching for .json files at #{source}")
       json_files = FilesFinder.new(source, '.json').find_files(@verbose)
       if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
@@ -68,6 +69,9 @@ class PublicMain
     else
       abort(@@usage)
     end
+    end_time = Time.now
+    elapsed_seconds = end_time - beginning_time
+    puts "Finished after #{Time.at(elapsed_seconds).utc.strftime("%H:%M:%S")}"
   end
 
   public
