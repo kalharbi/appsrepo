@@ -8,9 +8,9 @@ This is the MongoDB driver for the database. It retrieves all public description
     
     -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
     
-    -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
+    -H, --host <host_name>           The host name that mongod is connected to. Default value is localhost.
     
-    -p, --port <port>                The port number that the mongod instance is listening. Default port number value is 27017.
+    -p, --port <port>                The port number that mongod instance is listening to. Default port number value is 27017.
     
     -P, --permission <name>          One valid Android permission name that the application needs.
     
