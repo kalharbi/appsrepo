@@ -96,11 +96,11 @@ class MongodbDriver
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
         end
+        opts.on('-P','--permission <name>', 'One valid Android permission name that the application needs.') do |per_name|
+          @per_name = per_name
+        end
         opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done.') do
           @verbose = true
-        end
-        opts.on('-P' '--permission <permission_name>', 'One valid Android permission name that the application needs.') do |per_name|
-          @per_name = per_name
         end
       end
       opt_parser.parse!
