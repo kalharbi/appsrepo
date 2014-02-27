@@ -12,6 +12,8 @@ class MongodbDriver
   COLLECTION_NAME = "public"
   @collection
   @out_dir
+  @per_name
+
   attr_reader :host, :port
   
   def initialize
@@ -28,7 +30,7 @@ class MongodbDriver
     @collection
   end
 
-  def find_apps_by_permissions
+  def find_apps_with_permissions
     @collection.find({"per" => {"$not" => {"$size" => 0} } }, :fields => ["n", "desc", "per"]).each do |doc|
       name = doc["n"]
       desc = doc["desc"]
@@ -39,6 +41,18 @@ class MongodbDriver
     end
   end
 
+  def find_apps_by_permission
+    @collection.find({"per" => @per_name }, :fields => ["n", "desc", "per"]).each do |doc|
+      name = doc["n"]
+      desc = doc["desc"]
+      next unless desc.language.to_s.eql? "english" || desc.split.size > 10
+      out_file = File.join(@out_dir, name + ".raw.txt")
+      File.open(out_file, 'w') { |file| file.write(desc) }
+      Logging.logger.info("The app's description has been written to: #{out_file}")
+    end
+  end
+
+
   def start_main(out_dir)
     beginning_time = Time.now
     if(!File.directory?(out_dir))
@@ -48,7 +62,11 @@ class MongodbDriver
     @out_dir = out_dir
 
     connect_mongodb
-    find_apps_by_permissions
+    if(@per_name.nil?)
+      find_apps_with_permissions
+    else
+      find_apps_by_permission
+    end
 
     end_time = Time.now
     elapsed_time = end_time - beginning_time
@@ -80,6 +98,9 @@ class MongodbDriver
         end
         opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done.') do
           @verbose = true
+        end
+        opts.on('-P' '--permission <permission_name>', 'One valid Android permission name that the application needs.') do |per_name|
+          @per_name = per_name
         end
       end
       opt_parser.parse!
