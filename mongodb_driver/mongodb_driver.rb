@@ -3,7 +3,7 @@
 require 'mongo'
 require 'optparse'
 require 'whatlanguage'
-require_relative 'logging'
+require_relative '../utils/logging'
 
 class MongodbDriver
 

@@ -1,7 +1,7 @@
 require 'json'
 require_relative 'app'
 require_relative 'app_review'
-require_relative 'logging'
+require_relative '../utils/logging'
 
 class JsonReader
   attr_reader :json_file

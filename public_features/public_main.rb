@@ -7,7 +7,7 @@ require 'optparse'
 require_relative 'app'
 require_relative 'json_reader'
 require_relative 'files_finder'
-require_relative 'logging'
+require_relative '../utils/logging'
 
 class PublicMain
 
