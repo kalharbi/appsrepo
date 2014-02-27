@@ -17,10 +17,10 @@ This is the MongoDB driver for the database. It retrieves all public description
     -v, --verbose                    Causes the tool to be verbose to explain what is being done.
 
 ### Examples:
--   Get all public descriptions of Camera apps and save the results in text files at ~/camera_apps_descriptions/.
+-   Get all public descriptions of Camera apps and save the results in text files at ~/camera_apps_descriptions.
 
-        ruby ./mongodb_driver.rb ~/camera_apps_descriptions/ --permission android.permission.CAMERA
+        ruby ./mongodb_driver.rb ~/camera_apps_descriptions --permission android.permission.CAMERA
 
-- Get the desciption of all apps with permissions and save the results in text files at ~/camera_apps_descriptions/
+- Get the desciption of all apps with permissions and save the results in text files at ~/permission_apps_description/
 
-        ruby ./mongodb_driver.rb ~/permission_apps_description/ --permission android.permission.CAMERA
+        ruby ./mongodb_driver.rb ~/permission_apps_description
