@@ -59,7 +59,7 @@ class MongodbDriver
     download_hd = "download_count"
     out_file = File.join(@out_dir, "top_apps.txt")
     File.open(name_hd, 'w') do |file| 
-      file.write(name + ", " + download_hd)
+      file.write(name_hd + ", " + download_hd)
       @collection.find({ "per" => { "$not" => { "$size" => 0 } } }, :fields => ["n", "dct"], :sort => ['dct', Mongo::DESCENDING], :limit => @limit).each do |doc|
         name = doc["n"]
         dct = doc["dct"]
