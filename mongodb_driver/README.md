@@ -2,7 +2,7 @@
 This is the MongoDB driver for the database. It retrieves all public descriptions of apps by the permission name and stores the results in text files.
 ### Usage:
 
-    Usage: ./mongodb_driver.rb {out_dir} [OPTIONS]
+    Usage: ./mongodb_driver.rb {find_apps_with_permissions | find_apps_by_permission | find_top_apps} {out_dir} [OPTIONS]
     
     -h, --help                       Show this help message and exit.
     
@@ -19,8 +19,12 @@ This is the MongoDB driver for the database. It retrieves all public description
 ### Examples:
 -   Get all public descriptions of Camera apps and save the results in text files at ~/camera_apps_descriptions.
 
-        ruby ./mongodb_driver.rb ~/camera_apps_descriptions --permission android.permission.CAMERA
+        ruby ./mongodb_driver.rb find_apps_by_permission ~/camera_apps_descriptions --permission android.permission.CAMERA
 
 - Get the desciption of all apps with permissions and save the results in text files at ~/permission_apps_description/
 
-        ruby ./mongodb_driver.rb ~/permission_apps_description
+        ruby ./mongodb_driver.rb find_apps_with_permissions ~/permission_apps_description
+
+- Get the top 500 apps with permissions and save the results in a text file at ~/top_apps/
+
+		ruby ./mongodb_driver.rb find_top_apps -limit ~/top_apps
