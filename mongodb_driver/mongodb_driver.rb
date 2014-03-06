@@ -141,7 +141,7 @@ class MongodbDriver
     end
     cmd = ""
     
-    if(args[0].nil)
+    if(args[0].nil?)
       abort(@@usage)
     end
     
