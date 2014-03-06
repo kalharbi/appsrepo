@@ -7,7 +7,7 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {find_apps_with_permissions | find_apps_by_permission | find_top_apps} {out_dir} [OPTIONS]"
+  @@usage = "Usage: #{$PROGRAM_NAME} {find_apps_with_permissions | find_apps_by_permission | find_top_free_apps} {out_dir} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @collection
@@ -15,7 +15,7 @@ class MongodbDriver
   @per_name
   @limit
   
-  attr_reader :host, :port
+  attr_reader :host, :port, :limit
   
   def initialize
     @host = "localhost"
@@ -54,16 +54,18 @@ class MongodbDriver
     end
   end
   
-  def find_top_apps
+  def find_top_free_apps
     name_hd = "apk_name"
     download_hd = "download_count"
     out_file = File.join(@out_dir, "top_apps.txt")
-    File.open(name_hd, 'w') do |file| 
-      file.write(name_hd + ", " + download_hd)
-      @collection.find({ "per" => { "$not" => { "$size" => 0 } } }, :fields => ["n", "dct"], :sort => ['dct', Mongo::DESCENDING], :limit => @limit).each do |doc|
+    File.open(out_file, 'w') do |file| 
+      file.puts(name_hd + ", " + download_hd)
+      @collection.find({ "pri" => "Free", "per" => { "$not" => { "$size" => 0 } } },{ :fields => ["n", "dct"], :sort => [:limit => @limit], :sort => ["dct", Mongo::DESCENDING]}).each do |doc|
         name = doc["n"]
         dct = doc["dct"]
-        file.write(name + ", " + dct)
+        line = name + ", " + dct.to_s
+        Logging.logger.info(line)
+        file.puts(line)
       end
     end
       Logging.logger.info("The top apps list has been written to: #{out_file}")
@@ -87,8 +89,8 @@ class MongodbDriver
       end
     elsif(cmd.eql? "find_apps_with_permissions")
       find_apps_with_permissions
-    elsif(cmd.eql? "find_top_apps")
-      find_top_apps
+    elsif(cmd.eql? "find_top_free_apps")
+      find_top_free_apps
     end
 
     end_time = Time.now
@@ -146,8 +148,8 @@ class MongodbDriver
       abort(@@usage)
     end
     
-    if(args[0].eql? "find_top_apps")
-      cmd = "find_top_apps"
+    if(args[0].eql? "find_top_free_apps")
+      cmd = "find_top_free_apps"
     elsif(args[0].eql? "find_apps_by_permission")
       cmd = "find_apps_by_permission"
     elsif(args[0].eql? "find_apps_with_permissions")
