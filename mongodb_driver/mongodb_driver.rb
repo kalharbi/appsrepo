@@ -72,7 +72,7 @@ class MongodbDriver
   def start_main(out_dir, cmd)
     beginning_time = Time.now
     if(!File.directory?(out_dir))
-      puts "No such directory."
+      puts "No such directory. #{out_dir}"
       abort(@@usage)
     end
     @out_dir = out_dir
@@ -142,6 +142,7 @@ class MongodbDriver
     cmd = ""
     
     if(args[0].nil?)
+      puts 'Error: no command'
       abort(@@usage)
     end
     
@@ -159,7 +160,7 @@ class MongodbDriver
     if(args[1].nil?)
       abort(@@usage)
     else
-      out_dir = File.absolute_path(args[0])
+      out_dir = File.absolute_path(args[1])
       start_main(out_dir, cmd)
     end
   end
