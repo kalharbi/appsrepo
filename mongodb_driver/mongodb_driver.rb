@@ -123,7 +123,7 @@ class MongodbDriver
           @per_name = per_name
         end
         opts.on('-l','--limit <value>', 'The number of documents in the result set.') do |limit_value|
-          @limit = limit
+          @limit = limit_value
         end
         opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done.') do
           @verbose = true
