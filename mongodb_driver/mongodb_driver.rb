@@ -159,7 +159,7 @@ class MongodbDriver
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given lo    gging level such as error or info. The default logging level is info.') do |log_options|
+        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level such as error or info. The default logging level is info.') do |log_options|
           log_level = 'info'
           if(!log_options[1].nil?)
             log_level = log_options[1]
@@ -176,7 +176,7 @@ class MongodbDriver
         opts.on('-P','--permission <name>', 'One valid Android permission name that the application needs.') do |per_name|
           @per_name = per_name
         end
-        opts.on('f', 'fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
+        opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
           @price = fee_value
         end
         opts.on('-l','--limit <value>', 'The number of documents in the result set.') do |limit_value|
