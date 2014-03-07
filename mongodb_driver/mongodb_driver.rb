@@ -202,7 +202,8 @@ class MongodbDriver
       puts 'Error: no command'
       abort(@@usage)
     end
-    
+    if(args[0].eql? "find_apps_by_permission")
+      cmd = "find_apps_by_permission"
     if(args[0].eql? "find_top_free_apps")
       cmd = "find_top_free_apps"
     elsif(args[0].eql? "write_description_apps_by_permission")
@@ -213,7 +214,6 @@ class MongodbDriver
       puts "Error: Unknown command."
       abort(@@usage)
     end
-      
     if(args[1].nil?)
       abort(@@usage)
     else
