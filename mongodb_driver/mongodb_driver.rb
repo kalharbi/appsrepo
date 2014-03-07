@@ -7,15 +7,15 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {find_apps_with_permissions | find_apps_by_permission | find_top_free_apps} {out_dir} [OPTIONS]"
+  @@usage = "Usage: #{$PROGRAM_NAME} CMD {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_free_apps | write_description_apps_with_permissions | write_description_apps_by_permission}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @collection
   @out_dir
   @per_name
   @limit
-  
-  attr_reader :host, :port, :limit
+  @price
+  attr_reader :host, :port, :limit, :price
   
   def initialize
     @host = "localhost"
@@ -32,8 +32,41 @@ class MongodbDriver
     @collection
   end
 
-  def find_apps_with_permissions
-    @collection.find({"per" => {"$not" => {"$size" => 0} } }, :fields => ["n", "desc", "per"]).each do |doc|
+  # Find apps by permission and price. Write their names to a file in the target directory
+  def find_apps_by_permission
+    query = '{"per" => "#{@per_name}" }, :fields => ["n"]'
+    out_file_name = "#{@per_name}-all_apps.txt"
+    if(!@price.nil?)
+      if(@price.casecmp("free") == 0)
+        query = '{"per" => "#{@per_name}", "pr" => "Free" }, :fields => ["n"]'
+        out_file_name = "#{@per_name}-free_apps.txt"
+      elsif(@price.casecmp("paid") == 0) 
+        query = '{"per" => "#{@per_name}", "pr" => {"$ne: "Free"} }, :fields => ["n"]'
+        out_file_name = "#{@per_name}-paid_apps.txt"
+      end
+    end
+    out_file = File.join(@out_dir, out_file_name)
+    File.open(out_file, 'w') do |file| 
+      @collection.find(query).each do |doc|
+        name = doc["n"]
+        out_file.puts(name)
+        Logging.logger.info(name)
+      end
+    end
+    Logging.logger.info("The apps list has been written to: #{out_file}")
+  end
+  
+  # Find apps that have at least one permission and write the description if it's English
+  def write_description_apps_with_permissions
+    query = '{"per" => {"$not" => {"$size" => 0} } }, :fields => ["n", "desc", "per"]'
+    if(!@price.nil?)
+      if(@price.casecmp("free") == 0)
+        query = '{"per" => {"$not" => {"$size" => 0} }, "pr" => "Free" }, :fields => ["n", "desc", "per"]'
+      elsif(@price.casecmp("paid") == 0)
+        query = '{"per" => {"$not" => {"$size" => 0} }, "pr" => {"$ne: "Free"} }, :fields => ["n", "desc", "per"]'
+      end
+    end
+    @collection.find(query).each do |doc|
       name = doc["n"]
       desc = doc["desc"]
       next unless desc.language.to_s.eql? "english" || desc.split.size > 10
@@ -42,9 +75,18 @@ class MongodbDriver
       Logging.logger.info("The app's description has been written to: #{out_file}")
     end
   end
-
-  def find_apps_by_permission
-    @collection.find({"per" => @per_name }, :fields => ["n", "desc", "per"]).each do |doc|
+  
+  # Find apps by permission and write the description if it's English
+  def write_description_apps_by_permission
+    query = '{"per" => "#{@per_name}" }, :fields => ["n", "desc", "per"]'
+    if(!@price.nil?)
+      if(@price.casecmp("free") == 0)
+        query = '{"per" => "#{@per_name}", "pr" => "Free" }, :fields => ["n", "desc", "per"]'
+      elsif(@price.casecmp("paid") == 0)
+        query = '{"per" => "#{@per_name}", "pr" => {"$ne: "Free"} }, :fields => ["n", "desc", "per"]'
+      end
+    end
+    @collection.find(query).each do |doc|
       name = doc["n"]
       desc = doc["desc"]
       next unless desc.language.to_s.eql? "english" || desc.split.size > 10
@@ -55,12 +97,13 @@ class MongodbDriver
   end
   
   def find_top_free_apps
+    query = '{ "pri" => "#{@price}", "per" => { "$not" => { "$size" => 0 } } },{ :fields => ["n", "dct"], :sort => [:limit => @limit], :sort => ["dct", Mongo::DESCENDING]}'
     name_hd = "apk_name"
     download_hd = "download_count"
     out_file = File.join(@out_dir, "top_apps.txt")
-    File.open(out_file, 'w') do |file| 
+    File.open(out_file, 'w') do |file|
       file.puts(name_hd + ", " + download_hd)
-      @collection.find({ "pri" => "Free", "per" => { "$not" => { "$size" => 0 } } },{ :fields => ["n", "dct"], :sort => [:limit => @limit], :sort => ["dct", Mongo::DESCENDING]}).each do |doc|
+      @collection.find(query).each do |doc|
         name = doc["n"]
         dct = doc["dct"]
         line = name + ", " + dct.to_s
@@ -80,19 +123,28 @@ class MongodbDriver
     @out_dir = out_dir
     connect_mongodb
     
+    if(!@price.nil)
+      if(@price.casecmp("free") != 0  || @price.casecmp("paid") != 0)
+        puts "Error: Unknown fee value. Please user either free or paid"
+      end
+    end
+    
     if(cmd.eql? "find_apps_by_permission")
       if(@per_name.nil?)
         puts "Please indicate the permission name using the option -P."
         abort(@@usage)
       else
-        find_apps_with_permissions
+        find_apps_by_permission
       end
-    elsif(cmd.eql? "find_apps_with_permissions")
-      find_apps_with_permissions
     elsif(cmd.eql? "find_top_free_apps")
+      @price ="Free"
       find_top_free_apps
+    elsif(cmd.eql? "write_description_apps_with_permissions")
+      write_description_apps_with_permissions
+    elsif(cmd.eql? "write_description_apps_with_permissions")
+      write_description_apps_with_permissions
     end
-
+    
     end_time = Time.now
     elapsed_time = end_time - beginning_time
     Logging.logger.info("Finished after #{Time.at(elapsed_time).utc.strftime("%H:%M:%S")}")
@@ -124,6 +176,9 @@ class MongodbDriver
         opts.on('-P','--permission <name>', 'One valid Android permission name that the application needs.') do |per_name|
           @per_name = per_name
         end
+        opts.on('f', 'fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
+          @price = fee_value
+        end
         opts.on('-l','--limit <value>', 'The number of documents in the result set.') do |limit_value|
           @limit = limit_value
         end
@@ -150,10 +205,10 @@ class MongodbDriver
     
     if(args[0].eql? "find_top_free_apps")
       cmd = "find_top_free_apps"
-    elsif(args[0].eql? "find_apps_by_permission")
-      cmd = "find_apps_by_permission"
-    elsif(args[0].eql? "find_apps_with_permissions")
-      cmd = "find_apps_with_permissions"
+    elsif(args[0].eql? "write_description_apps_by_permission")
+      cmd = "write_description_apps_by_permission"
+    elsif(args[0].eql? "write_description_apps_with_permissions")
+      cmd = "write_description_apps_with_permissions"
     else
       puts "Error: Unknown command."
       abort(@@usage)
