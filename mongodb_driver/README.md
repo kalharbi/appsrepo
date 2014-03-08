@@ -18,20 +18,20 @@ This is the MongoDB driver for the database. It retrieves all public description
 
 - Get all public descriptions of Camera apps and save the results in text files at ~/camera_apps_descriptions.
 
-      ruby ./mongodb_driver.rb write_apps_description_by_permission ~/camera_apps_descriptions --permission android.permission.CAMERA
+        ruby ./mongodb_driver.rb write_apps_description_by_permission ~/camera_apps_descriptions --permission android.permission.CAMERA
 
 - Get the desciption of all apps with at least one permission and save the results in text files at ~/permission_apps_description/
 
-      ruby ./mongodb_driver.rb write_description_for_all_apps_with_at_least_one_permission ~/permission_apps_description
+        ruby ./mongodb_driver.rb write_description_for_all_apps_with_at_least_one_permission ~/permission_apps_description
 
 - Get the top 500 apps with permissions and save the results in a text file at ~/top_apps/
 
-      ruby ./mongodb_driver.rb find_top_apps ~/top_apps --fee free --max 500
+        ruby ./mongodb_driver.rb find_top_apps ~/top_apps --fee free --max 500
 		
 - Get all free camera apps
     
-	  ruby ./mongodb_driver.rb find_apps_by_permission /home/khalid/results/ --fee Free --permission android.permission.CAMERA
+	    ruby ./mongodb_driver.rb find_apps_by_permission /home/khalid/results/ --fee Free --permission android.permission.CAMERA
 
 - Get all paid apps that require PHONE permission
 
-	  ruby ./mongodb_driver.rb find_apps_by_permission /home/khalid/results/ --fee paid --permission android.permission.PHONE
+	    ruby ./mongodb_driver.rb find_apps_by_permission /home/khalid/results/ --fee paid --permission android.permission.PHONE
