@@ -34,15 +34,15 @@ class MongodbDriver
 
   # Find apps by permission and price. Write their names to a file in the target directory
   def find_apps_by_permission
-    query = '{"per" => "#{@per_name}" }, :fields => ["n"]'
-    out_file_name = "#{@per_name}-all_apps.txt"
+    query = "{'per' => '#@per_name', :fields => ['n']"
+    out_file_name = "#@per_name-all_apps.txt"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
-        query = '{"per" => "#{@per_name}", "pr" => "Free" }, :fields => ["n"]'
-        out_file_name = "#{@per_name}-free_apps.txt"
-      elsif(@price.casecmp("paid") == 0) 
-        query = '{"per" => "#{@per_name}", "pr" => {"$ne: "Free"} }, :fields => ["n"]'
-        out_file_name = "#{@per_name}-paid_apps.txt"
+        query = "{'per' => '#@per_name', 'pr' => 'Free' }, :fields => ['n']"
+        out_file_name = "#@per_name-free_apps.txt"
+      elsif(@price.casecmp("paid") == 0)
+        query = "{'per' => '#@per_name', 'pr' => {'$ne': 'Free'} }, :fields => ['n']"
+        out_file_name = "#@per_name-paid_apps.txt"
       end
     end
     out_file = File.join(@out_dir, out_file_name)
@@ -58,12 +58,12 @@ class MongodbDriver
   
   # Find apps that have at least one permission and write the description if it's English
   def write_description_apps_with_permissions
-    query = '{"per" => {"$not" => {"$size" => 0} } }, :fields => ["n", "desc", "per"]'
+    query = "{'per' => {'$not' => {'$size' => 0} } }, :fields => ['n', 'desc', 'per']"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
-        query = '{"per" => {"$not" => {"$size" => 0} }, "pr" => "Free" }, :fields => ["n", "desc", "per"]'
+        query = "{'per' => {'$not' => {'$size' => 0} }, 'pr' => 'Free' }, :fields => ['n', 'desc', 'per']"
       elsif(@price.casecmp("paid") == 0)
-        query = '{"per" => {"$not" => {"$size" => 0} }, "pr" => {"$ne: "Free"} }, :fields => ["n", "desc", "per"]'
+        query = "{'per' => {'$not' => {'$size' => 0} }, 'pr' => {'$ne': 'Free'} }, :fields => ['n', 'desc', 'per']"
       end
     end
     @collection.find(query).each do |doc|
@@ -78,12 +78,12 @@ class MongodbDriver
   
   # Find apps by permission and write the description if it's English
   def write_description_apps_by_permission
-    query = '{"per" => "#{@per_name}" }, :fields => ["n", "desc", "per"]'
+    query = "{'per' => '#@per_name' }, :fields => ['n', 'desc', 'per']"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
-        query = '{"per" => "#{@per_name}", "pr" => "Free" }, :fields => ["n", "desc", "per"]'
+        query = "{'per' => '#@per_name', 'pr' => 'Free' }, :fields => ['n', 'desc', 'per']"
       elsif(@price.casecmp("paid") == 0)
-        query = '{"per" => "#{@per_name}", "pr" => {"$ne: "Free"} }, :fields => ["n", "desc", "per"]'
+        query = "{'per' => '#@per_name', 'pr' => {'$ne': 'Free'} }, :fields => ['n', 'desc', 'per']"
       end
     end
     @collection.find(query).each do |doc|
@@ -97,7 +97,7 @@ class MongodbDriver
   end
   
   def find_top_free_apps
-    query = '{ "pri" => "#{@price}", "per" => { "$not" => { "$size" => 0 } } },{ :fields => ["n", "dct"], :sort => [:limit => @limit], :sort => ["dct", Mongo::DESCENDING]}'
+    query = "{ 'pri' => '#@price', 'per' => { '$not' => { '$size' => 0 } } },{ :fields => ['n', 'dct'], :sort => [:limit => @limit], :sort => ['dct', Mongo::DESCENDING]}"
     name_hd = "apk_name"
     download_hd = "download_count"
     out_file = File.join(@out_dir, "top_apps.txt")
@@ -202,9 +202,10 @@ class MongodbDriver
       puts 'Error: no command'
       abort(@@usage)
     end
+    
     if(args[0].eql? "find_apps_by_permission")
       cmd = "find_apps_by_permission"
-    if(args[0].eql? "find_top_free_apps")
+    elsif(args[0].eql? "find_top_free_apps")
       cmd = "find_top_free_apps"
     elsif(args[0].eql? "write_description_apps_by_permission")
       cmd = "write_description_apps_by_permission"
@@ -214,6 +215,7 @@ class MongodbDriver
       puts "Error: Unknown command."
       abort(@@usage)
     end
+    
     if(args[1].nil?)
       abort(@@usage)
     else
@@ -222,6 +224,7 @@ class MongodbDriver
     end
   end
 end
+
 
 if __FILE__ == $PROGRAM_NAME
   driver_obj = MongodbDriver.new
