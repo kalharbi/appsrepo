@@ -3,7 +3,7 @@ This is the MongoDB driver for the database. It retrieves all public description
 ### Usage:
 
     Usage: ./mongodb_driver.rb {CMD} {out_dir} [OPTIONS]
-    CMD: { find_apps_by_permission | find_top_free_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}}
+    CMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}}
     
     -h, --help                       Show this help message and exit
     -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
