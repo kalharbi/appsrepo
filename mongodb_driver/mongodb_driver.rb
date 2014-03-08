@@ -123,8 +123,8 @@ class MongodbDriver
     @out_dir = out_dir
     connect_mongodb
     
-    if(!@price.nil)
-      if(@price.casecmp("free") != 0  || @price.casecmp("paid") != 0)
+    if(!@price.nil?)
+      if(!(@price.casecmp("free") == 0  || @price.casecmp("paid") == 0))
         puts "Error: Unknown fee value. Please user either free or paid"
       end
     end
