@@ -7,7 +7,7 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} CMD {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
+  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @collection
@@ -65,7 +65,7 @@ class MongodbDriver
       if(@price.casecmp("free") == 0)
         query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => 'Free' }"
       elsif(@price.casecmp("paid") == 0)
-        query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => {'$ne': 'Free'} }"
+        query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => {'$ne' => 'Free'} }"
       end
     end
     @collection.find(eval(query), eval(opts)).each do |doc|
@@ -86,7 +86,7 @@ class MongodbDriver
       if(@price.casecmp("free") == 0)
        query = "{'per' => '#@per_name', 'pri' => 'Free' }"
       elsif(@price.casecmp("paid") == 0)
-        query = "{'per' => '#@per_name', 'pri' => {'$ne': 'Free'} }"
+        query = "{'per' => '#@per_name', 'pri' => {'$ne' => 'Free'} }"
       end
     end
     @collection.find(eval(query), eval(opts)).each do |doc|
@@ -108,7 +108,7 @@ class MongodbDriver
          query = "{ 'pri' => 'Free', 'per' => { '$not' => { '$size' => 0 } } }"
          file_name = "top_free_apps.txt"
        elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne': 'Free'}, 'per' => { '$not' => { '$size' => 0 } } }"
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { '$not' => { '$size' => 0 } } }"
          file_name = "top_paid_apps.txt"
        end
     end
