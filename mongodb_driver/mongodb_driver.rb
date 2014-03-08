@@ -7,7 +7,7 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} CMD {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
+  @@usage = "Usage: #{$PROGRAM_NAME} CMD {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @collection
