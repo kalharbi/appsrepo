@@ -102,7 +102,7 @@ class JsonReader
     download_count = 0
     if !index.nil?
       download_text_value = download_range[0..index]
-      download_count = download_text_value.gsub(/[^\d]/, '')
+      download_count = download_text_value.gsub(/[^\d]/, '').to_i
     end
     download_count
   end
