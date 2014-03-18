@@ -11,7 +11,7 @@ require_relative '../utils/logging'
 
 class PublicMain
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {json_file | json_directory} [OPTIONS]"
+  @@usage = "Usage: #{$PROGRAM_NAME} {InsertWithDuplicates | InsertIfNotExists} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   attr_reader :host, :port, :verbose
@@ -31,25 +31,44 @@ class PublicMain
     collection
   end
 
-  def insert_document(collection, document)
+  def insert_document_with_duplicates(collection, document)
     id = collection.insert(document)
+    msg = "Inserted a new document for apk: #{document["n"]}, document id = #{id}"
+    if(@verbose)
+      puts msg
+    end
+    Logging.logger.info(msg)
   end
 
-  def document_reader(collection, json_file)
-    json_reader = JsonReader.new
-    Logging.logger.info("processing #{json_file}")
-    app_info = json_reader.parse_json_data(json_file)
-    if !app_info.nil?
-      id = insert_document(collection, app_info)
-      msg = "Inserted a new document for apk: #{app_info["n"]}, document id = #{id}"
+  def insert_document_if_not_exists(collection, document)
+    apk = document['n']
+    ver = document['ver']
+    query = "{'n' => '#{apk}', 'ver' => '#{ver}'}"
+    cursor = collection.find(eval(query))
+    if !cursor.has_next?
+      id = collection.insert(document)
+      msg = "Inserted a new document for apk: #{apk}, ver: #{ver}, document id = #{id}"
       if(@verbose)
         puts msg
       end
       Logging.logger.info(msg)
+    end    
+  end
+
+  def document_reader(cmd, collection, json_file)
+    json_reader = JsonReader.new
+    Logging.logger.info("processing #{json_file}")
+    app_info = json_reader.parse_json_data(json_file)
+    if !app_info.nil?
+      if(cmd.eql? "InsertIfNotExists")
+        insert_document_if_not_exists(collection, app_info)
+      elsif(cmd.eql? "InsertWithDuplicates")
+        insert_document_with_duplicates(collection, app_info)
+      end
     end
   end
   
-  def start_main(source)
+  def start_main(cmd, source)
     beginning_time = Time.now
     if(!File.exist? source)
       puts "Error: No such file or directory"
@@ -64,12 +83,12 @@ class PublicMain
       collection = connect_mongodb
       # If the source is a directory that contains json file(s).
       json_files.each do |json_file|
-        document_reader(collection, json_file)
+        document_reader(cmd, collection, json_file)
       end
      # If the source is a json file
     elsif (File.extname(source).downcase.eql? ".json")
       collection = connect_mongodb
-      document_reader(collection, source)
+      document_reader(cmd, collection, source)
     else
       abort(@@usage)
     end
@@ -115,13 +134,29 @@ class PublicMain
       puts opt_parser.help()
       exit
     end
- 
+
+    cmd = ""
     if(args[0].nil?)
+      puts "Error command is not specified."
       abort(@@usage)
     else
-      source = File.absolute_path(args[0])
-      start_main(source)
+        if(args[0].eql? "InsertWithDuplicates")
+          cmd = "InsertWithDuplicates"
+        elsif(args[0].eql? "InsertIfNotExists")
+          cmd = "InsertIfNotExists"
+        else
+          puts "Unknown command. Valid commands are: InsertWithDuplicates or InsertIfNotExists."
+          abort(@@usage)
+        end
     end
+    
+    if(args[1].nil?)
+      puts "Error source is not specified."
+      abort(@@usage)
+    end
+    
+    source = File.absolute_path(args[1])
+    start_main(cmd, source)
   end
 end
 
