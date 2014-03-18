@@ -22,6 +22,7 @@ class JsonReader
   
   private
   def convert_to_object(name, data)
+    name = remove_download_date_from_apk_name(name)
     app = App.new(name)
     app.title = data["title"]
     app.playStoreURL = data["playStoreURL"]
@@ -65,7 +66,20 @@ class JsonReader
     end
     new_review
   end
-
+  
+  # Remove the download date from the apk name.
+  # This is done because the crwaler appends the download date into the file name
+  # Example: com.google.android.apps.googlevoice.20130926 ->com.google.android.apps.googlevoice
+  def remove_download_date_from_apk_name(apk_name)
+    date_index = apk_name.rindex('.201')
+    if !date_index.nil?
+      if is_number?(apk_name[-8..-1])
+        apk_name = apk_name[0..-10]
+      end
+    end
+    apk_name
+  end
+  
   def convert_install_size_text_to_KBytes(sizeText)
     unit = sizeText[-1].downcase
     size = sizeText.to_f
@@ -93,7 +107,6 @@ class JsonReader
     download_count
   end
   
-  private
   def is_number?(number)
     true if Float(number) rescue false
   end
