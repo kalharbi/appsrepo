@@ -57,10 +57,10 @@ class ManifestMain(object):
                 self.log.info("Inserted a new document for apk: %s; version:%s", 
                               app_manifest.package, app_manifest.version_name)
         if(len(manifest_files) == 0):
-            print("Error: Failed to find AndroidManifest.xml files in",
-                  dir_name, " in the depth of ", self.DIR_DEPTH_SEARCH, 
-                  "directories.\nTry to change the depth" + 
-                  " value using the command line option -d", sep=" ")
+            self.log.error("Error: Failed to find AndroidManifest.xml files in %s" +
+                           " in the depth of %d directories.\nTry to change the depth" +
+                           " value using the command line option -d",
+                           dir_name, self.DIR_DEPTH_SEARCH)
         
     def main(self, argv):
         # Configure logging
