@@ -18,10 +18,85 @@ class ManifestParser(ContentHandler):
         'in_meta_data', 'in_activity_alias', 'in_service', 'in_receiver', 'in_provider',
         'in_grant_uri_permission', 'in_path_permission', 'in_uses_library'
     ], False)
-    
-    
+        
     def __init__(self):
         ContentHandler.__init__(self)
+        
+        # <activity> global variables
+        self.activity_allowTaskReparenting = None
+        self.activity_alwaysRetainTaskState = None
+        self.activity_clearTaskOnLaunch = None
+        self.activity_configChanges = None
+        self.activity_enabled = None
+        self.activity_excludeFromRecents = None
+        self.activity_exported = None
+        self.activity_finishOnTaskLaunch = None
+        self.activity_hardwareAccelerated = None
+        self.activity_icon = None
+        self.activity_label = None
+        self.activity_launchMode = None
+        self.activity_multiprocess = None
+        self.activity_name = None
+        self.activity_noHistory = None
+        self.activity_parentActivityName = None
+        self.activity_permission = None
+        self.activity_process = None
+        self.activity_screenOrientation = None
+        self.activity_stateNotNeeded = None
+        self.activity_taskAffinity = None
+        self.activity_theme = None
+        self.activity_uiOptions = None
+        self.activity_windowSoftInputMode = None
+        # end of <activity> global variables
+        
+        #<activity-alias> global variables
+        self.activity_alias_enabled = None
+        self.activity_alias_exported = None
+        self.activity_alias_icon = None
+        self.activity_alias_label = None
+        self.activity_alias_name = None
+        self.activity_alias_permission = None
+        self.activity_alias_targetActivity = None
+        #end of <activity-alias> global variables
+        
+        # <service> global variables
+        self.service_enabled = None
+        self.service_exported = None
+        self.service_icon = None
+        self.service_isolatedProcess = None
+        self.service_label = None
+        self.service_name = None
+        self.service_permission = None
+        self.service_process = None
+        # end of <service> global variables
+        
+        # <provider> global variables
+        self.provider_authorities = None
+        self.provider_enabled = None
+        self.provider_exported = None
+        self.provider_grantUriPermissions = None
+        self.provider_icon = None
+        self.provider_initOrder = None
+        self.provider_label = None
+        self.provider_multiprocess = None
+        self.provider_name = None
+        self.provider_permission = None
+        self.provider_process = None
+        self.provider_readPermission = None
+        self.provider_syncable = None
+        self.provider_writePermission = None
+        # end of <provider> global variables
+        
+        #<receiver> global elemnts
+        self.receiver_enabled = None
+        self.receiver_exported = None
+        self.receiver_icon = None
+        self.receiver_label = None
+        self.receiver_name = None
+        self.receiver_permission = None
+        self.receiver_process = None
+        #end of <receiver> global elemnts
+        
         self.app_manifest = None
         
         self.intent_filter_activity = None
@@ -37,7 +112,6 @@ class ManifestParser(ContentHandler):
         self.meta_data_receiver = []
         self.grant_uri_permission = []
         self.path_permission = []
-        
             
     def startElement(self, name, attrs):
         if name == 'manifest':
@@ -148,6 +222,8 @@ class ManifestParser(ContentHandler):
             self.flags['in_application'] = False
             self.app_manifest.set_application_meta_data(self.meta_data_application)
         elif name == 'activity':
+            self.do_end_activity()
+            self.reset_activity_variables()
             self.flags['in_activity'] = False
             self.intent_filter_activity = None
             self.meta_data_activity = []
@@ -162,18 +238,26 @@ class ManifestParser(ContentHandler):
         elif name == 'meta-data':
             self.flags['in_meta_data'] = False        
         elif name == 'activity-alias':
+            self.do_end_activity_alias()
+            self.reset_activity_alias_variables()
             self.flags['in_activity_alias'] = False
             self.intent_filter_activity_alias = None
             self.meta_data_activity_alias = []
         elif name == 'service':
+            self.do_end_service()
+            self.reset_service_variables()
             self.flags['in_service'] = False
             self.intent_filter_service = None
             self.meta_data_service = []
         elif name == 'receiver':
+            self.do_end_receiver()
+            self.reset_receiver_variables()
             self.flags['in_receiver'] = False
             self.intent_filter_receiver = None
             self.meta_data_receiver = []
         elif name == 'provider':
+            self.do_end_provider()
+            self.reset_provider_variables()
             self.flags['in_provider'] = False
         elif name == 'grant-uri-permission':
             self.flags['in_grant_uri_permission'] = False
@@ -187,6 +271,76 @@ class ManifestParser(ContentHandler):
         if self.flags['in_activity']:
             return
     
+    def reset_activity_variables(self):
+        self.activity_allowTaskReparenting = None
+        self.activity_alwaysRetainTaskState = None
+        self.activity_clearTaskOnLaunch = None
+        self.activity_configChanges = None
+        self.activity_enabled = None
+        self.activity_excludeFromRecents = None
+        self.activity_exported = None
+        self.activity_finishOnTaskLaunch = None
+        self.activity_hardwareAccelerated = None
+        self.activity_icon = None
+        self.activity_label = None
+        self.activity_launchMode = None
+        self.activity_multiprocess = None
+        self.activity_name = None
+        self.activity_noHistory = None
+        self.activity_parentActivityName = None
+        self.activity_permission = None
+        self.activity_process = None
+        self.activity_screenOrientation = None
+        self.activity_stateNotNeeded = None
+        self.activity_taskAffinity = None
+        self.activity_theme = None
+        self.activity_uiOptions = None
+        self.activity_windowSoftInputMode = None
+    
+    def reset_activity_alias_variables(self):
+        self.activity_alias_enabled = None
+        self.activity_alias_exported = None
+        self.activity_alias_icon = None
+        self.activity_alias_label = None
+        self.activity_alias_name = None
+        self.activity_alias_permission = None
+        self.activity_alias_targetActivity = None
+    
+    def reset_service_variables(self):
+        self.service_enabled = None
+        self.service_exported = None
+        self.service_icon = None
+        self.service_isolatedProcess = None
+        self.service_label = None
+        self.service_name = None
+        self.service_permission = None
+        self.service_process = None
+        
+    def reset_receiver_variables(self):
+        self.receiver_enabled = None
+        self.receiver_exported = None
+        self.receiver_icon = None
+        self.receiver_label = None
+        self.receiver_name = None
+        self.receiver_permission = None
+        self.receiver_process = None
+        
+    def reset_provider_variables(self):
+        self.provider_authorities = None
+        self.provider_enabled = None
+        self.provider_exported = None
+        self.provider_grantUriPermissions = None
+        self.provider_icon = None
+        self.provider_initOrder = None
+        self.provider_label = None
+        self.provider_multiprocess = None
+        self.provider_name = None
+        self.provider_permission = None
+        self.provider_process = None
+        self.provider_readPermission = None
+        self.provider_syncable = None
+        self.provider_writePermission = None
+        
     def do_manifest(self, name, attrs):
         package = attrs.get('package', None)
         sharedUserId = attrs.get('android:sharedUserId', None)
@@ -304,7 +458,6 @@ class ManifestParser(ContentHandler):
         theme = attrs.get('android:theme', None)
         uiOptions = attrs.get('android:uiOptions', None)
         vmSafeMode = attrs.get('android:vmSafeMode', None)
-        
         self.app_manifest.set_application(allowTaskReparenting, allowBackup, backupAgent, debuggable, 
                                           description, enabled, hasCode, hardwareAccelerated, icon, killAfterRestore, 
                                           label, logo, manageSpaceActivity, largeHeap, name, permission, persistent, 
@@ -313,39 +466,41 @@ class ManifestParser(ContentHandler):
                                           uiOptions, vmSafeMode)
         
     def do_activity(self, attrs):
-        allowTaskReparenting = attrs.get('android:allowTaskReparenting', None)
-        alwaysRetainTaskState = attrs.get('android:alwaysRetainTaskState', None)
-        clearTaskOnLaunch = attrs.get('android:clearTaskOnLaunch', None)
-        configChanges = attrs.get('android:configChanges', None)
-        enabled = attrs.get('android:enabled', None)
-        excludeFromRecents = attrs.get('android:excludeFromRecents', None)
-        exported = attrs.get('android:exported', None)
-        finishOnTaskLaunch = attrs.get('android:finishOnTaskLaunch', None)
-        hardwareAccelerated = attrs.get('android:hardwareAccelerated', None)
-        icon = attrs.get('android:icon', None)
-        label = attrs.get('android:label', None)
-        launchMode = attrs.get('android:launchMode', None)
-        multiprocess = attrs.get('android:multiprocess', None)
-        name = attrs.get('android:name', None)
-        noHistory = attrs.get('android:noHistory', None)
-        parentActivityName = attrs.get('android:parentActivityName', None)
-        permission = attrs.get('android:permission', None)
-        process = attrs.get('android:process', None)
-        screenOrientation = attrs.get('android:screenOrientation', None)
-        stateNotNeeded = attrs.get('android:stateNotNeeded', None)
-        taskAffinity = attrs.get('android:taskAffinity', None)
-        theme = attrs.get('android:theme', None)
-        uiOptions = attrs.get('android:uiOptions', None)
-        windowSoftInputMode = attrs.get('android:windowSoftInputMode', None)
-        intentFilter = self.intent_filter_activity
-        metaData = self.meta_data_activity
-        self.app_manifest.set_activity(allowTaskReparenting, alwaysRetainTaskState, 
-                             clearTaskOnLaunch, configChanges, enabled, excludeFromRecents, 
-                             exported, finishOnTaskLaunch, hardwareAccelerated, icon, label, 
-                             launchMode, multiprocess, name, noHistory, parentActivityName, 
-                             permission, process, screenOrientation, stateNotNeeded, taskAffinity,
-                             theme, uiOptions, windowSoftInputMode, intentFilter, metaData)
-        
+        self.activity_allowTaskReparenting = attrs.get('android:allowTaskReparenting', None)
+        self.activity_alwaysRetainTaskState = attrs.get('android:alwaysRetainTaskState', None)
+        self.activity_clearTaskOnLaunch = attrs.get('android:clearTaskOnLaunch', None)
+        self.activity_configChanges = attrs.get('android:configChanges', None)
+        self.activity_enabled = attrs.get('android:enabled', None)
+        self.activity_excludeFromRecents = attrs.get('android:excludeFromRecents', None)
+        self.activity_exported = attrs.get('android:exported', None)
+        self.activity_finishOnTaskLaunch = attrs.get('android:finishOnTaskLaunch', None)
+        self.activity_hardwareAccelerated = attrs.get('android:hardwareAccelerated', None)
+        self.activity_icon = attrs.get('android:icon', None)
+        self.activity_label = attrs.get('android:label', None)
+        self.activity_launchMode = attrs.get('android:launchMode', None)
+        self.activity_multiprocess = attrs.get('android:multiprocess', None)
+        self.activity_name = attrs.get('android:name', None)
+        self.activity_noHistory = attrs.get('android:noHistory', None)
+        self.activity_parentActivityName = attrs.get('android:parentActivityName', None)
+        self.activity_permission = attrs.get('android:permission', None)
+        self.activity_process = attrs.get('android:process', None)
+        self.activity_screenOrientation = attrs.get('android:screenOrientation', None)
+        self.activity_stateNotNeeded = attrs.get('android:stateNotNeeded', None)
+        self.activity_taskAffinity = attrs.get('android:taskAffinity', None)
+        self.activity_theme = attrs.get('android:theme', None)
+        self.activity_uiOptions = attrs.get('android:uiOptions', None)
+        self.activity_windowSoftInputMode = attrs.get('android:windowSoftInputMode', None)
+    
+    def do_end_activity(self):
+        self.app_manifest.set_activity(self.activity_allowTaskReparenting, self.activity_alwaysRetainTaskState, 
+                             self.activity_clearTaskOnLaunch, self.activity_configChanges, self.activity_enabled, 
+                             self.activity_excludeFromRecents, self.activity_exported, self.activity_finishOnTaskLaunch, 
+                             self.activity_hardwareAccelerated, self.activity_icon, self.activity_label, self.activity_launchMode, 
+                             self.activity_multiprocess, self.activity_name, self.activity_noHistory, self.activity_parentActivityName, 
+                             self.activity_permission, self.activity_process, self.activity_screenOrientation, self.activity_stateNotNeeded, 
+                             self.activity_taskAffinity, self.activity_theme, self.activity_uiOptions, self.activity_windowSoftInputMode, 
+                             self.intent_filter_activity, self.meta_data_activity)
+    
     def do_intent_filter(self, attrs):
         name = attrs.get('android:name', None)
         icon = attrs.get('android:icon', None)
@@ -421,64 +576,80 @@ class ManifestParser(ContentHandler):
             self.meta_data_application.append(MetaData(name, resource, value))
         
     def do_activity_alias(self, attrs):
-        enabled = attrs.get('android:enabled', None)
-        exported = attrs.get('android:exported', None)
-        icon = attrs.get('android:icon', None)
-        label = attrs.get('android:label', None)
-        name = attrs.get('android:name', None)
-        permission = attrs.get('android:permission', None)
-        targetActivity = attrs.get('android:targetActivity', None)
-        intentFilter = self.intent_filter_activity_alias
-        metaData = self.meta_data_activity_alias
-        self.app_manifest.set_activity_alias(enabled, exported, icon, label, name, permission, targetActivity, 
-                                            intentFilter, metaData)
+        self.activity_alias_enabled = attrs.get('android:enabled', None)
+        self.activity_alias_exported = attrs.get('android:exported', None)
+        self.activity_alias_icon = attrs.get('android:icon', None)
+        self.activity_alias_label = attrs.get('android:label', None)
+        self.activity_alias_name = attrs.get('android:name', None)
+        self.activity_alias_permission = attrs.get('android:permission', None)
+        self.activity_alias_targetActivity = attrs.get('android:targetActivity', None)
+                                         
+    def do_end_activity_alias(self):
+        self.app_manifest.set_activity_alias(self.activity_alias_enabled, self.activity_alias_exported, 
+                                             self.activity_alias_icon, self.activity_alias_label, 
+                                             self.activity_alias_name, self.activity_alias_permission, 
+                                             self.activity_alias_targetActivity, 
+                                             self.intent_filter_activity_alias, 
+                                             self.meta_data_activity_alias)
+        
     def do_service(self, attrs):
-        enabled = attrs.get('android:enabled', None)
-        exported = attrs.get('android:exported', None)
-        icon = attrs.get('android:icon', None)
-        isolatedProcess = attrs.get('android:isolatedProcess', None)
-        label = attrs.get('android:label', None)
-        name = attrs.get('android:name', None)
-        permission = attrs.get('android:permission', None)
-        process = attrs.get('android:process', None)
-        intentFilter = self.intent_filter_service
-        metaData = self.meta_data_service
-        self.app_manifest.set_service(enabled, exported, icon, isolatedProcess, label, name, permission, 
-                                      process, intentFilter, metaData)
+        self.service_enabled = attrs.get('android:enabled', None)
+        self.service_exported = attrs.get('android:exported', None)
+        self.service_icon = attrs.get('android:icon', None)
+        self.service_isolatedProcess = attrs.get('android:isolatedProcess', None)
+        self.service_label = attrs.get('android:label', None)
+        self.service_name = attrs.get('android:name', None)
+        self.service_permission = attrs.get('android:permission', None)
+        self.service_process = attrs.get('android:process', None)
+        
+    def do_end_service(self):
+        self.app_manifest.set_service(self.service_enabled, self.service_exported, 
+                                      self.service_icon, self.service_isolatedProcess, 
+                                      self.service_label, self.service_name, self.service_permission, 
+                                      self.service_process, self.intent_filter_service, 
+                                      self.meta_data_service)
+        
     def do_receiver(self, attrs):
-        enabled = attrs.get('android:enabled', None)
-        exported = attrs.get('android:exported', None)
-        icon = attrs.get('android:icon', None)
-        label = attrs.get('android:label', None)
-        name = attrs.get('android:name', None)
-        permission = attrs.get('android:permission', None)
-        process = attrs.get('android:process', None)
-        intentFilter = self.intent_filter_receiver
-        metaData = self.meta_data_receiver
-        self.app_manifest.set_receiver(enabled, exported, icon, label, name, permission, process, intentFilter, metaData)
-    
+        self.receiver_enabled = attrs.get('android:enabled', None)
+        self.receiver_exported = attrs.get('android:exported', None)
+        self.receiver_icon = attrs.get('android:icon', None)
+        self.receiver_label = attrs.get('android:label', None)
+        self.receiver_name = attrs.get('android:name', None)
+        self.receiver_permission = attrs.get('android:permission', None)
+        self.receiver_process = attrs.get('android:process', None)
+
+    def do_end_receiver(self):
+        self.app_manifest.set_receiver(self.receiver_enabled, self.receiver_exported,
+                                       self.receiver_icon, self.receiver_label, 
+                                       self.receiver_name, self.receiver_permission, 
+                                       self.receiver_process, self.intent_filter_receiver,
+                                       self.meta_data_receiver)
+        
     def do_provider(self, attrs):
-        authorities = attrs.get('android:authorities', None)
-        enabled = attrs.get('android:enabled', None)
-        exported = attrs.get('android:exported', None)
-        grantUriPermissions = attrs.get('android:grantUriPermissions', None)
-        icon = attrs.get('android:icon', None)
-        initOrder = attrs.get('android:initOrder', None)
-        label = attrs.get('android:label', None)
-        multiprocess = attrs.get('android:multiprocess', None)
-        name = attrs.get('android:name', None)
-        permission = attrs.get('android:permission', None)
-        process = attrs.get('android:process', None)
-        readPermission = attrs.get('android:readPermission', None)
-        syncable = attrs.get('android:syncable', None)
-        writePermission = attrs.get('android:writePermission', None)
-        metaData = self.meta_data_provider
-        grant_uri_permission = self.grant_uri_permission
-        path_permission = self.path_permission
-        self.app_manifest.set_provider(authorities, enabled, exported, grantUriPermissions, icon, initOrder, label, 
-                                       multiprocess, name, permission, process, readPermission, syncable, writePermission, 
-                                       metaData, grant_uri_permission, path_permission)
-                                       
+        self.provider_authorities = attrs.get('android:authorities', None)
+        self.provider_enabled = attrs.get('android:enabled', None)
+        self.provider_exported = attrs.get('android:exported', None)
+        self.provider_grantUriPermissions = attrs.get('android:grantUriPermissions', None)
+        self.provider_icon = attrs.get('android:icon', None)
+        self.provider_initOrder = attrs.get('android:initOrder', None)
+        self.provider_label = attrs.get('android:label', None)
+        self.provider_multiprocess = attrs.get('android:multiprocess', None)
+        self.provider_name = attrs.get('android:name', None)
+        self.provider_permission = attrs.get('android:permission', None)
+        self.provider_process = attrs.get('android:process', None)
+        self.provider_readPermission = attrs.get('android:readPermission', None)
+        self.provider_syncable = attrs.get('android:syncable', None)
+        self.provider_writePermission = attrs.get('android:writePermission', None)
+
+    
+    def do_end_provider(self):
+        self.app_manifest.set_provider(self.provider_authorities, self.provider_enabled, self.provider_exported, 
+                                       self.provider_grantUriPermissions, self.provider_icon, self.provider_initOrder, 
+                                       self.provider_label, self.provider_multiprocess, self.provider_name, 
+                                       self.provider_permission, self.provider_process, self.provider_readPermission,
+                                       self.provider_syncable, self.provider_writePermission, self.meta_data_provider,
+                                       self.grant_uri_permission, self.path_permission) 
+                                           
     def do_grant_uri_permission(self, attrs):
         path = attrs.get('android:path')
         pathPattern = attrs.get('android:pathPattern')
