@@ -14,8 +14,8 @@ class JsonReader
       name = File.basename(json_file,".json")
       app = convert_to_object(name, data)
       app.to_json
-    rescue JSON::ParserError
-      Logging.logger.error("Error in file: #{json_file}")
+    rescue Exception => e 
+      Logging.logger.error("Error in file: #{json_file} - #{e.message}")
       return nil
     end
   end
