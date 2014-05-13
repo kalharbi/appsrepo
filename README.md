@@ -6,7 +6,7 @@ Database of Android apps.
 # Android Apps Analysis
 A set of command line tools that aid in the inspection and analysis of Android APKs.
 
-### 1- MongoDB Ruby Driver [_mongodb_driver_]
+### 1- MongoDB Ruby Driver [_public__mongodb_driver_]
 This is the Ruby MongoDB driver for the public collection of the database. It retrieves various public information of apps and stores the results in text files.
 
 ### 2- Public Features Collection [_public_features_]
