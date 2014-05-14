@@ -4,6 +4,7 @@ import os.path
 import datetime
 import logging
 import glob
+import shutil
 from optparse import OptionParser
 
 class FindNdCopy(object):
@@ -11,6 +12,9 @@ class FindNdCopy(object):
     log = logging.getLogger("find_nd_copy")
     log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
     
+    def __init__(self):
+        self.apk_files = []
+        
     def start_main(self, apk_names_file, source_dir, target_dir):
         with open(apk_names_file, 'r') as f:
             # skip the first line since it's the header line [apk_name, download_count]
@@ -18,33 +22,49 @@ class FindNdCopy(object):
             for line in f:
                 arr = [items.strip() for items in line.split(',')]
                 apk_name = arr[0]
-                apk_files = self.find_apk_file(apk_name, source_dir)
-                if apk_files:
-                    for apk_file in apk_files:
-                        self.log.info('APK: ' + apk_name + '. File: ' + apk_file)
-                        self.copy_file(apk_file, target_dir)
+                if apk_name:
+                    apk_files = self.find_apk_file(apk_name, os.path.join(source_dir, apk_name[0])) # search in the directory that starts with the apk first letter.
+                    if apk_files:
+                        # Copy the first file in the list
+                        # TODO: Handle multiple versions files.
+                        self.copy_file(apk_files[0], target_dir)
                 
     def find_apk_file(self, apk_name, source_directory):
-        matches = []
-        os.chdir(source_directory)
-        for file in glob.glob(apk_name + '*.apk'):
-            print matches.append(file)
-
-        if len(matches) == 1:
-            self.log.info('Found APK file:' + matches[0])
-            return matches[0]
-        elif len(matches) > 1:
-            self.log.warning('Warning: found ' + str(len(matches))  + ' files for apk ' + apk_name + '. ' +
-                             ', '.join([str(x) for x in matches]))
-            return matches
-        elif len(matches) == 0:
-            self.log.error('Error: Could not find the apk file for ' + apk_name)
+        if(not os.path.exists(source_directory)):
+            self.log.error(source_directory + ' No such file or directory.')
+            return None
+        
+        self.files_listing(os.path.abspath(source_directory), apk_name,'.apk')
+        found_apk_files = self.apk_files
+        self.apk_files = []
+        if len(found_apk_files) == 1:
+            self.log.info('Found APK file:' + found_apk_files[0])
+            return found_apk_files[0]
+        elif len(found_apk_files) > 1:
+            self.log.warning('Found ' + str(len(found_apk_files))  + ' files for apk ' + apk_name + '. ' +
+                             ', '.join([str(x) for x in found_apk_files]))
+            return found_apk_files
+        elif len(found_apk_files) == 0:
+            self.log.error('Could not find the apk file for ' + apk_name + ' in: '+ 
+                            source_directory)
         return None
           
     def copy_file(self, apk_file, target_directory):
-        #TODO
-        self.log.info("copying file " + apk_file)
-            
+        self.log.info("copying file " + apk_file + ' to ' + target_directory)
+        try:
+            shutil.copy(apk_file, target_directory)
+        except IOError as e:
+            self.log.error(str(e))
+          
+    def files_listing(self, source, apk_name, ext_name):
+        for item in os.listdir(source):
+            file = os.path.join(source, item)
+            self.log.info('searching for ' + apk_name + ' in ' + file)
+            if(os.path.isdir(file)):
+                self.files_listing(file, apk_name, ext_name)
+            elif(os.path.splitext(file)[1].lower() == ext_name and os.path.basename(os.path.splitext(file)[0]).startswith(apk_name)):
+                self.apk_files.append(file)
+    
     def main(self, args):
         start_time = datetime.datetime.now()
         # Configure logging
@@ -81,8 +101,6 @@ class FindNdCopy(object):
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
-            print("logging level: ", logging_level)
-            print("verbose: ", options.verbose)
             
             # set the file logger level if it exists
             if logging_file:
@@ -98,12 +116,12 @@ class FindNdCopy(object):
         source_dir = None
         target_dir = None
         if os.path.isdir(args[1]):
-            source_dir = args[1]
+            source_dir = os.path.abspath(args[1])
         else:
             sys.exit("Error: source directory " + args[1] + " does not exist.")
         
         if os.path.isdir(args[2]):
-            target_dir = args[2]
+            target_dir = os.path.abspath(args[2])
         else:
             sys.exit("Error: target directory " + args[2] + " does not exist.")
         
