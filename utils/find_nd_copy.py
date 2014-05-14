@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import sys
 import os.path
-import os.walk
-import fnmatch
 import datetime
 import logging
 from optparse import OptionParser
@@ -27,14 +25,15 @@ class FindNdCopy(object):
                 
     def find_apk_file(self, apk_name, source_directory):
         matches = []
-        for root, dirnames, filenames in os.walk(source_directory):
-          for filename in fnmatch.filter(filenames, apk_name + '*.apk'):
-              matches.append(os.path.join(root, filename))
+        os.chdir(source_directory)
+        for file in glob.glob(apk_name + '*.apk'):
+            print matches.append(file)
+
         if len(matches) == 1:
             self.log.info('Found APK file:' + matches[0])
             return matches[0]
         elif len(matches) > 1:
-            self.log.warning('Warning: found ' + len(matches)  + ' files for apk ' + apk_name + '. ' +
+            self.log.warning('Warning: found ' + str(len(matches))  + ' files for apk ' + apk_name + '. ' +
                              ', '.join([str(x) for x in matches]))
             return matches
         elif len(matches) == 0:
