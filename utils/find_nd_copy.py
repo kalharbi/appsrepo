@@ -98,14 +98,11 @@ class FindNdCopy(object):
         if len(args) != 3:
             parser.error("incorrect number of arguments.")
         if options.log_file:
-            if os.path.exists(options.log_file):
-                sys.exit("Error: Log file already exists.")
-            else:
-                logging_file = logging.FileHandler(options.log_file, mode='a',
-                                                            encoding='utf-8', delay=False)
-                logging_file.setLevel(logging_level)
-                logging_file.setFormatter(formatter)
-                self.log.addHandler(logging_file)
+            logging_file = logging.FileHandler(options.log_file, mode='a',
+                                               encoding='utf-8', delay=False)
+            logging_file.setLevel(logging_level)
+            logging_file.setFormatter(formatter)
+            self.log.addHandler(logging_file)
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
