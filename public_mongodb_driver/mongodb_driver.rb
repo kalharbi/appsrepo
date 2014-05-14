@@ -7,7 +7,7 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
+  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @collection
@@ -141,6 +141,48 @@ class MongodbDriver
       Logging.logger.info("The top apps list has been written to: #{out_file}")
   end
 
+  def find_bottom_apps
+    query = "{'per' => { '$not' => { '$size' => 0 } } }"
+    opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit}"
+    file_name = "bottom_apps.txt"
+    if(!@price.nil?)
+       if(@price.casecmp("free") == 0)
+         query = "{ 'pri' => 'Free', 'per' => { '$not' => { '$size' => 0 } } }"
+         file_name = "bottom_free_apps.txt"
+       elsif(@price.casecmp("paid") == 0)
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { '$not' => { '$size' => 0 } } }"
+         file_name = "bottom_paid_apps.txt"
+       end
+    end
+    if(!@per_name.nil?)
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
+        file_name = "bottom_free_" + "#@per_name" + "_apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
+        file_name = "bottom_paid_" + "#@per_name" + "_apps.txt"
+      else
+        query = "{'per' => '#@per_name' }"
+        file_name = "bottom_" + "#@per_name" + "_apps.txt"
+      end
+    end
+      
+    name_hd = "apk_name"
+    download_hd = "download_count"
+    out_file = File.join(@out_dir, file_name)
+    File.open(out_file, 'w') do |file|
+      file.puts(name_hd + ", " + download_hd)
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        name = doc["n"]
+        dct = doc["dct"]
+        line = name + ", " + dct.to_s
+        Logging.logger.info(line)
+        file.puts(line)
+      end
+    end
+      Logging.logger.info("The bottom apps list has been written to: #{out_file}")
+  end
+
   def start_main(out_dir, cmd)
     beginning_time = Time.now
     if(!File.directory?(out_dir))
@@ -166,6 +208,8 @@ class MongodbDriver
       end
     elsif(cmd.eql? "find_top_apps")
       find_top_apps
+    elsif(cmd.eql? "find_bottom_apps")
+      find_bottom_apps
     elsif(cmd.eql? "write_apps_description_by_permission")
       if(@per_name.nil?)
         puts "Please indicate the permission name using the option -P."
