@@ -22,8 +22,16 @@ class FindNdCopy(object):
             for line in f:
                 arr = [items.strip() for items in line.split(',')]
                 apk_name = arr[0]
+                apk_path = source_dir
                 if apk_name:
-                    apk_files = self.find_apk_file(apk_name, os.path.join(source_dir, apk_name[0])) # search in the directory that starts with the apk first letter.
+                    # Only search in the directory of each apk file.
+                    for index, item in enumerate(apk_name.split('.')):
+                        apk_path = os.path.join(apk_path, item[0])
+                        apk_path = os.path.join(apk_path, item)
+                        if index == 1:
+                            break
+                    apk_path = os.path.join(apk_path, apk_name)
+                    apk_files = self.find_apk_file(apk_name, apk_path)
                     if apk_files:
                         # Copy the first file in the list
                         # TODO: Handle multiple versions files.
