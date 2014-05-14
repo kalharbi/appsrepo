@@ -35,3 +35,12 @@ This is the MongoDB driver for the database. It retrieves all public description
 - Get all paid apps that require PHONE permission
 
 	    ruby ./mongodb_driver.rb find_apps_by_permission /home/khalid/results/ --fee paid --permission android.permission.PHONE
+
+- Get the top free 2000 apps that require Camera permission and save the results into a text file.
+
+        ruby ./mongodb_driver.rb find_top_apps /Volumes/sdi2/uiver/khalid/top_apps_lists/camera/ -f Free -P android.permission.CAMERA -m 2000 -v
+
+- Get the bottom free 2000 apps that require Phone permission and save the results into a text file.
+            
+        ruby ./mongodb_driver.rb find_bottom_apps /Volumes/sdi2/uiver/khalid/bottom_apps_lists/phone/ -f Free -P android.permission.CALL_PHONE -m 2000 -v
+
