@@ -3,6 +3,7 @@ import sys
 import os.path
 import datetime
 import logging
+import glob
 from optparse import OptionParser
 
 class FindNdCopy(object):
