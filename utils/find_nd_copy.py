@@ -31,11 +31,11 @@ class FindNdCopy(object):
                         if index == 1:
                             break
                     apk_path = os.path.join(apk_path, apk_name)
-                    apk_files = self.find_apk_file(apk_name, apk_path)
-                    if apk_files:
+                    apk_file = self.find_apk_file(apk_name, apk_path)
+                    if apk_file:
                         # Copy the first file in the list
                         # TODO: Handle multiple versions files.
-                        self.copy_file(apk_files[0], target_dir)
+                        self.copy_file(apk_file, target_dir)
                 
     def find_apk_file(self, apk_name, source_directory):
         if(not os.path.exists(source_directory)):
@@ -51,7 +51,7 @@ class FindNdCopy(object):
         elif len(found_apk_files) > 1:
             self.log.warning('Found ' + str(len(found_apk_files))  + ' files for apk ' + apk_name + '. ' +
                              ', '.join([str(x) for x in found_apk_files]))
-            return found_apk_files
+            return found_apk_files[0]
         elif len(found_apk_files) == 0:
             self.log.error('Could not find the apk file for ' + apk_name + ' in: '+ 
                             source_directory)
