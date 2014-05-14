@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import sys
 import os.path
+import os.walk
+import fnmatch
 import datetime
 import logging
 from optparse import OptionParser
