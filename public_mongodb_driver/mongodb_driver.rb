@@ -112,6 +112,19 @@ class MongodbDriver
          file_name = "top_paid_apps.txt"
        end
     end
+    if(!@per_name.nil?)
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
+        file_name = "top_free_" + "#@per_name" + "_apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
+        file_name = "top_paid_" + "#@per_name" + "_apps.txt"
+      else
+        query = "{'per' => '#@per_name' }"
+        file_name = "top_" + "#@per_name" + "_apps.txt"
+      end
+    end
+      
     name_hd = "apk_name"
     download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
