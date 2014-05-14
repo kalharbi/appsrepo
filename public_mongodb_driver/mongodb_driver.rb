@@ -283,6 +283,8 @@ class MongodbDriver
       cmd = "find_apps_by_permission"
     elsif(args[0].eql? "find_top_apps")
       cmd = "find_top_apps"
+    elsif(args[0].eql? "find_bottom_apps")
+      cmd = "find_bottom_apps"
     elsif(args[0].eql? "write_apps_description_by_permission")
       cmd = "write_apps_description_by_permission"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
