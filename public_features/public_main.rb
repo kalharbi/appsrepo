@@ -42,17 +42,19 @@ class PublicMain
 
   def insert_document_if_not_exists(collection, document)
     apk = document['n']
-    ver = document['ver']
-    query = "{'n' => '#{apk}', 'ver' => '#{ver}'}"
+    date_published = document['dtp']
+    query = "{'n' => '#{apk}', 'dtp' => '#{date_published}'}"
     cursor = collection.find(eval(query))
     if !cursor.has_next?
       id = collection.insert(document)
-      msg = "Inserted a new document for apk: #{apk}, ver: #{ver}, document id = #{id}"
+      msg = "Inserted a new document for apk: #{apk}, date published: #{date_published}, document id = #{id}"
       if(@verbose)
         puts msg
       end
       Logging.logger.info(msg)
-    end    
+    else
+      Logging.logger.info("Document already exists for apk: #{apk}, date published: #{date_published}")
+    end
   end
 
   def document_reader(cmd, collection, json_file)
