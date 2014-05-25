@@ -7,11 +7,11 @@ Running one program multiple times to process one apk file each time takes a lot
 These tools are used to batch process apk files at once saving you a lot of time.
 
 ##Tools:
-1. Apktool extractor  *[apktool_executor.py]*
+1. Apktool Executor  *[apktool_executor.py]*
 2. Dare Executor  *[dare_executor.sh]*
 3. Find and Copy Apk Files *[find_nd_copy.py]*
 
-###1- Apktool extractor  *[apktool_executor.py]*
+###1- Apktool Executor  *[apktool_executor.py]*
 A python script that runs [apktool]('https://code.google.com/p/android-apktool/') on a group of apps. It takes a text file that contains 
 a list of apk names as input, finds their apk files, runs apktool on each apk file, 
 and stores the extracted files for each apk file into one directory.
