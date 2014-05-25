@@ -1,23 +1,22 @@
-android-apps
-============
+appsrepo
+========
 
-Database of Android apps.
+A tool chain that extracts, analyzes, loads, and retrives real Android apps.
 
-# Android Apps Analysis
-A set of command line tools that aid in the inspection and analysis of Android APKs.
-
-### 1- MongoDB Ruby Driver [_public__mongodb_driver_]
+### 1- MongoDB Ruby Driver, */public_mongodb_driver*
 This is the Ruby MongoDB driver for the public collection of the database. It retrieves various public information of apps and stores the results in text files.
 
-### 2- Public Features Collection [_public_features_]
+### 2- Public Features Collection, */public_features*
 This tool reads raw JSON files and stores them into a MongoDB collection named public.
 
-### 3- smali Methods Finder [_smali-methods-finder_]
-This tool extracts Android API methods and user's defined methods from .smali files.
+### 3- smali Methods Finder, */smali-methods-finder*
+This is a Ruby based tool that extracts Android API methods and user's defined methods from .smali files.
 
-### 4- Manifest Features Collection [_public_features_]
+### 4- Manifest Features Collection, */public_features*
 This tool parses AndroidManifest.xml files and stores them into a MongoDB collection named manifest.
 
-### 5- Manifest Mongodb Driver [_manifest_mongodb_driver_]
-This is the Ruby MongoDB driver for the manifest collection of the database. It retrieves AndroidManifest features and stores the results into text files.
+### 5- Manifest Mongodb Driver, */manifest_mongodb_driver*
+This is the Python MongoDB driver for the manifest collection of the database. It retrieves AndroidManifest features from MongoDB and stores the results into text files.
+### 6- Tools, */tools*
+Python & shell script tools for batch processing a list of apk files.
 
