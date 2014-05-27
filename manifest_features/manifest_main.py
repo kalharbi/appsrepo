@@ -4,6 +4,7 @@ import os.path
 import json
 import glob
 import time
+import yaml
 import logging
 import logging.handlers
 from pymongo import MongoClient
@@ -48,6 +49,9 @@ class ManifestMain(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse((manifest_file))
+            apktool_yaml_file = os.path.join(os.path.dirname(manifest_file), 'apktool.yml')
+            app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
+            app_manifest.set_sdk_versions(app_sdk_versions[0], app_sdk_versions[1])
             if(self.document_exists(manifest_collection, app_manifest)):
                 self.log.info("Already Exists.")
                 continue
@@ -61,7 +65,19 @@ class ManifestMain(object):
                            " in the depth of %d directories.\nTry to change the depth" +
                            " value using the command line option -d",
                            dir_name, self.DIR_DEPTH_SEARCH)
-        
+    
+    def get_app_sdk_versions(self, yaml_file):
+        # Read apktool.yaml to get the min and target sdk versions
+        try:
+            self.log.info("Processing file %s.", yaml_file)
+            with open(yaml_file, 'r') as f:
+                doc = yaml.load(f)
+            min_sdk_version = doc.get('sdkInfo', None).get('minSdkVersion', None)
+            target_sdk_version = doc.get('sdkInfo', None).get('targetSdkVersion', None)
+            return(min_sdk_version, target_sdk_version)
+        except yaml.YAMLError, exc:
+            self.log.error("Error in apktool yaml file:", exc)
+            
     def main(self, argv):
         # Configure logging
         logging_file = None
@@ -87,8 +103,8 @@ class ManifestMain(object):
         if len(args) != 1:
             parser.error("incorrect number of arguments.")
         if options.log_file:
-            if os.path.exists(options.log_file):
-                sys.exit("Error: Log file already exists.")
+            if not os.path.exists(os.path.dirname(options.log_file)):
+                sys.exit("Error: Log file directory does not exist.")
             else:
                 logging_file = logging.FileHandler(options.log_file, mode='a',
                                                             encoding='utf-8', delay=False)
