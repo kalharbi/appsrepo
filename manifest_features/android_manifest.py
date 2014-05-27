@@ -34,6 +34,10 @@ class AndroidManifest(object):
         self.providers = []
         self.meta_data = None # Only <meta-data> elements contained inside <application> element
         self.uses_libraries = []
+    
+    def set_sdk_versions(self, min_sdk_version, target_sdk_version):
+        self.min_sdk_version = min_sdk_version
+        self.target_sdk_version = target_sdk_version
         
     def set_uses_permission(self, name = None, max_sdk_version = None):
         uses_permission_set = {'name': name, 'maxSdkVersion': max_sdk_version}
