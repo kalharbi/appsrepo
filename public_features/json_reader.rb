@@ -1,4 +1,5 @@
 require 'json'
+require 'date'
 require_relative 'app'
 require_relative 'app_review'
 require_relative '../utils/logging'
@@ -28,7 +29,7 @@ class JsonReader
     app.playStoreURL = data["playStoreURL"]
     app.category = data["category"]
     app.price = data["price"]
-    app.datePublished = data["datePublished"]
+    app.datePublished = convert_string_to_date(data["datePublished"])
     app.version = data["version"]
     app.operatingSystems = data["operatingSystems"]
     app.ratingsCount = data["ratingsCount"]
@@ -106,7 +107,16 @@ class JsonReader
     end
     download_count
   end
-  
+
+  def convert_string_to_date(string_date)
+   begin
+     return Date.parse string_date
+   rescue ArgumentError => e
+     Logging.logger.error("Date conversion error in file: #{@json_file} - #{e.message}")
+     return string_date
+   end
+  end
+
   def is_number?(number)
     true if Float(number) rescue false
   end
