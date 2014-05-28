@@ -189,7 +189,6 @@ class MongodbDriver
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
-        puts query
         file_name = "bottom_free" + "#{file_name_per_part}" + "apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
