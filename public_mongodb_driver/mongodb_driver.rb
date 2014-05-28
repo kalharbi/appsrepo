@@ -13,6 +13,7 @@ class MongodbDriver
   @collection
   @out_dir
   @per_name
+  @per_list = []
   @limit
   @price
   attr_reader :host, :port, :limit, :price
@@ -115,16 +116,34 @@ class MongodbDriver
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
-        file_name = "top_free_" + "#@per_name" + "_apps.txt"
+        file_name = "top_free_" + "#@per_name.split('.')[-1]" + "_apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
-        file_name = "top_paid_" + "#@per_name" + "_apps.txt"
+        file_name = "top_paid_" + "#@per_name.split('.')[-1]" + "_apps.txt"
       else
         query = "{'per' => '#@per_name' }"
-        file_name = "top_" + "#@per_name" + "_apps.txt"
+        file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.txt"
       end
     end
-      
+    if(!@per_list.nil?)
+      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
+      file_name_per_part = '-'
+      @per_list.each do |p|
+        file_name_per_part << p.split('.')[-1] + '-'
+      end
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
+        puts query
+        file_name = "top_free" + "#{file_name_per_part}" + "apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
+        file_name = "top_paid" + "#{file_name_per_part}" + "apps.txt"
+      else
+        query = "{'per' => { $in: '#@per_list' } }"
+        file_name = "top" + "#{file_name_per_part}" + "apps.txt"
+      end
+    end
+    
     name_hd = "apk_name"
     download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
@@ -157,13 +176,31 @@ class MongodbDriver
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
-        file_name = "bottom_free_" + "#@per_name" + "_apps.txt"
+        file_name = "bottom_free-" + "#@per_name.split('.')[-1]" + "-apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
-        file_name = "bottom_paid_" + "#@per_name" + "_apps.txt"
+        file_name = "bottom_paid-" + "#@per_name.split('.')[-1]" + "-apps.txt"
       else
         query = "{'per' => '#@per_name' }"
-        file_name = "bottom_" + "#@per_name" + "_apps.txt"
+        file_name = "bottom-" + "#@per_name.split('.')[-1]" + "-apps.txt"
+      end
+    end
+    if(!@per_list.nil?)
+      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
+      file_name_per_part = '-'
+      @per_list.each do |p|
+        file_name_per_part << p.split('.')[-1] + '-'
+      end
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
+        puts query
+        file_name = "bottom_free" + "#{file_name_per_part}" + "apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
+        file_name = "bottom_free" + "#{file_name_per_part}" + "apps.txt"
+      else
+        query = "{'per' => { $in: '#@per_list' } }"
+        file_name = "bottom" + "#{file_name_per_part}" + "apps.txt"
       end
     end
       
@@ -249,8 +286,12 @@ class MongodbDriver
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
         end
-        opts.on('-P','--permission <name>', 'One valid Android permission name that the application needs.') do |per_name|
-          @per_name = per_name
+        opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses. Or a list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
+          if(per_name.include? ',')
+            @per_list = per_name.split(',')
+          else
+            @per_name = per_name
+          end
         end
         opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
           @price = fee_value
@@ -308,3 +349,4 @@ if __FILE__ == $PROGRAM_NAME
   driver_obj = MongodbDriver.new
   driver_obj.command_line(ARGV)
 end
+
