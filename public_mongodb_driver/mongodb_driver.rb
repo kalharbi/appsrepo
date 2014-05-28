@@ -3,13 +3,15 @@
 require 'mongo'
 require 'optparse'
 require 'whatlanguage'
+require 'time'
 require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
+  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | find_top_bottom_apps_in_any_permission | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
+  @db
   @collection
   @out_dir
   @per_name
@@ -27,8 +29,8 @@ class MongodbDriver
   private
   def connect_mongodb
     mongo_client = Mongo::Connection.new(@host, @port)
-    db = mongo_client.db(DB_NAME)
-    @collection = db.collection(COLLECTION_NAME)
+    @db = mongo_client.db(DB_NAME)
+    @collection = @db.collection(COLLECTION_NAME)
     Logging.logger.info("Connected to database #{DB_NAME}, collection #{COLLECTION_NAME}")
     @collection
   end
@@ -100,6 +102,93 @@ class MongodbDriver
     end
   end
   
+  # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
+  def find_top_bottom_apps_in_any_permission
+    collection_name = nil
+    file_name = nil
+    query = nil
+    
+    # Prepare the collection that will be passed to the mapreduce function.
+    # The goal is to limit the mapreduce operation to a subset of the collection.
+    if(!@per_list.nil?)
+      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
+      file_name_per_part = '-'
+      # set the result collection name
+      map = {' ' => '', '-' => '_', ':' => '_'}
+      regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
+      collection_name = @per_list[0].split('.')[-1] + '_'+ Time.now.to_s.gsub(regex, map)
+      @per_list.each do |p|
+        file_name_per_part << p.split('.')[-1] + '-'
+      end
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
+        file_name = "free" + "#{file_name_per_part}" + "apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
+        file_name = "paid" + "#{file_name_per_part}" + "apps.txt"
+      else
+        query = "{'per' => { $in: '#@per_list' } }"
+        file_name = "#{file_name_per_part}" + "apps.txt"
+      end
+    else
+      Logging.logger.error("Permission list is empty.")
+      return
+    end
+    
+    # Phase 1: Perform map-reduce and output to a collection named collection_name
+    # MapReduce Options Hash. 
+    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
+    # map and reduces functions written in JavaScript
+    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
+    reduce = 'function(key, values){ return 1; };'
+    # Perform map-reduce operation on the public collection.
+    @collection.map_reduce(map, reduce, eval(opts))
+    
+    custom_collection = @db.collection(collection_name)
+    
+    # Phase2: Query the output collection
+    top_file_name = 'top_' + file_name
+    bottom_file_name = 'bottom_' + file_name
+    opts_for_top = nil
+    opt_for_bottom = nil
+    if(!@limit.nil?)
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]], :limit => #@limit}"
+      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]], :limit => #@limit}"
+    else
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]]}"
+      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]]}"
+    end
+    # write the results into two files
+    #1) Write the results of top apps.
+    name_hd = "apk_name, download_count"
+    top_out_file = File.join(@out_dir, top_file_name)
+    File.open(top_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + ", " + dct
+        Logging.logger.info(line)
+        file.puts(line)
+      end
+    end
+    #2) Write the results of bottom apps.
+    bottom_out_file = File.join(@out_dir, bottom_file_name)
+    File.open(bottom_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opt_for_bottom)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + ", " + dct
+        Logging.logger.info(line)
+        file.puts(line)
+      end
+    end
+    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
+    Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")          
+    
+  end
+  
   def find_top_apps
     query = "{'per' => { '$not' => { '$size' => 0 } } }"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit}"
@@ -125,31 +214,20 @@ class MongodbDriver
         query = "{'per' => '#@per_name' }"
         file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.txt"
       end
-    end
-    if(!@per_list.nil?)
-      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
-      file_name_per_part = '-'
-      @per_list.each do |p|
-        file_name_per_part << p.split('.')[-1] + '-'
-      end
-      if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
-        file_name = "top_free" + "#{file_name_per_part}" + "apps.txt"
-      elsif(!@price.nil? and @price.casecmp("paid") == 0)
-        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
-        file_name = "top_paid" + "#{file_name_per_part}" + "apps.txt"
-      else
-        query = "{'per' => { $in: '#@per_list' } }"
-        file_name = "top" + "#{file_name_per_part}" + "apps.txt"
-      end
+    else
+      Logging.logger.error("Permission name is not specified. Please use the -P option with a valid permission name.")
+      return;
     end
     
     name_hd = "apk_name"
+    download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
       file.puts(name_hd + ", ")
-      @collection.distinct('n', eval(query), eval(opts)).each do |doc|
-        line = doc + ", "
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        name = doc['n']
+        dct = doc["dct"]
+        line = name + ", " + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
@@ -182,31 +260,19 @@ class MongodbDriver
         query = "{'per' => '#@per_name' }"
         file_name = "bottom-" + "#@per_name.split('.')[-1]" + "-apps.txt"
       end
+    else
+      Logging.logger.error("Permission name is not specified. Please use the -P option with a valid permission name.")
+      return;
     end
-    if(!@per_list.nil?)
-      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
-      file_name_per_part = '-'
-      @per_list.each do |p|
-        file_name_per_part << p.split('.')[-1] + '-'
-      end
-      if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
-        file_name = "bottom_free" + "#{file_name_per_part}" + "apps.txt"
-      elsif(!@price.nil? and @price.casecmp("paid") == 0)
-        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
-        file_name = "bottom_free" + "#{file_name_per_part}" + "apps.txt"
-      else
-        query = "{'per' => { $in: '#@per_list' } }"
-        file_name = "bottom" + "#{file_name_per_part}" + "apps.txt"
-      end
-    end
-      
+          
     name_hd = "apk_name"
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
       file.puts(name_hd + ", ")
-      @collection.distinct('n', eval(query), eval(opts)).each do |doc|
-        line = doc + ", "
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        name = doc["n"]
+        dct = doc["dct"]
+        line = name + ", " + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
@@ -222,7 +288,6 @@ class MongodbDriver
     end
     @out_dir = out_dir
     connect_mongodb
-    
     if(!@price.nil?)
       if(!(@price.casecmp("free") == 0  || @price.casecmp("paid") == 0))
         puts "Error: Unknown fee value. Please user either free or paid"
@@ -241,6 +306,13 @@ class MongodbDriver
       find_top_apps
     elsif(cmd.eql? "find_bottom_apps")
       find_bottom_apps
+    elsif(cmd.eql? "find_top_bottom_apps_in_any_permission")
+      if(@per_list.nil?)
+        puts "Please use the -P option to specify the permissions in a comma-separated list."
+        abort(@@usage)
+      else
+        find_top_bottom_apps_in_any_permission
+      end
     elsif(cmd.eql? "write_apps_description_by_permission")
       if(@per_name.nil?)
         puts "Please indicate the permission name using the option -P."
@@ -320,6 +392,8 @@ class MongodbDriver
       cmd = "find_top_apps"
     elsif(args[0].eql? "find_bottom_apps")
       cmd = "find_bottom_apps"
+    elsif(args[0].eql? "find_top_bottom_apps_in_any_permission")
+      cmd = "find_top_bottom_apps_in_any_permission"
     elsif(args[0].eql? "write_apps_description_by_permission")
       cmd = "write_apps_description_by_permission"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
