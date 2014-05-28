@@ -133,7 +133,6 @@ class MongodbDriver
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
-        puts query
         file_name = "top_free" + "#{file_name_per_part}" + "apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
@@ -145,14 +144,11 @@ class MongodbDriver
     end
     
     name_hd = "apk_name"
-    download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", " + download_hd)
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc["n"]
-        dct = doc["dct"]
-        line = name + ", " + dct.to_s
+      file.puts(name_hd + ", ")
+      @collection.distinct('n', eval(query), eval(opts)).each do |doc|
+        line = doc + ", "
         Logging.logger.info(line)
         file.puts(line)
       end
@@ -205,14 +201,11 @@ class MongodbDriver
     end
       
     name_hd = "apk_name"
-    download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", " + download_hd)
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc["n"]
-        dct = doc["dct"]
-        line = name + ", " + dct.to_s
+      file.puts(name_hd + ", ")
+      @collection.distinct('n', eval(query), eval(opts)).each do |doc|
+        line = doc + ", "
         Logging.logger.info(line)
         file.puts(line)
       end
