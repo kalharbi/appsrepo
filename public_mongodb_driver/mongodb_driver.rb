@@ -116,7 +116,8 @@ class MongodbDriver
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
-        file_name = "top_free_" + "#@per_name.split('.')[-1]" + "_apps.txt"
+        file_name_per_part = @per_name.split('.')[-1]
+        file_name = "top_free_" + "#{file_name_per_part}" + "_apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
         file_name = "top_paid_" + "#@per_name.split('.')[-1]" + "_apps.txt"
@@ -172,7 +173,8 @@ class MongodbDriver
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
-        file_name = "bottom_free-" + "#@per_name.split('.')[-1]" + "-apps.txt"
+        file_name_per_part = @per_name.split('.')[-1]
+        file_name = "bottom_free-" + "#{file_name_per_part}" + "-apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
         file_name = "bottom_paid-" + "#@per_name.split('.')[-1]" + "-apps.txt"
