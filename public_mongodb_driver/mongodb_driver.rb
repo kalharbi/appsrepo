@@ -167,7 +167,7 @@ class MongodbDriver
       custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
         name = doc['_id']['apk_name']
         dct = doc['_id']['download']
-        line = name + ", " + dct
+        line = name + ", " + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
@@ -179,7 +179,7 @@ class MongodbDriver
       custom_collection.find(Hash.new(0), eval(opt_for_bottom)).each do |doc|
         name = doc['_id']['apk_name']
         dct = doc['_id']['download']
-        line = name + ", " + dct
+        line = name + ", " + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
