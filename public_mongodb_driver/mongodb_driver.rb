@@ -8,12 +8,13 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | find_top_bottom_apps_in_any_permission | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}"
+  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | find_top_bottom_apps_in_any_permission | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission | write_apps_description_by_package_name}"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @db
   @collection
   @out_dir
+  @package_names_file
   @per_name
   @per_list = []
   @limit
@@ -102,6 +103,23 @@ class MongodbDriver
     end
   end
   
+  # Find apps by apk name and write their description if it's English
+  def write_apps_description_by_package_name
+    opts = "{:fields => ['n', 'desc', 'ver']}"
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 #skips first line that contains the header info (apk_name, download_count)
+      package_name = line.split(',')[0]
+      query = "{'n' => '#{package_name}'}"
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        name = doc["n"]
+        desc = doc["desc"]
+        ver = doc["ver"]
+        out_file = File.join(@out_dir, name + ".description.txt")
+        File.open(out_file, 'w') { |result_file| result_file.write(desc) }
+        Logging.logger.info("The app's description has been written to: #{out_file}")
+      end
+    end
+  end
   # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
   def find_top_bottom_apps_in_any_permission
     collection_name = nil
@@ -322,6 +340,16 @@ class MongodbDriver
       end
     elsif(cmd.eql? "write_description_for_all_apps_with_at_least_one_permission")
       write_description_for_all_apps_with_at_least_one_permission
+    elsif(cmd.eql? "write_apps_description_by_package_name")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the package names file."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        write_apps_description_by_package_name
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
     end
     
     end_time = Time.now
@@ -358,6 +386,9 @@ class MongodbDriver
           else
             @per_name = per_name
           end
+        end
+        opts.on('-k','--package <pckg_list_file>', 'File that contains a list of package names.') do |package_names_file|
+          @package_names_file = package_names_file
         end
         opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
           @price = fee_value
@@ -396,6 +427,8 @@ class MongodbDriver
       cmd = "find_top_bottom_apps_in_any_permission"
     elsif(args[0].eql? "write_apps_description_by_permission")
       cmd = "write_apps_description_by_permission"
+    elsif(args[0].eql? "write_apps_description_by_package_name")
+      cmd = "write_apps_description_by_package_name"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
       cmd = "write_description_for_all_apps_with_at_least_one_permission"
     else
