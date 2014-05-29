@@ -34,6 +34,19 @@ class ApktoolExecutor(object):
         return target_dir
             
     def start_main(self, apk_names_file, source_dir, target_dir):
+        # If apk list file is not given, run apktool on each apk file in the source directory.
+        if not apk_names_file:
+            for apk_file in os.listdir(source_dir):
+                if(os.path.splitext(apk_file)[1] == '.apk'):
+                    result_dir = self.run_apktool(os.path.join(source_dir, apk_file), target_dir)
+                    # Rename the unpacked apk directory.
+                    apk_info = self.get_apk_info(result_dir)
+                    new_name = os.path.join(os.path.dirname(result_dir),
+                                            apk_info[0] + '-' + apk_info[1])
+                    os.rename(result_dir, new_name)
+                    self.log.info("APK file has been extracted at: " + new_name)
+            return
+            
         with open(apk_names_file, 'r') as f:
             # skip the first line since it's the header line [apk_name, download_count]
             next(f)
@@ -126,16 +139,18 @@ class ApktoolExecutor(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] apk_names_file source_directory target_directory", version="%prog 1.0")
+        parser = OptionParser(usage="%prog apk_source_directory target_directory [options]", version="%prog 1.0")
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
-                          action='count', help='Increase verbosity.')
+                          action='count', help='increase verbosity.')
+        parser.add_option('-f', '--file', dest="apk_names_list_file",
+                          metavar="FILE", default=0, help='read apk names from a file that contains a list of APK names.')
         parser.add_option('-c', '--custom', dest="custom_search", action='store_true', default=False,
                           help="search for apk files using the custom directory naming scheme. e.g, dir/c/com/a/amazon/com.amazon")
                           
         (options, args) = parser.parse_args()
-        if len(args) != 3:
+        if len(args) != 2:
             parser.error("incorrect number of arguments.")
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
@@ -154,22 +169,23 @@ class ApktoolExecutor(object):
             self.use_custom_file_search = True
         # Get apk file names
         apk_names_file = None
-        if os.path.isfile(args[0]):
-            apk_names_file = args[0]
-        else:
-            sys.exit("Error: APK names list file " + args[0] + " does not exist.")
+        if options.apk_names_list_file:
+            if os.path.isfile(options.apk_names_list_file):
+                apk_names_file = options.apk_names_list_file
+            else:
+                sys.exit("Error: APK names list file " + options.apk_names_list_file + " does not exist.")
         # Check target directory
         source_dir = None
         target_dir = None
-        if os.path.isdir(args[1]):
-            source_dir = os.path.abspath(args[1])
+        if os.path.isdir(args[0]):
+            source_dir = os.path.abspath(args[0])
         else:
-            sys.exit("Error: source directory " + args[1] + " does not exist.")
+            sys.exit("Error: source directory " + args[0] + " does not exist.")
     
-        if os.path.isdir(args[2]):
-            target_dir = os.path.abspath(args[2])
+        if os.path.isdir(args[1]):
+            target_dir = os.path.abspath(args[1])
         else:
-            sys.exit("Error: target directory " + args[2] + " does not exist.")
+            sys.exit("Error: target directory " + args[1] + " does not exist.")
     
         self.start_main(apk_names_file, source_dir, target_dir)
      
