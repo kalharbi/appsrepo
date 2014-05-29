@@ -39,12 +39,13 @@ class ApktoolExecutor(object):
             for apk_file in os.listdir(source_dir):
                 if(os.path.splitext(apk_file)[1] == '.apk'):
                     result_dir = self.run_apktool(os.path.join(source_dir, apk_file), target_dir)
+                    # TODO: fix os.rename bug ('Directory not empty') to rename the unpacked file
                     # Rename the unpacked apk directory.
-                    apk_info = self.get_apk_info(result_dir)
-                    new_name = os.path.join(os.path.dirname(result_dir),
-                                            apk_info[0] + '-' + apk_info[1])
-                    os.rename(result_dir, new_name)
-                    self.log.info("APK file has been extracted at: " + new_name)
+                    #apk_info = self.get_apk_info(result_dir)
+                    #new_name = os.path.join(os.path.dirname(result_dir),
+                                            #apk_info[0] + '-' + apk_info[1])
+                    #os.rename(result_dir, new_name)
+                    self.log.info("APK file has been extracted at: " + result_dir)
             return
             
         with open(apk_names_file, 'r') as f:
@@ -66,12 +67,13 @@ class ApktoolExecutor(object):
                         # Run apktool on the first file in the list
                         # TODO: Handle multiple versions files.
                         result_dir = self.run_apktool(apk_file, target_dir)
+                        # TODO: fix os.rename bug ('Directory not empty') to rename the unpacked file
                         # Rename the unpacked apk directory.
-                        apk_info = self.get_apk_info(result_dir)
-                        new_name = os.path.join(os.path.dirname(result_dir),
-                                                apk_info[0] + '-' + apk_info[1])
-                        os.rename(result_dir, new_name)
-                        self.log.info("APK file has been extracted at: " + new_name)
+                        #apk_info = self.get_apk_info(result_dir)
+                        #new_name = os.path.join(os.path.dirname(result_dir),
+                                                #apk_info[0] + '-' + apk_info[1])
+                        #os.rename(result_dir, new_name)
+                        self.log.info("APK file has been extracted at: " + result_dir)
                         
                 
     def find_apk_file(self, apk_name, source_directory):
