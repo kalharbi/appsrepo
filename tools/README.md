@@ -19,7 +19,7 @@ and stores the extracted files for each apk file into one directory.
 #### Usage:
 
 ```
-Usage: apktool_executor.py [options] apk_names_file source_directory target_directory
+Usage: python apktool_executor.py [options] apk_names_file source_directory target_directory
 
    Options:
      --version            show program's version number and exit
@@ -36,7 +36,7 @@ A shell script that runs [dare]('http://siis.cse.psu.edu/dare/') on a group of a
 #### Usage:
 
 ```
-Usage: dare_executor.sh input_directory_that_contains_apk_files output_directory
+Usage: sh dare_executor.sh input_directory_that_contains_apk_files output_directory
 ```
 __Note:__ You have to edit the file dare_executor.sh and change the DARE_PATH variable to point to the location where dare is installed.
 
@@ -47,7 +47,7 @@ a list of apk names as input, finds their apk files, and copies them into the gi
 #### Usage:
 
 ```
-Usage: find_nd_copy.py [options] apk_names_file source_directory target_directory
+Usage: python find_nd_copy.py [options] apk_names_file source_directory target_directory
 
 Options:
   --version            show program's version number and exit
