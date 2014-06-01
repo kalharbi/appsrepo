@@ -108,8 +108,8 @@ class ManifestFeatures(object):
 
         # command line parser
         parser = OptionParser(
-            usage="%prog [options] apk_dir ",
-            version="%prog 1.0",
+            usage="python %prog [options] apk_dir ",
+            version="%prog 1.1",
             description='The manifest_features tool recursively searches for '
                         'a directory of unpacked apk files, parses their '
                         'AndroidManifest.xml files and stores them in a '
