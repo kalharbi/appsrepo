@@ -8,7 +8,7 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: #{$PROGRAM_NAME} {CMD} {out_dir} [OPTIONS]\nCMD: { find_apps_by_permission | find_top_apps | find_bottom_apps | find_top_bottom_apps_in_any_permission | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission | write_apps_description_by_package_name}"
+  @@usage = "Usage: ruby #{$PROGRAM_NAME} <command> <out_dir> [OPTIONS]\n\nThe following commands are available:\n    find_apps_by_permission -P <permission_name> \n    find_top_apps\n    find_bottom_apps  \n    find_top_bottom_apps_in_any_permission -P <comma_separated_permission_names>\n    write_description_for_all_apps_with_at_least_one_permission\n    write_apps_description_by_permission -P <permission_name>\n    write_apps_description_by_package_name -k <file_names_of_packages>\n\n The following options are available:\n"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @db
@@ -366,7 +366,7 @@ class MongodbDriver
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level such as error or info. The default logging level is info.') do |log_options|
+        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level', 'such as error or info. The default logging level is info.') do |log_options|
           log_level = 'info'
           if(!log_options[1].nil?)
             log_level = log_options[1]
@@ -374,13 +374,13 @@ class MongodbDriver
           config = {"dev" => log_options[0], "level" => log_level}
           Logging.config_log(config)
         end
-        opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
+        opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value', 'is localhost.') do |host_name|
           @host = host_name
         end
-        opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
+        opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port ', 'number value is 27017.') do |port_num|
           @port = port_num
         end
-        opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses. Or a list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
+        opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses,or a', 'list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
           if(per_name.include? ',')
             @per_list = per_name.split(',')
           else
@@ -390,7 +390,7 @@ class MongodbDriver
         opts.on('-k','--package <pckg_list_file>', 'File that contains a list of package names.') do |package_names_file|
           @package_names_file = package_names_file
         end
-        opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps. Valid values are free or paid') do |fee_value|
+        opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps.', 'Valid values are free or paid') do |fee_value|
           @price = fee_value
         end
         opts.on('-m','--max <value>', 'The maximum number of documents to return.') do |max_value|
