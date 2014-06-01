@@ -8,7 +8,16 @@ require_relative '../utils/logging'
 
 class MongodbDriver
 
-  @@usage = "Usage: ruby #{$PROGRAM_NAME} <command> <out_dir> [OPTIONS]\n\nThe following commands are available:\n    find_apps_by_permission -P <permission_name> \n    find_top_apps\n    find_bottom_apps  \n    find_top_bottom_apps_in_any_permission -P <comma_separated_permission_names>\n    write_description_for_all_apps_with_at_least_one_permission\n    write_apps_description_by_permission -P <permission_name>\n    write_apps_description_by_package_name -k <file_names_of_packages>\n\n The following options are available:\n"
+  @@usage = "Usage: ruby #{$PROGRAM_NAME} <command> <out_dir> [OPTIONS]"
+  @@cmd_desc = "\n\nThe following commands are available:\n\n"+
+               "    find_apps_by_permission -P <permission_name> \n    find_top_apps\n    find_bottom_apps  \n" + 
+               "    find_top_bottom_apps_in_any_permission -P <comma_separated_permission_names>\n" +
+               "    find_top_bottom_apps_not_in_any_permission -P <comma_separated_permission_names>\n" +
+               "    write_description_for_all_apps_with_at_least_one_permission\n" +
+               "    write_apps_description_by_permission -P <permission_name>\n" +
+               "    write_apps_description_by_package_name -k <file_names_of_packages>" + 
+               "\n\n The following options are available:\n\n"
+    
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   @db
@@ -120,7 +129,9 @@ class MongodbDriver
       end
     end
   end
+  
   # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
+  # That's it, find top and bottom downloaded apps that use any of the specified permissions.
   def find_top_bottom_apps_in_any_permission
     collection_name = nil
     file_name = nil
@@ -134,7 +145,7 @@ class MongodbDriver
       # set the result collection name
       map = {' ' => '', '-' => '_', ':' => '_'}
       regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
-      collection_name = @per_list[0].split('.')[-1] + '_'+ Time.now.to_s.gsub(regex, map)
+      collection_name = 'in_' + @per_list[0].split('.')[-1] + '_'+ Time.now.to_s.gsub(regex, map)
       @per_list.each do |p|
         file_name_per_part << p.split('.')[-1] + '-'
       end
@@ -165,8 +176,8 @@ class MongodbDriver
     custom_collection = @db.collection(collection_name)
     
     # Phase2: Query the output collection
-    top_file_name = 'top_' + file_name
-    bottom_file_name = 'bottom_' + file_name
+    top_file_name = 'top_either_' + file_name
+    bottom_file_name = 'bottom_either_' + file_name
     opts_for_top = nil
     opt_for_bottom = nil
     if(!@limit.nil?)
@@ -205,6 +216,93 @@ class MongodbDriver
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")          
     
+  end
+  
+  # Run mapreduce to find unique top/bottom apps that use neither of the given permissions.
+  # That's it, find top and bottom downloaded apps that do not use any of the specified permissions.
+  def find_top_bottom_apps_not_in_any_permission
+    collection_name = nil
+    file_name = nil
+    query = nil
+    
+    # Prepare the collection that will be passed to the mapreduce function.
+    # The goal is to limit the mapreduce operation to a subset of the collection.
+    if(!@per_list.nil?)
+      per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
+      file_name_per_part = '-'
+      # set the result collection name
+      map = {' ' => '', '-' => '_', ':' => '_'}
+      regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
+      collection_name = 'not_in_' + @per_list[0].split('.')[-1] + '_'+ Time.now.to_s.gsub(regex, map)
+      @per_list.each do |p|
+        file_name_per_part << p.split('.')[-1] + '-'
+      end
+      if(!@price.nil? and @price.casecmp("free") == 0)
+        query = "{ 'pri' => 'Free', 'per' => { '$nin' => #@per_list } }"
+        file_name = "free" + "#{file_name_per_part}" + "apps.txt"
+      elsif(!@price.nil? and @price.casecmp("paid") == 0)
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $nin: '#@per_list' } }"
+        file_name = "paid" + "#{file_name_per_part}" + "apps.txt"
+      else
+        query = "{'per' => { $nin: '#@per_list' } }"
+        file_name = "#{file_name_per_part}" + "apps.txt"
+      end
+    else
+      Logging.logger.error("Permission list is empty.")
+      return
+    end
+    
+    # Phase 1: Perform map-reduce and output to a collection named collection_name
+    # MapReduce Options Hash. 
+    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
+    # map and reduces functions written in JavaScript
+    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
+    reduce = 'function(key, values){ return 1; };'
+    # Perform map-reduce operation on the public collection.
+    @collection.map_reduce(map, reduce, eval(opts))
+    
+    custom_collection = @db.collection(collection_name)
+    
+    # Phase2: Query the output collection
+    top_file_name = 'top_neither_' + file_name
+    bottom_file_name = 'bottom_neither_' + file_name
+    opts_for_top = nil
+    opt_for_bottom = nil
+    if(!@limit.nil?)
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]], :limit => #@limit}"
+      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]], :limit => #@limit}"
+    else
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]]}"
+      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]]}"
+    end
+    # write the results into two files
+    #1) Write the results of top apps.
+    name_hd = "apk_name, download_count"
+    top_out_file = File.join(@out_dir, top_file_name)
+    File.open(top_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + ", " + dct.to_s
+        Logging.logger.info(line)
+        file.puts(line)
+      end
+    end
+    #2) Write the results of bottom apps.
+    bottom_out_file = File.join(@out_dir, bottom_file_name)
+    File.open(bottom_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opt_for_bottom)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + ", " + dct.to_s
+        Logging.logger.info(line)
+        file.puts(line)
+      end
+    end
+    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
+    Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
   
   def find_top_apps
@@ -331,6 +429,16 @@ class MongodbDriver
       else
         find_top_bottom_apps_in_any_permission
       end
+    elsif(cmd.eql? "find_top_bottom_apps_not_in_any_permission")
+      if(@per_list.nil?)
+        if(@per_name.nil?)
+          puts "Please use the -P option to specify a permission or a set of permissions in a comma-separated values format."
+          abort(@@usage)
+        else
+          @per_list = [@per_name]
+        end
+      end
+      find_top_bottom_apps_not_in_any_permission
     elsif(cmd.eql? "write_apps_description_by_permission")
       if(@per_name.nil?)
         puts "Please indicate the permission name using the option -P."
@@ -361,7 +469,7 @@ class MongodbDriver
   def command_line(args)
     begin
       opt_parser = OptionParser.new do |opts|
-        opts.banner = @@usage
+        opts.banner = @@usage + @@cmd_desc
         opts.on('-h','--help', 'Show this help message and exit') do
           puts opts
           exit
@@ -402,18 +510,22 @@ class MongodbDriver
       end
       opt_parser.parse!
     rescue OptionParser::AmbiguousArgument
-      puts "Error: illegal command line argument."
+      puts "Error: illegal command line argument.\n"
       puts opt_parser.help()
       exit
     rescue OptionParser::InvalidOption
-      puts "Error: illegal command line option."
+      puts "Error: illegal command line option.\n"
+      puts opt_parser.help()
+      exit
+    rescue OptionParser::MissingArgument
+      puts "Error: missing argument.\n"
       puts opt_parser.help()
       exit
     end
     cmd = ""
     
     if(args[0].nil?)
-      puts 'Error: no command'
+      puts 'Error: command is missing.'
       abort(@@usage)
     end
     
@@ -425,6 +537,8 @@ class MongodbDriver
       cmd = "find_bottom_apps"
     elsif(args[0].eql? "find_top_bottom_apps_in_any_permission")
       cmd = "find_top_bottom_apps_in_any_permission"
+    elsif(args[0].eql? "find_top_bottom_apps_not_in_any_permission")
+      cmd = "find_top_bottom_apps_not_in_any_permission"
     elsif(args[0].eql? "write_apps_description_by_permission")
       cmd = "write_apps_description_by_permission"
     elsif(args[0].eql? "write_apps_description_by_package_name")
@@ -437,6 +551,7 @@ class MongodbDriver
     end
     
     if(args[1].nil?)
+      puts("Results output direcotry is missing.")
       abort(@@usage)
     else
       out_dir = File.absolute_path(args[1])
