@@ -1,3 +1,12 @@
-*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Tool log Files
 *.log
 
+# Intellij
+.idea/
+
+# Mac
+.DS_Store
