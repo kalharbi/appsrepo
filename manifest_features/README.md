@@ -10,7 +10,7 @@ Store apps' AndroidManifest.xml features in a Mongodb collection named manifest.
 
 ### Usage:
 ```
-Usage: ./manifest_features.py [options] apk_dir
+Usage: python manifest_features.py [options] apk_dir
 The manifest_features tool recursively searches for a directory of unpacked
 apk files, parses their AndroidManifest.xml files and stores them in a MongoDB 
 collection named manifest.
