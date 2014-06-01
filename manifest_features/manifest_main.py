@@ -16,7 +16,7 @@ from custom_json_encoder import CustomJsonEncoder
 This script parses AndroidManifest.xml files and stores them in MongoDB.
 
 """
-class ManifestMain(object):
+class ManifestFeatures(object):
     
     DB_NAME = "apps"
     COLLECTION_NAME = "manifest"
@@ -92,7 +92,7 @@ class ManifestMain(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] apk_dir ", version="%prog 1.0")
+        parser = OptionParser(usage="%prog [options] apk_dir ", version="%prog 1.0", description = 'The manifest_features tool recursively searches for a directory of unpacked apk files, parses their AndroidManifest.xml files and stores them in a MongoDB collection named manifest.')
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
@@ -142,4 +142,4 @@ class ManifestMain(object):
         return glob.glob(dir_name + path_separator + 'AndroidManifest.xml')
     
 if __name__ == '__main__':
-    ManifestMain().main(sys.argv[1:])  
+    ManifestFeatures().main(sys.argv[1:])  
