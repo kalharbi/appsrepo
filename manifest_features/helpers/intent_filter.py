@@ -7,15 +7,17 @@ class IntentFilter(object):
         self.category = None
         self.data = []
         self.action = []
-            
+
     def set_category(self, name):
         self.category = name
-            
-    def set_data(self, scheme, host, port, path, pathPattern, pathPrefix, mimeType):
-        data_set = {'scheme':scheme, 'host': host, 'port' : port, 'path':path, 'pathPattern': pathPattern,
+
+    def set_data(self, scheme, host, port, path, pathPattern, pathPrefix,
+                 mimeType):
+        data_set = {'scheme': scheme, 'host': host, 'port': port, 'path': path,
+                    'pathPattern': pathPattern,
                     'pathPrefix': pathPrefix, 'mimeType': mimeType}
         self.data.append(data_set)
-                
+
     def set_action(self, name):
         action_set = {'name': name}
         self.action.append(action_set)
