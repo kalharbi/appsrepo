@@ -4,20 +4,26 @@ Store apps' AndroidManifest.xml features in a Mongodb collection named manifest.
 ### Requirements
 * Required:
   * Python  2.7 or later.
-  * PyMongo (pip install pymongo)
+  * [PyMongo 2.7.1]('http://api.mongodb.org/python/current/')
+  * [PyYAML 3.11]('http://pyyaml.org/wiki/PyYAML')
+* You can install the required packages using: ```pip install -r requirements.txt```
 
 ### Usage:
 ```
-  Usage: manifest_main.py [options] apk_dir
+Usage: manifest_main.py [options] apk_dir
+The manifest_features tool recursively searches for a directory of unpacked
+apk files, parses their AndroidManifest.xml files and stores them in a MongoDB 
+collection named manifest.
 
-  Options:
-    --version             show program's version number and exit
-    -h, --help            show this help message and exit
-    -l FILE, --log=FILE   write logs to FILE.
-    -v, --verbose         Increase verbosity.
-    -d DEPTH_VALUE, --depth=DEPTH_VALUE
-                          The depth of the subdirectories to scan for
-                          AndroidManifest.xml files.
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         Increase verbosity.
+  -d DEPTH_VALUE, --depth=DEPTH_VALUE
+                        The depth of the subdirectories to scan for
+                        AndroidManifest.xml files.
+
 ```
 ##Manifest Features Collection
 This is an example of running the query: 
