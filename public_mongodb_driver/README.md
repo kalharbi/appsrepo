@@ -1,18 +1,40 @@
 # MongoDB Ruby Driver
-This is the MongoDB driver for the database. It retrieves all public descriptions of apps by the permission name and stores the results in text files.
+MongoDB driver for the public features collection. It retrieves public features of apps by permission name and stores the results in text files.
 ### Usage:
 
-    Usage: ./mongodb_driver.rb {CMD} {out_dir} [OPTIONS]
-    CMD: { find_apps_by_permission | find_top_apps | write_description_for_all_apps_with_at_least_one_permission | write_apps_description_by_permission}}
-    
+```
+
+Usage: ruby ./mongodb_driver.rb <command> <out_dir> [OPTIONS]
+
+The following commands are available:
+
+    find_apps_by_permission -P <permission_name>
+    find_top_apps
+    find_bottom_apps
+    find_top_bottom_apps_in_any_permission -P <comma_separated_permission_names>
+    find_top_bottom_apps_not_in_any_permission -P <comma_separated_permission_names>
+    write_description_for_all_apps_with_at_least_one_permission
+    write_apps_description_by_permission -P <permission_name>
+    write_apps_description_by_package_name -k <file_names_of_packages>
+
+ The following options are available:
+
     -h, --help                       Show this help message and exit
-    -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
-    -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
-    -p, --port <port>                The port number that the mongod instance is listening. Default port number value is 27017.
-    -P, --permission <name>          One valid Android permission name that the application needs.
-    -f, --fee <Free|Paid>            The fee to indicate whether to return free or paid apps. Valid values are free or paid
+    -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level
+                                     such as error or info. The default logging level is info.
+    -H, --host <host_name>           The host name that the mongod is connected to. Default value
+                                     is localhost.
+    -p, --port <port>                The port number that the mongod instance is listening. Default port
+                                     number value is 27017.
+    -P, --permission <name>          One valid Android permission name that the application uses,or a
+                                     list of comma separated permissions that the app may use (inclusive disjunction).
+    -k, --package <pckg_list_file>   File that contains a list of package names.
+    -f, --fee <Free|Paid>            The fee to indicate whether to return free or paid apps.
+                                     Valid values are free or paid
     -m, --max <value>                The maximum number of documents to return.
     -v, --verbose                    Causes the tool to be verbose to explain what is being done.
+
+```
 
 ### Examples:
 
@@ -41,6 +63,10 @@ This is the MongoDB driver for the database. It retrieves all public description
         ruby ./mongodb_driver.rb find_top_apps /Volumes/sdi2/uiver/khalid/top_apps_lists/camera/ -f Free -P android.permission.CAMERA -m 2000 -v
 
 - Get the bottom free 2000 apps that require Phone permission and save the results into a text file.
-            
+      
         ruby ./mongodb_driver.rb find_bottom_apps /Volumes/sdi2/uiver/khalid/bottom_apps_lists/phone/ -f Free -P android.permission.CALL_PHONE -m 2000 -v
+
+- Get the top and bottom 100 free apps that DO NOT use any of the following Bluetooth related permissions: android.permission.BLUETOOTH,android.permission.BLUETOOTH_ADMIN,android.permission.BLUETOOTH_PRIVILEGED
+
+        ruby ./mongodb_driver.rb find_top_bottom_apps_not_in_any_permission ./ -l ./neither_in.log -f Free -m 3 -P android.permission.BLUETOOTH,android.permission.BLUETOOTH_ADMIN,android.permission.BLUETOOTH_PRIVILEGED
 
