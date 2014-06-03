@@ -306,15 +306,15 @@ class MongodbDriver
   end
   
   def find_top_apps
-    query = "{'per' => { '$not' => { '$size' => 0 } } }"
+    query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit}"
     file_name = "top_apps.txt"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
-         query = "{ 'pri' => 'Free', 'per' => { '$not' => { '$size' => 0 } } }"
+         query = "{ 'pri' => 'Free' }"
          file_name = "top_free_apps.txt"
        elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { '$not' => { '$size' => 0 } } }"
+         query = "{ 'pri' => {'$ne' => 'Free'} }"
          file_name = "top_paid_apps.txt"
        end
     end
@@ -330,9 +330,6 @@ class MongodbDriver
         query = "{'per' => '#@per_name' }"
         file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.txt"
       end
-    else
-      Logging.logger.error("Permission name is not specified. Please use the -P option with a valid permission name.")
-      return;
     end
     
     name_hd = "apk_name"
@@ -352,15 +349,15 @@ class MongodbDriver
   end
 
   def find_bottom_apps
-    query = "{'per' => { '$not' => { '$size' => 0 } } }"
+    query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit}"
     file_name = "bottom_apps.txt"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
-         query = "{ 'pri' => 'Free', 'per' => { '$not' => { '$size' => 0 } } }"
+         query = "{ 'pri' => 'Free' }"
          file_name = "bottom_free_apps.txt"
        elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { '$not' => { '$size' => 0 } } }"
+         query = "{ 'pri' => {'$ne' => 'Free'} }"
          file_name = "bottom_paid_apps.txt"
        end
     end
@@ -376,9 +373,6 @@ class MongodbDriver
         query = "{'per' => '#@per_name' }"
         file_name = "bottom-" + "#@per_name.split('.')[-1]" + "-apps.txt"
       end
-    else
-      Logging.logger.error("Permission name is not specified. Please use the -P option with a valid permission name.")
-      return;
     end
           
     name_hd = "apk_name"
