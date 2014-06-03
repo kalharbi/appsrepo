@@ -49,6 +49,14 @@ a list of apk names as input, finds their apk files, and copies them into the gi
 ```
 Usage: python find_nd_copy.py [options] apk_names_file source_directory target_directory
 
+apk_names_file is a file that contains comma separtaed apk name values like the example below:
+            apk_name,
+            com.evernote,
+            com.google.android.apps.maps,
+
+source_directory is where the actual files are stored.
+target_directory is the destination to copy the files to.
+
 Options:
   --version            show program's version number and exit
   -h, --help           show this help message and exit
