@@ -336,7 +336,7 @@ class MongodbDriver
     download_hd = "download_count"
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", ")
+      file.puts(name_hd + ", " + download_hd)
       @collection.find(eval(query), eval(opts)).each do |doc|
         name = doc['n']
         dct = doc["dct"]
@@ -376,11 +376,15 @@ class MongodbDriver
     end
           
     name_hd = "apk_name"
+    version_hd = "version"
+    download_hd = "download_count"
+    
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", ")
+      file.puts(name_hd + ", " + download_hd)
       @collection.find(eval(query), eval(opts)).each do |doc|
         name = doc["n"]
+        ver = doc["ver"]
         dct = doc["dct"]
         line = name + ", " + dct.to_s
         Logging.logger.info(line)
