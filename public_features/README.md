@@ -55,7 +55,7 @@ Field names consume disk space, so we should keep them short but still meaningfu
 | a         | review author             |
 | url       | review author URL         |
 | surl      | review author secure URL  |
-
+| new       | what's new in this version|
 
 ### Example:
 
