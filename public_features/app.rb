@@ -4,7 +4,7 @@ class App
   attr_reader :name
   attr_accessor :title, :playStoreURL, :category, :price, :datePublished, :version, :operatingSystems, 
   :ratingsCount, :rating, :contentRating, :creator, :creatorURL, :installSize, :installSizeText, 
-  :downloadsCount, :downloadsCountText, :description, :reviews, :permissions
+  :downloadsCount, :downloadsCountText, :description, :reviews, :permissions, :whatIsNew
   
   def initialize(name)
     @name = name
@@ -18,7 +18,7 @@ class App
         'crat' => @contentRating, 'crt' => @creator, 'curl' => @creatorURL, 
         'sz' => @installSize, 'sztxt' => @installSizeText, 
         'dct' => @downloadsCount, 'dtxt' => @downloadsCountText, 
-        'per' => @permissions, 'rev' => @reviews}
+        'per' => @permissions, 'new' => @whatIsNew, 'rev' => @reviews}
     JSON.parse(app_info.to_json)
   end
 end
