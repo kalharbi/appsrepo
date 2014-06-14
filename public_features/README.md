@@ -22,8 +22,9 @@ Store apps' public features into Mongodb.
 ```
 
 ##Public Features Collection
-###Fields Names:
-Field names consume disk space, so we should keep them short but still meaningful.
+###Fields Names symbol table:
+MongoDB stores all field names in every document which consumes disk space; therefore, we should use shorter field names. 
+The following table shows the short names used in the public collection in MongoDB and their meanings.
 
 |short name |  meaning                  |
 |-----------|---------------------------|
@@ -34,7 +35,8 @@ Field names consume disk space, so we should keep them short but still meaningfu
 | cat       | category                  |
 | pri       | price                     |
 | dtp       | date published            |
-| ver       | version                   |
+| vern      | version name              |
+| verc      | version code              |
 | os        | operating systems         |
 | rct       | ratings count             |
 | rate      | rating                    |
@@ -56,6 +58,7 @@ Field names consume disk space, so we should keep them short but still meaningfu
 | url       | review author URL         |
 | surl      | review author secure URL  |
 | new       | what's new in this version|
+
 
 ### Example:
 
