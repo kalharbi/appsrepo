@@ -7,9 +7,7 @@ module Settings
   
   public
   def load(conf_file)
-    unless File.exists?(conf_file) then
-      raise "The configuration file #{conf_file} doesn’t exist!"
-    end
+    raise "The configuration file #{conf_file} doesn’t exist!" unless File.exists?(conf_file)
     @settings = Hash.new
     store_conf(conf_file)
   end
