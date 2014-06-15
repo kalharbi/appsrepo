@@ -7,7 +7,10 @@ require 'optparse'
 require_relative 'app'
 require_relative 'json_reader'
 require_relative 'files_finder'
+require_relative 'html_scraper'
 require_relative '../utils/logging'
+require_relative '../utils/settings'
+require_relative 'aapt_executor'
 
 class PublicMain
 
@@ -39,28 +42,43 @@ class PublicMain
     end
     Logging.logger.info(msg)
   end
-
+  
+  # Insert unique documents into MongoDB with a unique package name and version code.
   def insert_document_if_not_exists(collection, document)
     apk = document['n']
-    date_published = document['dtp']
-    query = "{'n' => '#{apk}', 'dtp' => '#{date_published}'}"
+    version_code = document['verc']
+    version_name = document['vern']
+    query = "{'n' => '#{apk}', 'verc' => '#{version_code}'}"
     cursor = collection.find(eval(query))
     if !cursor.has_next?
       id = collection.insert(document)
-      msg = "Inserted a new document for apk: #{apk}, date published: #{date_published}, document id = #{id}"
+      msg = "Inserted a new document for apk: #{apk}, version code: #{version_code}, version name: #{version_name}, document id = #{id}"
       if(@verbose)
         puts msg
       end
       Logging.logger.info(msg)
     else
-      Logging.logger.info("Document already exists for apk: #{apk}, date published: #{date_published}")
+      msg = "Document already exists for apk: #{apk}, version code: #{version_code}, version name: #{version_name}"
+      if(@verbose)
+        puts msg
+      end
+      Logging.logger.info(msg)
     end
   end
 
   def document_reader(cmd, collection, json_file)
+    # Get public features info from the JSON file
     json_reader = JsonReader.new
-    Logging.logger.info("processing #{json_file}")
-    app_info = json_reader.parse_json_data(json_file)
+    Logging.logger.info("processing JSON file: #{json_file}")
+    app_obj = json_reader.parse_json_data(json_file)
+    # Get what's new information from the html file.
+    app_obj.whatIsNew = get_what_is_new(File.join(File.dirname(json_file), File.basename(json_file, ".json") + ".html"))
+    # Get version name and version code info from aapt tool
+    version_info = get_version_info(File.join(File.dirname(json_file), File.basename(json_file, ".json") + ".apk"))
+    app_obj.versionCode = version_info[:version_code]
+    app_obj.versionName = version_info[:version_name]
+    # Serialize the object to json
+    app_info = app_obj.to_json
     if !app_info.nil?
       if(cmd.eql? "InsertIfNotExists")
         insert_document_if_not_exists(collection, app_info)
@@ -68,6 +86,32 @@ class PublicMain
         insert_document_with_duplicates(collection, app_info)
       end
     end
+  end
+  
+  # Get what's new from the html file
+  def get_what_is_new(html_file)
+    what_is_new = []
+    if(File.exist? html_file)
+      Logging.logger.info("Parsing HTML file: #{html_file}")
+      html_scraper = HtmlScraper.new(html_file)
+      what_is_new = html_scraper.get_what_is_new
+    else
+      Logging.logger.error("HTML file does not exist. #{html_file}")
+    end
+    what_is_new
+  end
+  
+  # Get version name and version code using aapt from the apk file
+  def get_version_info(apk_file)
+    version_info = Hash.new
+    if(File.exist? apk_file)
+      Logging.logger.info("Running aapt on APK file: #{apk_file}")
+      aapt_executor = AaptExecutor.new(apk_file)
+      version_info = aapt_executor.get_version_info
+    else
+      Logging.logger.error("APK file does not exist. #{apk_file}")
+    end
+    version_info
   end
   
   def start_main(cmd, source)
@@ -163,6 +207,8 @@ class PublicMain
 end
 
 if __FILE__ == $PROGRAM_NAME
+  # Load configurations
+  Settings.load('./config/public_features.conf')
   main_obj = PublicMain.new
   main_obj.command_line(ARGV)
 end
