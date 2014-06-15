@@ -71,6 +71,7 @@ class PublicMain
     json_reader = JsonReader.new
     Logging.logger.info("processing JSON file: #{json_file}")
     app_obj = json_reader.parse_json_data(json_file)
+    return if app_obj.nil?
     # Get what's new information from the html file.
     app_obj.whatIsNew = get_what_is_new(File.join(File.dirname(json_file), File.basename(json_file, ".json") + ".html"))
     # Get version name and version code info from aapt tool
