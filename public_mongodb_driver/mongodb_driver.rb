@@ -114,7 +114,7 @@ class MongodbDriver
   
   # Find apps by apk name and write their description if it's English
   def write_apps_description_by_package_name
-    opts = "{:fields => ['n', 'desc', 'ver']}"
+    opts = "{:fields => ['n', 'desc', 'verc']}"
     File.open(@package_names_file, 'r').each_with_index do |line, index|
       next if index == 0 #skips first line that contains the header info (apk_name, download_count)
       package_name = line.split(',')[0]
@@ -122,8 +122,8 @@ class MongodbDriver
       @collection.find(eval(query), eval(opts)).each do |doc|
         name = doc["n"]
         desc = doc["desc"]
-        ver = doc["ver"]
-        out_file = File.join(@out_dir, name + ".description.txt")
+        verc = doc["verc"]
+        out_file = File.join(@out_dir, name + "-" + "verc" + ".description.txt")
         File.open(out_file, 'w') { |result_file| result_file.write(desc) }
         Logging.logger.info("The app's description has been written to: #{out_file}")
       end
@@ -376,7 +376,7 @@ class MongodbDriver
     end
           
     name_hd = "apk_name"
-    version_hd = "version"
+    version_hd = "version_code"
     download_hd = "download_count"
     
     out_file = File.join(@out_dir, file_name)
@@ -384,7 +384,7 @@ class MongodbDriver
       file.puts(name_hd + ", " + download_hd)
       @collection.find(eval(query), eval(opts)).each do |doc|
         name = doc["n"]
-        ver = doc["ver"]
+        verc = doc["verc"]
         dct = doc["dct"]
         line = name + ", " + dct.to_s
         Logging.logger.info(line)
