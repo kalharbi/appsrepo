@@ -14,7 +14,6 @@ class JsonReader
       data = JSON.parse(serialized)
       name = File.basename(json_file,".json")
       app = convert_to_object(name, data)
-      app.to_json
     rescue Exception => e 
       Logging.logger.error("Error in file: #{json_file} - #{e.message}")
       return nil
@@ -30,7 +29,6 @@ class JsonReader
     app.category = data["category"]
     app.price = data["price"]
     app.datePublished = convert_string_to_date(data["datePublished"])
-    app.version = data["version"]
     app.operatingSystems = data["operatingSystems"]
     app.ratingsCount = data["ratingsCount"]
     app.rating = data["rating"]
