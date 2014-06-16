@@ -10,6 +10,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 from pymongo import MongoClient 
 import gridfs
+import zipfile
 from pymongo.errors import ConnectionFailure, InvalidName
 
 class ApkBucket(object):
@@ -34,7 +35,7 @@ class ApkBucket(object):
         try:
             client = MongoClient(self.HOST_NAME, self.PORT_NUMBER)
             db = client[self.DB_NAME]
-            apk_bucket_collection = db[self.BUCKET_NAME]
+            apk_bucket_collection = gridfs.GridFS(db, collection=self.BUCKET_NAME)
             self.log.info("Connected to database: %s Collection: %s.",
                           self.DB_NAME,
                           self.BUCKET_NAME)
@@ -46,20 +47,31 @@ class ApkBucket(object):
     
     @staticmethod
     def document_exists(apk_bucket_collection, package_name, version_code):
-        return apk_bucket_collection.find_one(
-            {"n": package_name, "verc": version_code})
+        """ Check if the file exists in this apk_bukcet collection. """
+        return apk_bucket_collection.exists(
+            {"metadata.n": package_name, "metadata.verc": version_code})
     
     def start_main(self, source_directory):
         # Connect to MongoDB
-        #apk_bucket_collection = self.connect_mongodb()
+        apk_bucket_collection = self.connect_mongodb()
         # Get all apk files and save them into a global variable named 'apk_files'
         self.find_apk_files(source_directory)
         for apk_file in self.apk_files:
             app_info = self.get_app_info(apk_file)
+            self.log.info("")
+            additional_metadata = {"n": app_info["package_name"], "verc": app_info["version_code"], "vern": app_info["version_name"]}
             print("=========================================")
-            print("package name:" + app_info["package_name"])
-            print("version name:" + app_info["version_name"])
-            print("version code:" + app_info["version_code"])
+            custom_file_name = app_info["package_name"] + "-" + app_info["version_code"] + "-" + app_info["version_name"]
+            print(additional_metadata)
+            print(custom_file_name)
+            if(self.document_exists(apk_bucket_collection, app_info["package_name"], app_info["version_code"])):
+                self.log.info("APK file for package %s, version code: %s already exists.", 
+                              app_info["package_name"], app_info["version_code"])
+                continue
+            else:
+                with open(apk_file) as new_apk_file:
+                    inserted_file_id = apk_bucket_collection.put(new_apk_file, content_type= 'apk', filename= custom_file_name, metadata= additional_metadata)
+                    self.log.info("Inserted a new APK file for package: %s, version code: %s", app_info["package_name"], app_info["version_code"])
     
     def get_app_info(self, apk_file):
         """ Returns package name, version code, and version name by running aapt on the apk file.
