@@ -1,6 +1,6 @@
 # !/usr/bin/python
 import sys
-import os.path
+import os
 import datetime
 import logging
 import logging.handlers
@@ -58,7 +58,13 @@ class ApkBucket(object):
         # Get all apk files and save them into a global variable named 'apk_files'
         self.find_apk_files(source_directory)
         for apk_file in self.apk_files:
+            # Check file size
+            stat_info = os.stat(apk_file)
+            if(stat_info.st_size == 0):
+                self.log.error("Empty APK file: %s", apk_file)
+                continue
             app_info = self.get_app_info(apk_file)
+            if app_info is None: continue
             additional_metadata = {"n": app_info["package_name"], "verc": app_info["version_code"],
                                    "vern": app_info["version_name"]}
             custom_file_name = app_info["package_name"] + "-" + app_info["version_code"] + "-" + app_info[
@@ -86,7 +92,8 @@ class ApkBucket(object):
                             stdout=PIPE, stderr=PIPE)
         out, err = sub_process.communicate()
         if err:
-            self.log.error(err)
+            self.log.error("Errorin %s. %s", apk_file, err)
+            return None
         if out:
             for line in out.splitlines():
                 segment = line.strip().split(':')
