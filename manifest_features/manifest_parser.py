@@ -386,7 +386,7 @@ class ManifestParser(ContentHandler):
         icon = attrs.get('android:icon', None)
         label = attrs.get('android:label', None)
         name = attrs.get('android:name', None)
-        self.app_manifest.set_permission_tree(description, icon, label, name)
+        self.app_manifest.set_permission_group(description, icon, label, name)
 
     def do_instrumentation(self, attrs):
         functional_test = attrs.get('android:functionalTest', None)
@@ -450,7 +450,7 @@ class ManifestParser(ContentHandler):
 
     def do_supports_gl_texture(self, attrs):
         name = attrs.get('android:name', None)
-        self.app_manifest.set_supports_gl_texture(self, name)
+        self.app_manifest.set_supports_gl_texture(name)
 
     def do_application(self, attrs):
         allowTaskReparenting = attrs.get('android:allowTaskReparenting', None)
