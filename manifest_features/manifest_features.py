@@ -3,6 +3,7 @@ import sys
 import os.path
 import json
 import glob
+import datetime
 import logging
 import logging.handlers
 from optparse import OptionParser
@@ -59,6 +60,7 @@ class ManifestFeatures(object):
             apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
                                              'apktool.yml')
             app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
+            if app_sdk_versions is None: continue
             app_manifest.set_sdk_versions(app_sdk_versions[0],
                                           app_sdk_versions[1])
             if self.document_exists(manifest_collection, app_manifest):
@@ -82,6 +84,9 @@ class ManifestFeatures(object):
         # Read apktool.yaml to get the min and target sdk versions
         try:
             self.log.info("Processing file %s.", yaml_file)
+            if not os.path.isfile(yaml_file):
+                self.log.error("YAML file does not exist %s", yaml_file)
+                return None
             with open(yaml_file, 'r') as f:
                 doc = yaml.load(f)
             min_sdk_version = doc.get('sdkInfo', None).get('minSdkVersion',
@@ -93,6 +98,7 @@ class ManifestFeatures(object):
             self.log.error("Error in apktool yaml file:", exc)
 
     def main(self):
+        start_time = datetime.datetime.now()
         # Configure logging
         logging_file = None
         logging_level = logging.ERROR
@@ -155,13 +161,17 @@ class ManifestFeatures(object):
             self.start_main(args[0])
         else:
             sys.exit("Error: No such directory.")
+        
+        print("======================================================")
+        print("Finished after " + str(datetime.datetime.now() - start_time))
+        print("======================================================")
 
-    '''
-    Get the manifest files for each apk directory.
-    This uses the specified fixed depth value.
-    '''
 
     def get_manifest_files(self, dir_name):
+        '''
+        Get the manifest files for each apk directory.
+        This uses the specified fixed depth value.
+        '''
         depth = self.DIR_DEPTH_SEARCH
         path_separator = '*/'
         while depth > 1:
