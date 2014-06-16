@@ -144,7 +144,7 @@ class ApkBucket(object):
         self.log.addHandler(logging_console)
 
         # command line parser
-        parser = OptionParser(usage="python %prog apk_source_directory target_directory [options]", version="%prog 1.0")
+        parser = OptionParser(usage="python %prog apk_files_directory [options]", version="%prog 1.0")
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
