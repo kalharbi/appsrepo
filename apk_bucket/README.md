@@ -18,6 +18,11 @@ The tools creates two collections for this bucket named:
         | uploadDate   | the  date the document was first stored by GridFS|
         | md5          | MD5 hash of the stored apk file|
               
+##Requirements
+* Required:
+  * Python  2.7 or later.
+  * [PyMongo 2.7.1]('http://api.mongodb.org/python/current/')
+* You can install the required packages using: ```pip install -r requirements.txt```
 
 ## Usage
 
