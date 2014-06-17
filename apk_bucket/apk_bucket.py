@@ -92,7 +92,7 @@ class ApkBucket(object):
                             stdout=PIPE, stderr=PIPE)
         out, err = sub_process.communicate()
         if err:
-            self.log.error("Errorin %s. %s", apk_file, err)
+            self.log.error("Failed to run aapt on %s. %s", apk_file, err)
             return None
         if out:
             for line in out.splitlines():
