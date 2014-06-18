@@ -188,7 +188,18 @@ class PublicMain
       abort(@@usage)
     else
         if(args[0].eql? "InsertWithDuplicates")
-          cmd = "InsertWithDuplicates"
+	  puts "Are you sure you want to fill the database with duplicate files (yes,no)?"
+	  response = $stdin.gets.chomp.strip
+	  until response.eql? "no" or response.eql? "yes" do
+	    puts "What (yes/no)?"
+	    response = $stdin.gets.chomp.strip.downcase
+	  end
+	  if response.eql? "yes"
+	    cmd = "InsertWithDuplicates"
+	  else
+	    puts "OK! You may try 'InsertIfNotExists' to avoid inserting duplicate documents."
+	    exit
+	  end
         elsif(args[0].eql? "InsertIfNotExists")
           cmd = "InsertIfNotExists"
         else
