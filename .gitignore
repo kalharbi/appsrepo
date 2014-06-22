@@ -2,6 +2,19 @@
 __pycache__/
 *.py[cod]
 
+# Java
+*.class
+*.jar
+
+# Maven
+dependency-reduced-pom.xml
+
+# Eclipse
+.classpath
+.project
+local.properties
+.settings/
+
 # Tool log Files
 *.log
 
