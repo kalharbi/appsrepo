@@ -69,8 +69,6 @@ class ApkBucket(object):
                                    "vern": app_info["version_name"]}
             custom_file_name = app_info["package_name"] + "-" + app_info["version_code"] + "-" + app_info[
                 "version_name"]
-            print(additional_metadata)
-            print(custom_file_name)
             if (self.document_exists(apk_bucket_collection, app_info["package_name"], app_info["version_code"])):
                 self.log.info("APK file for package %s, version code: %s already exists.",
                               app_info["package_name"], app_info["version_code"])
