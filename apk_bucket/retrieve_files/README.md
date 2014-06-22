@@ -1,4 +1,5 @@
-# Retrieve APK Files from MongoDB GridFS
+# APK Files Bucket
+## Retrieve APK Files from MongoDB GridFS
 
 This is a Java based tool that retrives APK files from MongoDB bucket and saves them into a directory.
 
@@ -6,11 +7,12 @@ This is a Java based tool that retrives APK files from MongoDB bucket and saves 
 ## Requirements
 -  Apache Maven 3 or higher.
 
-## Build instructions
+## Build Instructions
 
 ``` mvn package ```
 
 ## Usage
+
 ```
 
 usage: java -jar apk_retrieval_jGridFS-0.0.1-SNAPSHOT.jar{ {package_name version_code} | package_list_file } target_directory 

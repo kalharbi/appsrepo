@@ -4,7 +4,7 @@ appsrepo
 A tool chain that extracts, analyzes, loads, and retrives real Android apps.
 
 ### 1- [APK Bucket](apk_bucket/)
-This Python tool stores apk files in a common MongoDB bucket using GridFS. 
+This includes a Python tool that stores apk files in a common MongoDB bucket using GridFS, and a Java based tool that retrieves them.
 
 ### 2- [Public Features MongoDB Ruby Driver](public_mongodb_driver/)
 This is the Ruby MongoDB driver for the public collection of the database. It retrieves various public information of apps and stores the results in text files.
