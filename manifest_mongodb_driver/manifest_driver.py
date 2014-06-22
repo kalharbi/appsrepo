@@ -29,19 +29,19 @@ class ManifestDriver(object):
         except InvalidName:
             sys.exit("ERROR: Invalid database name")
     
-    def find_activities(self, package_name, version_name, out_dir):
-        self.log.info("package name: " + package_name + ". version:" + version_name)
+    def find_activities(self, package_name, version_code, out_dir):
+        self.log.info("package name: " + package_name + ". version code:" + version_code)
         result_file = None
         try:
             result_file_name = os.path.join(os.path.abspath(out_dir), package_name + '-' +
-                                        version_name + '-activities' + '.txt')
+                                        version_code + '-activities' + '.txt')
             result_file = open(result_file_name, 'w')
         except IOError as detail:
             print(detail)
             sys.exit()
         manifest_collection = self.connect_mongodb()
         cursor = manifest_collection.find({"package": package_name,
-                                  "version_name" : version_name}, {'activities' :1})
+                                  "version_code" : version_code}, {'activities' :1})
         if cursor.count() > 0:
             for entry in cursor:
                 activities = entry['activities']
@@ -59,10 +59,39 @@ class ManifestDriver(object):
                         self.log.info(activity_name)
                         result_file.write(activity_name + '\n')
         else:
-            self.log.error("Error: The package " + package_name + ", version: " +
-                           version_name + " doesn't exist or has no activities.")
+            self.log.error("Error: The package " + package_name + ", version code: " +
+                           version_code + " doesn't exist or has no activities.")
         result_file.close()
     
+    def find_all_packages_and_versions(self, out_dir):
+        self.log.info("Trying to find all package names and version code values...")
+        result_file = None
+        try:
+            result_file_name = os.path.join(os.path.abspath(out_dir), 'all_packages_nd_verions.csv')
+            result_file = open(result_file_name, 'w')
+        except IOError as detail:
+            print(detail)
+            sys.exit()
+        manifest_collection = self.connect_mongodb()
+        cursor = manifest_collection.find({}, {'package': 1, 'version_code':1, 'min_sdk_version' :1})        
+        if cursor.count() > 0:
+            result_file.write('"package_name", "version_code", "min_sdk_version" \n')
+            for entry in cursor:
+                line = package_name = entry['package'] + '\n'
+                try:
+                    package_name = entry['package']
+                    version_code = entry['version_code']
+                    min_sdk_version = entry['min_sdk_version']
+                    line = package_name + ',' + version_code + ',' + min_sdk_version + '\n'
+                    self.log.info(line)
+                    result_file.write(line)
+                except KeyError:
+                    continue
+        else:
+            self.log.error("No documents are found.")
+        
+        result_file.close()
+            
     def main(self, argv):
         start_time = datetime.datetime.now()
         # Configure logging
@@ -78,11 +107,11 @@ class ManifestDriver(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] {find_app_activities} out_dir ", version="%prog 1.0")
+        parser = OptionParser(usage="%prog [options] {find_app_activities | find_all_packages_and_versions} out_dir ", version="%prog 1.0")
         parser.add_option('-p', '--package', dest="package_name",
                           help='App package name.')
-        parser.add_option('-r', '--ver', dest="app_version",
-                          help='App version name.')
+        parser.add_option('-r', '--ver', dest="app_version_code",
+                          help='App version code.')
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
@@ -119,12 +148,14 @@ class ManifestDriver(object):
         
         if args[0]:
             if(args[0] == "find_app_activities"):
-                if(options.package_name and options.app_version):
-                    self.find_activities(options.package_name, options.app_version, out_dir)
+                if(options.package_name and options.app_version_code):
+                    self.find_activities(options.package_name, options.app_version_code, out_dir)
                 else:
-                    sys.exit("Error: please specify the package name and version number."
+                    sys.exit("Error: please specify the package name and version code number."
                              "\nUsage: " + os.path.basename(__file__) +
                              " find_app_activities ~/target_dir -p <package_name> -r <version_name>")
+            elif(args[0] == 'find_all_packages_and_versions'):
+                self.find_all_packages_and_versions(out_dir)
             else:
                sys.exit("Error: unknown command.") 
         else:
