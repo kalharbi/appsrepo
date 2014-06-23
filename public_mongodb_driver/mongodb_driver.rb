@@ -147,6 +147,10 @@ class MongodbDriver
         name = doc["n"]
         verc = doc["verc"]
         dct = doc["dct"]
+        if(verc.nil?)
+          Logging.logger.error("Missing version code for package #{name}")
+          next
+        end
         line = name + "," + verc + "," + dct.to_s
         result_arr << line
       end
