@@ -346,29 +346,30 @@ class MongodbDriver
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
   
+  # Find top apps that have version code numbers.
   def find_top_apps
     query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit}"
     file_name = "top_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
-         query = "{ 'pri' => 'Free' }"
+         query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
          file_name = "top_free_apps.csv"
        elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne' => 'Free'} }"
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
          file_name = "top_paid_apps.csv"
        end
     end
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
+        query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil}, 'per' => '#@per_name' }"
         file_name_per_part = @per_name.split('.')[-1]
         file_name = "top_free_" + "#{file_name_per_part}" + "_apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
-        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil}, 'per' => '#@per_name' }"
         file_name = "top_paid_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       else
-        query = "{'per' => '#@per_name' }"
+        query = "{'per' => '#@per_name', 'verc' => {'$ne' => nil} }"
         file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       end
     end
@@ -412,30 +413,30 @@ class MongodbDriver
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
   end
   
-  
+  # Find bottom apps that have version code numbers.
   def find_bottom_apps
     query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit}"
     file_name = "bottom_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
-         query = "{ 'pri' => 'Free' }"
+         query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
          file_name = "bottom_free_apps.csv"
        elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne' => 'Free'} }"
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
          file_name = "bottom_paid_apps.csv"
        end
     end
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
+        query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil}, 'per' => '#@per_name' }"
         file_name_per_part = @per_name.split('.')[-1]
         file_name = "bottom_free_" + "#{file_name_per_part}" + "_apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
-        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil}, 'per' => '#@per_name' }"
         file_name = "bottom_paid_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       else
-        query = "{'per' => '#@per_name' }"
+        query = "{'per' => '#@per_name', 'verc' => {'$ne' => nil} }"
         file_name = "bottom_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       end
     end
