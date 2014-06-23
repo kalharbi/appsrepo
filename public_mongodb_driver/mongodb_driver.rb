@@ -171,9 +171,6 @@ class MongodbDriver
   # Find additional info for a list of package names and version code values
   def find_app_info
     opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per']}"
-    if(!@limit.nil?)
-      opts = "{:fields => ['n', 'verc', 'dct'], :limit => #@limit}"
-    end
     
     result_arr = []
     File.open(@package_names_file, 'r').each_with_index do |line, index|
@@ -193,7 +190,7 @@ class MongodbDriver
         developer = doc["crt"]
         permission_size = doc["per"].length
         line = title + "," + package_name + "," + version_name  + "," + category + "," + rating + 
-               "," + download_count + "," + date_published + "," + developer + "," + permission_size.to_s
+               "," + download_count.to_s + "," + date_published + "," + developer + "," + permission_size.to_s
         result_arr << line
       end
     end
