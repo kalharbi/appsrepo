@@ -9,13 +9,14 @@ require_relative '../utils/logging'
 class MongodbDriver
 
   @@usage = "Usage: ruby #{$PROGRAM_NAME} <command> <out_dir> [OPTIONS]"
-  @@cmd_desc = "\n\nThe following commands are available:\n\n"+
+  @@cmd_desc = "\n\nThe following commands are available:\n\n" +
                "    find_apps_by_permission -P <permission_name> \n    find_top_apps\n    find_bottom_apps  \n" + 
                "    find_top_bottom_apps_in_any_permission -P <comma_separated_permission_names>\n" +
                "    find_top_bottom_apps_not_in_any_permission -P <comma_separated_permission_names>\n" +
                "    write_description_for_all_apps_with_at_least_one_permission\n" +
                "    write_apps_description_by_permission -P <permission_name>\n" +
-               "    write_apps_description_by_package_name -k <file_names_of_packages>" + 
+               "    write_apps_description_by_package_name -k <file_names_of_packages>\n" +
+               "    find_version_code -k <file_names_of_packages>\n" +
                "\n\n The following options are available:\n\n"
     
   DB_NAME = "apps"
@@ -130,6 +131,38 @@ class MongodbDriver
     end
   end
   
+  # Find version code for a list of package names
+  def find_version_code
+    opts = "{:fields => ['n', 'verc', 'dct']}"
+    if(!@limit.nil?)
+      opts = "{:fields => ['n', 'verc', 'dct'], :limit => #@limit}"
+    end
+    
+    result_arr = []
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 #skips first line that contains the header info (apk_name, download_count)
+      package_name = line.split(',')[0]
+      query = "{'n' => '#{package_name}'}"
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        name = doc["n"]
+        verc = doc["verc"]
+        dct = doc["dct"]
+        line = name + "," + verc + "," + dct.to_s
+        result_arr << line
+      end
+    end
+    # Write results to  file
+    out_file = File.join(@out_dir, "version_code.csv")
+    name_hd = "package_name,version_code,download_count"
+    File.open(out_file, 'w') do |file|
+      file.puts(name_hd)
+      result_arr.each do |entry|
+        file.puts(entry)
+      end
+    end
+    Logging.logger.info("Package names and version codes have been written to: #{out_file}")
+  end
+  
   # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
   # That's it, find top and bottom downloaded apps that use any of the specified permissions.
   def find_top_bottom_apps_in_any_permission
@@ -213,6 +246,8 @@ class MongodbDriver
         file.puts(line)
       end
     end
+    # Drop the temporarily collection
+    custom_collection.drop()
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")          
     
@@ -301,6 +336,8 @@ class MongodbDriver
         file.puts(line)
       end
     end
+    # Drop the temporarily collection
+    custom_collection.drop()
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
@@ -308,44 +345,67 @@ class MongodbDriver
   def find_top_apps
     query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit}"
-    file_name = "top_apps.txt"
+    file_name = "top_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
          query = "{ 'pri' => 'Free' }"
-         file_name = "top_free_apps.txt"
+         file_name = "top_free_apps.csv"
        elsif(@price.casecmp("paid") == 0)
          query = "{ 'pri' => {'$ne' => 'Free'} }"
-         file_name = "top_paid_apps.txt"
+         file_name = "top_paid_apps.csv"
        end
     end
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
         file_name_per_part = @per_name.split('.')[-1]
-        file_name = "top_free_" + "#{file_name_per_part}" + "_apps.txt"
+        file_name = "top_free_" + "#{file_name_per_part}" + "_apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
-        file_name = "top_paid_" + "#@per_name.split('.')[-1]" + "_apps.txt"
+        file_name = "top_paid_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       else
         query = "{'per' => '#@per_name' }"
-        file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.txt"
+        file_name = "top_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       end
     end
+    # set the result collection name
+    map = {' ' => '', '-' => '_', ':' => '_'}
+    regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
+    collection_name = "top_apps_" + Time.now.to_s.gsub(regex, map)
     
-    name_hd = "apk_name"
-    download_hd = "download_count"
-    out_file = File.join(@out_dir, file_name)
-    File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", " + download_hd)
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc['n']
-        dct = doc["dct"]
-        line = name + ", " + dct.to_s
+    # Phase 1: Perform map-reduce and output to a collection named collection_name
+    # MapReduce Options Hash. 
+    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
+    # map and reduces functions written in JavaScript
+    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
+    reduce = 'function(key, values){ return 1; };'
+    # Perform map-reduce operation on the public collection.
+    @collection.map_reduce(map, reduce, eval(opts))
+    
+    custom_collection = @db.collection(collection_name)
+    # Phase2: Query the output collection
+    opts_for_top = nil
+    if(!@limit.nil?)
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]], :limit => #@limit}"
+    else
+      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]]}"
+    end
+    # write the results into two files.
+    name_hd = "apk_name,download_count"
+    top_out_file = File.join(@out_dir, file_name)
+    File.open(top_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + "," + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
     end
-      Logging.logger.info("The top apps list has been written to: #{out_file}")
+    # Drop the temporarily collection
+    custom_collection.drop()
+    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
   end
 
   def find_bottom_apps
@@ -448,10 +508,20 @@ class MongodbDriver
       write_description_for_all_apps_with_at_least_one_permission
     elsif(cmd.eql? "write_apps_description_by_package_name")
       if(@package_names_file.nil?)
-        puts "Error: Please use the -k option to specify the package names file."
+        puts "Error: Please use the -k option to specify the file that contains package names."
         abort(@@usage)
       elsif File.file?(@package_names_file)
         write_apps_description_by_package_name
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
+    elsif(cmd.eql? "find_version_code")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the file that contains package names."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        find_version_code
       else
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
@@ -543,6 +613,8 @@ class MongodbDriver
       cmd = "write_apps_description_by_package_name"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
       cmd = "write_description_for_all_apps_with_at_least_one_permission"
+    elsif(args[0].eql? "find_version_code")
+      cmd = "find_version_code"
     else
       puts "Error: Unknown command."
       abort(@@usage)
