@@ -73,7 +73,9 @@ class ManifestDriver(object):
             print(detail)
             sys.exit()
         manifest_collection = self.connect_mongodb()
-        cursor = manifest_collection.find({}, {'package': 1, 'version_code':1, 'min_sdk_version' :1})        
+        cursor = manifest_collection.find({"package": package_name,
+                                  "version_code" : version_code}, 
+                                  {'package': 1, 'version_code':1, 'min_sdk_version' :1})        
         if cursor.count() > 0:
             result_file.write('"package_name", "version_code", "min_sdk_version" \n')
             for entry in cursor:
@@ -91,7 +93,50 @@ class ManifestDriver(object):
             self.log.error("No documents are found.")
         
         result_file.close()
-            
+    
+    def find_additional_info(self, pacakge_names_file, target_dir):
+        result_file = None
+        try:
+            result_file_name = os.path.join(os.path.abspath(target_dir), 'additional_manifest_info.csv')
+            result_file = open(result_file_name, 'w')
+            result_file.write('package,version_name,min_sdk,target_sdk,activities,libraries,meta_data \n')
+        except IOError as detail:
+            print(detail)
+            sys.exit()
+        
+        manifest_collection = self.connect_mongodb()
+        with open(pacakge_names_file, 'r') as f:
+            # skip the first line since it's the header line [apk_name, download_count]
+            next(f)
+            for line in f:
+                arr = [items.strip() for items in line.split(',')]
+                package_name = arr[0]
+                version_code = arr[1]
+                cursor = manifest_collection.find({'package': package_name, 'version_code': version_code})        
+                if cursor.count() > 0:
+                    
+                    for entry in cursor:
+                        line = package_name = entry['package'] + '\n'
+                        try:
+                            package_name = entry.get('package')
+                            version_name = entry.get('version_name')
+                            min_sdk_version = entry.get('min_sdk_version', '')
+                            target_sdk_version = entry.get('target_sdk_version', '')
+                            activities = entry.get('activities', [])
+                            uses_libraries = entry.get('uses_libraries', [])
+                            meta_data = entry.get('meta_data', [])
+                            line = package_name + ',' + version_name + ',' + min_sdk_version + ',' + target_sdk_version + ',' + str(len(activities)) + ',' + str(len(uses_libraries)) + ',' + str(len(meta_data))+ '\n' 
+                            self.log.info(line)
+                            result_file.write(line)
+                            break
+                        except KeyError as e:
+                            self.log.error('KeyError in %s. %s',package_name, e) 
+                            continue
+                else:
+                    self.log.error("No documents are found.")
+                
+        result_file.close()
+        
     def main(self, argv):
         start_time = datetime.datetime.now()
         # Configure logging
@@ -107,11 +152,13 @@ class ManifestDriver(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] {find_app_activities | find_all_packages_and_versions} out_dir ", version="%prog 1.0")
+        parser = OptionParser(usage="%prog [options] {find_app_activities | find_all_packages_and_versions | find_additional_info} out_dir ", version="%prog 1.0")
         parser.add_option('-p', '--package', dest="package_name",
                           help='App package name.')
         parser.add_option('-r', '--ver', dest="app_version_code",
                           help='App version code.')
+        parser.add_option('-f', '--file', dest="apk_names_list_file",
+                          metavar="FILE", default=0, help='read package and version code values from a file.')
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
@@ -139,6 +186,13 @@ class ManifestDriver(object):
             if logging_file:
                 logging_file.setLevel(logging_level)
         
+        # Get apk file names
+        package_names_file = None
+        if options.apk_names_list_file:
+            if os.path.isfile(options.apk_names_list_file):
+                package_names_file = options.apk_names_list_file
+            else:
+                sys.exit("Error: APK names list file " + options.apk_names_list_file + " does not exist.")
         # Check target directory
         out_dir = None
         if os.path.isdir(args[1]):
@@ -156,6 +210,8 @@ class ManifestDriver(object):
                              " find_app_activities ~/target_dir -p <package_name> -r <version_name>")
             elif(args[0] == 'find_all_packages_and_versions'):
                 self.find_all_packages_and_versions(out_dir)
+            elif(args[0] == 'find_additional_info'):
+                self.find_additional_info(package_names_file, out_dir)
             else:
                sys.exit("Error: unknown command.") 
         else:
