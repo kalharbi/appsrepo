@@ -17,6 +17,7 @@ class MongodbDriver
                "    write_apps_description_by_permission -P <permission_name>\n" +
                "    write_apps_description_by_package_name -k <file_names_of_packages>\n" +
                "    find_version_code -k <file_names_of_packages>\n" +
+               "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "\n\n The following options are available:\n\n"
     
   DB_NAME = "apps"
@@ -165,6 +166,47 @@ class MongodbDriver
       end
     end
     Logging.logger.info("Package names and version codes have been written to: #{out_file}")
+  end
+  
+  # Find additional info for a list of package names and version code values
+  def find_app_info
+    opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per']}"
+    if(!@limit.nil?)
+      opts = "{:fields => ['n', 'verc', 'dct'], :limit => #@limit}"
+    end
+    
+    result_arr = []
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 #skips first line that contains the header info (apk_name, download_count)
+      items = line.split(',')
+      package_name = items[0]
+      version_code = items[1]
+      query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
+      @collection.find(eval(query), eval(opts)).each do |doc|
+        title = doc["t"]
+        package_name = doc["n"]
+        version_name = doc["vern"]
+        category = doc["cat"]
+        rating = doc["rate"]
+        download_count = doc["dct"]
+        date_published = doc["dtp"]
+        developer = doc["crt"]
+        permission_size = doc["per"].length
+        line = title + "," + package_name + "," + version_name  + "," + category + "," + rating + 
+               "," + download_count + "," + date_published + "," + developer + "," + permission_size.to_s
+        result_arr << line
+      end
+    end
+    # Write results to  file
+    out_file = File.join(@out_dir, "additional_info.csv")
+    name_hd = "title,package,version_name,category,rating,download,date_published,developer,permissions"
+    File.open(out_file, 'w') do |file|
+      file.puts(name_hd)
+      result_arr.each do |entry|
+        file.puts(entry)
+      end
+    end
+    Logging.logger.info("Apps additional info have been written to: #{out_file}")
   end
   
   # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
@@ -552,6 +594,16 @@ class MongodbDriver
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
       end
+    elsif(cmd.eql? "find_app_info")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the file that contains package names and version code values."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        find_app_info
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
     end
     
     end_time = Time.now
@@ -641,6 +693,8 @@ class MongodbDriver
       cmd = "write_description_for_all_apps_with_at_least_one_permission"
     elsif(args[0].eql? "find_version_code")
       cmd = "find_version_code"
+    elsif(args[0].eql? "find_app_info")
+      cmd = "find_app_info"
     else
       puts "Error: Unknown command."
       abort(@@usage)
