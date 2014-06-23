@@ -407,51 +407,72 @@ class MongodbDriver
     custom_collection.drop()
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
   end
-
+  
+  
   def find_bottom_apps
     query = "{}"
     opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit}"
-    file_name = "bottom_apps.txt"
+    file_name = "bottom_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
          query = "{ 'pri' => 'Free' }"
-         file_name = "bottom_free_apps.txt"
+         file_name = "bottom_free_apps.csv"
        elsif(@price.casecmp("paid") == 0)
          query = "{ 'pri' => {'$ne' => 'Free'} }"
-         file_name = "bottom_paid_apps.txt"
+         file_name = "bottom_paid_apps.csv"
        end
     end
     if(!@per_name.nil?)
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => '#@per_name' }"
         file_name_per_part = @per_name.split('.')[-1]
-        file_name = "bottom_free-" + "#{file_name_per_part}" + "-apps.txt"
+        file_name = "bottom_free_" + "#{file_name_per_part}" + "_apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => '#@per_name' }"
-        file_name = "bottom_paid-" + "#@per_name.split('.')[-1]" + "-apps.txt"
+        file_name = "bottom_paid_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       else
         query = "{'per' => '#@per_name' }"
-        file_name = "bottom-" + "#@per_name.split('.')[-1]" + "-apps.txt"
+        file_name = "bottom_" + "#@per_name.split('.')[-1]" + "_apps.csv"
       end
     end
-          
-    name_hd = "apk_name"
-    version_hd = "version_code"
-    download_hd = "download_count"
+    # set the result collection name
+    map = {' ' => '', '-' => '_', ':' => '_'}
+    regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
+    collection_name = "bottom_apps_" + Time.now.to_s.gsub(regex, map)
     
-    out_file = File.join(@out_dir, file_name)
-    File.open(out_file, 'w') do |file|
-      file.puts(name_hd + ", " + download_hd)
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc["n"]
-        verc = doc["verc"]
-        dct = doc["dct"]
-        line = name + ", " + dct.to_s
+    # Phase 1: Perform map-reduce and output to a collection named collection_name
+    # MapReduce Options Hash. 
+    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
+    # map and reduces functions written in JavaScript
+    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
+    reduce = 'function(key, values){ return 1; };'
+    # Perform map-reduce operation on the public collection.
+    @collection.map_reduce(map, reduce, eval(opts))
+    
+    custom_collection = @db.collection(collection_name)
+    # Phase2: Query the output collection
+    opts_for_bottom = nil
+    if(!@limit.nil?)
+      opts_for_bottom = "{ :sort => [['_id.download', Mongo::ASCENDING]], :limit => #@limit}"
+    else
+      opts_for_bottom = "{ :sort => [['_id.download', Mongo::ASCENDING]]}"
+    end
+    # write the results into two files.
+    name_hd = "apk_name,download_count"
+    bottom_out_file = File.join(@out_dir, file_name)
+    File.open(bottom_out_file, 'w') do |file|
+      file.puts(name_hd)
+      custom_collection.find(Hash.new(0), eval(opts_for_bottom)).each do |doc|
+        name = doc['_id']['apk_name']
+        dct = doc['_id']['download']
+        line = name + "," + dct.to_s
         Logging.logger.info(line)
         file.puts(line)
       end
     end
-      Logging.logger.info("The bottom apps list has been written to: #{out_file}")
+    # Drop the temporarily collection
+    custom_collection.drop()
+    Logging.logger.info("The bottom apps list has been written to: #{out_file}")
   end
 
   def start_main(out_dir, cmd)
