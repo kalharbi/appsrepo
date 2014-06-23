@@ -127,9 +127,7 @@ class ManifestDriver(object):
                             uses_libraries = entry.get('uses_libraries', [])
                             meta_data = entry.get('meta_data', [])
                             supports_screens = entry.get('supports_screens', [])
-                            line = package_name + ',' + version_name + ',' + min_sdk_version + ',' + target_sdk_version + ',' + 
-                                   str(len(activities)) + ',' + str(len(services)) + ',' + str(len(uses_libraries)) + ',' + 
-                                   str(len(meta_data))+ '\n' + str(len(supports_screens))
+                            line = package_name + ',' + version_name + ',' + min_sdk_version + ',' + target_sdk_version + ',' + str(len(activities)) + ',' + str(len(services)) + ',' + str(len(uses_libraries)) + ',' + str(len(meta_data)) + ',' + str(len(supports_screens)) + '\n'
                             self.log.info(line)
                             result_file.write(line)
                             break
@@ -137,7 +135,7 @@ class ManifestDriver(object):
                             self.log.error('KeyError in %s. %s',package_name, e) 
                             continue
                 else:
-                    self.log.error("No documents are found.")
+                    self.log.error("No documents are found for package: %s, version code: %s.", package_name, version_code)
                 
         result_file.close()
         
