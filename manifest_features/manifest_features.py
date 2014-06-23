@@ -87,6 +87,7 @@ class ManifestFeatures(object):
             if not os.path.isfile(yaml_file):
                 self.log.error("YAML file does not exist %s", yaml_file)
                 return None
+            doc = None
             with open(yaml_file, 'r') as f:
                 doc = yaml.load(f)
             min_sdk_version = doc.get('sdkInfo', None).get('minSdkVersion',
@@ -96,6 +97,8 @@ class ManifestFeatures(object):
             return min_sdk_version, target_sdk_version
         except yaml.YAMLError as exc:
             self.log.error("Error in apktool yaml file:", exc)
+        except AttributeError as exc:
+            self.log.error("sdk versions info is missing", exc)
 
     def main(self):
         start_time = datetime.datetime.now()
