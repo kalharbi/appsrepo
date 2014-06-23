@@ -99,7 +99,7 @@ class ManifestDriver(object):
         try:
             result_file_name = os.path.join(os.path.abspath(target_dir), 'additional_manifest_info.csv')
             result_file = open(result_file_name, 'w')
-            result_file.write('package,version_name,min_sdk,target_sdk,activities,libraries,meta_data \n')
+            result_file.write('package,version_name,min_sdk,target_sdk,activities,services,libraries,meta_data,supports_screens \n')
         except IOError as detail:
             print(detail)
             sys.exit()
@@ -123,9 +123,13 @@ class ManifestDriver(object):
                             min_sdk_version = entry.get('min_sdk_version', '')
                             target_sdk_version = entry.get('target_sdk_version', '')
                             activities = entry.get('activities', [])
+                            services = entry.get('services', [])
                             uses_libraries = entry.get('uses_libraries', [])
                             meta_data = entry.get('meta_data', [])
-                            line = package_name + ',' + version_name + ',' + min_sdk_version + ',' + target_sdk_version + ',' + str(len(activities)) + ',' + str(len(uses_libraries)) + ',' + str(len(meta_data))+ '\n' 
+                            supports_screens = entry.get('supports_screens', [])
+                            line = package_name + ',' + version_name + ',' + min_sdk_version + ',' + target_sdk_version + ',' + 
+                                   str(len(activities)) + ',' + str(len(services)) + ',' + str(len(uses_libraries)) + ',' + 
+                                   str(len(meta_data))+ '\n' + str(len(supports_screens))
                             self.log.info(line)
                             result_file.write(line)
                             break
