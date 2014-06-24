@@ -57,13 +57,13 @@ class ManifestFeatures(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
-            if app_manifest.version_code is None || app_manifest.version_name is None:
-               apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
-                                             'apktool.yml')
-               app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
-               if app_sdk_versions is None: continue
-                  app_manifest.set_sdk_versions(app_sdk_versions[0],
-                                                app_sdk_versions[1])
+            if app_manifest.version_code is None | app_manifest.version_name is None:
+                apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
+                                                 'apktool.yml')
+                app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
+                if app_sdk_versions is None: continue
+                app_manifest.set_sdk_versions(app_sdk_versions[0],
+                                              app_sdk_versions[1])
             if self.document_exists(manifest_collection, app_manifest):
                 self.log.info("Already Exists.")
                 continue
@@ -101,6 +101,7 @@ class ManifestFeatures(object):
         except AttributeError as exc:
             self.log.error("sdk versions info is missing", exc)
 
+    
     def main(self):
         start_time = datetime.datetime.now()
         # Configure logging
@@ -165,7 +166,7 @@ class ManifestFeatures(object):
             self.start_main(args[0])
         else:
             sys.exit("Error: No such directory.")
-        
+
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
         print("======================================================")
