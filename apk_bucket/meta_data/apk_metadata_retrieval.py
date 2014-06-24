@@ -11,7 +11,9 @@ from pymongo.errors import ConnectionFailure, InvalidName
 
 import ConfigParser
 
+
 class ApkMetadataRretrieval(object):
+
     """ This tool retrieves files metadata from MongoDB GridFS files collection.
     """
 
@@ -19,16 +21,17 @@ class ApkMetadataRretrieval(object):
     COLLECTION_NAME = "apk.files"
     PORT_NUMBER = 27017
     HOST_NAME = "localhost"
-    
+
     log = logging.getLogger("files_metadata")
     log.setLevel(
         logging.DEBUG)  # The logger's level must be set to the "lowest" level.
     config = ConfigParser.ConfigParser()
 
     def __init__(self):
-        self.config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "config", "apk_bucket.conf"))
+        self.config.read(os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "config", "apk_bucket.conf"))
         self.target_directroy = None
-    
+
     def connect_mongodb(self):
         try:
             client = MongoClient(self.HOST_NAME, self.PORT_NUMBER)
@@ -42,17 +45,20 @@ class ApkMetadataRretrieval(object):
             sys.exit("ERROR: Connection to the database failed or is lost.")
         except InvalidName:
             sys.exit("ERROR: Invalid database name")
-    
+
     def find_using_file(self, list_file):
         self.log.info("Reading file: %s", list_file)
         # Connect to MongoDB
         apk_bucket_files_collection = self.connect_mongodb()
         # Result file
-        result_file_name = os.path.join(self.target_directory, "files_info.csv")
+        result_file_name = os.path.join(
+            self.target_directory, "files_info.csv")
         result_file = open(result_file_name, 'w')
-        result_file.write('"package_name", "version_code", "length_in_bytes" \n')
+        result_file.write(
+            '"package_name", "version_code", "length_in_bytes" \n')
         with open(list_file, 'r') as f:
-            # skip the first line since it's the header line [package_name, version_code]
+            # skip the first line since it's the header line [package_name,
+            # version_code]
             next(f)
             for line in f:
                 try:
@@ -60,43 +66,52 @@ class ApkMetadataRretrieval(object):
                     package_name = arr[0]
                     version_code = arr[1]
                     if package_name and version_code:
-                        self.retrieve_metadata_from_collection(apk_bucket_files_collection, package_name, version_code, result_file)
+                        self.retrieve_metadata_from_collection(apk_bucket_files_collection, package_name, version_code,
+                                                               result_file)
                     else:
                         self.log.error("Missing info: %s", line)
                 except IndexError as e:
                     self.log.error("Error while reading CSV file. %s", e)
         result_file.close()
-    
+
     def find_using_package_values(self, package_name, version_code):
         # Connect to MongoDB
         apk_bucket_files_collection = self.connect_mongodb()
         # Result file
-        result_file_name = os.path.join(self.target_directory, "files_info.csv")
+        result_file_name = os.path.join(
+            self.target_directory, "files_info.csv")
         result_file = open(result_file_name, 'w')
-        result_file.write('"package_name", "version_code", "length_in_bytes" \n')
-        self.retrieve_metadata_from_collection(apk_bucket_files_collection, package_name, version_code, result_file)
+        result_file.write(
+            '"package_name", "version_code", "length_in_bytes" \n')
+        self.retrieve_metadata_from_collection(
+            apk_bucket_files_collection, package_name, version_code, result_file)
         result_file.close()
-    
+
     def retrieve_metadata_from_collection(self, fs_collection, package_name, version_code, result_file):
-        self.log.info("Retrieving metadata info for package: " + package_name + ", version code: " + version_code)
-        
-        cursor = fs_collection.find({"metadata.n": package_name, "metadata.verc": version_code}, {'length' :1}).limit(1)
+        self.log.info("Retrieving metadata info for package: " +
+                      package_name + ", version code: " + version_code)
+
+        cursor = fs_collection.find(
+            {"metadata.n": package_name, "metadata.verc": version_code}, {'length': 1}).limit(1)
         if cursor.count() > 0:
             for entry in cursor:
                 length_in_bytes = entry['length']
-                line = package_name + ',' + version_code + ',' + str(length_in_bytes) + '\n'
+                line = package_name + ',' + version_code + \
+                    ',' + str(length_in_bytes) + '\n'
                 self.log.info(line)
                 result_file.write(line)
         else:
-            self.log.error("Could not find the APK file for package:%s, version code:%s", package_name, version_code)
-    
+            self.log.error(
+                "Could not find the APK file for package:%s, version code:%s", package_name, version_code)
+
     def main(self, args):
         start_time = datetime.datetime.now()
         # Configure logging
         logging_file = None
         logging_level = logging.ERROR
         # Create formatter
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(message)s')
         # Create console logger and set its formatter and level
         logging_console = logging.StreamHandler(sys.stdout)
         logging_console.setFormatter(formatter)
@@ -135,7 +150,7 @@ class ApkMetadataRretrieval(object):
         list_file = None
         package_name = None
         version_code = None
-        
+
         if len(args) == 2:
             list_file = args[0]
             if os.path.exists(list_file):
@@ -149,7 +164,7 @@ class ApkMetadataRretrieval(object):
             target_directory = args[2]
         else:
             parser.error("Invalid number of arguments.")
-        
+
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
@@ -168,8 +183,9 @@ class ApkMetadataRretrieval(object):
         if os.path.isdir(target_directory):
             self.target_directory = os.path.abspath(target_directory)
         else:
-            sys.exit("Error: target directory " + target_directory + " does not exist.")
-        
+            sys.exit(
+                "Error: target directory " + target_directory + " does not exist.")
+
         if len(args) == 2:
             self.find_using_file(list_file)
         elif len(args) == 3:
@@ -178,7 +194,7 @@ class ApkMetadataRretrieval(object):
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
         print("======================================================")
-        
-            
+
+
 if __name__ == '__main__':
     ApkMetadataRretrieval().main(sys.argv[1:])
