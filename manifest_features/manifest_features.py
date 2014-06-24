@@ -48,8 +48,8 @@ class ManifestFeatures(object):
     @staticmethod
     def document_exists(manifest_collection, app_manifest):
         return manifest_collection.find_one(
-            {"package": app_manifest.package, "version_name":
-                app_manifest.version_name})
+            {"package": app_manifest.package, "version_code":
+                app_manifest.version_code})
 
     def start_main(self, dir_name):
         manifest_collection = self.connect_mongodb()
@@ -57,12 +57,13 @@ class ManifestFeatures(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
-            apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
+            if app_manifest.version_code is None || app_manifest.version_name is None:
+               apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
                                              'apktool.yml')
-            app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
-            if app_sdk_versions is None: continue
-            app_manifest.set_sdk_versions(app_sdk_versions[0],
-                                          app_sdk_versions[1])
+               app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
+               if app_sdk_versions is None: continue
+                  app_manifest.set_sdk_versions(app_sdk_versions[0],
+                                                app_sdk_versions[1])
             if self.document_exists(manifest_collection, app_manifest):
                 self.log.info("Already Exists.")
                 continue
