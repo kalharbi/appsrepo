@@ -6,6 +6,7 @@ import glob
 import datetime
 import logging
 import logging.handlers
+import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
 from pymongo.errors import ConnectionFailure, InvalidName
@@ -57,13 +58,35 @@ class ManifestFeatures(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
-            if app_manifest.version_code is None | app_manifest.version_name is None:
+            if app_manifest.version_code is None or app_manifest.version_name is None:
                 apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
                                                  'apktool.yml')
                 app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
                 if app_sdk_versions is None: continue
                 app_manifest.set_sdk_versions(app_sdk_versions[0],
                                               app_sdk_versions[1])
+            if app_manifest.version_name.startswith('@string/'):
+                strings_xml_file = os.path.join(os.path.dirname(manifest_file), 'res', 'values', 'strings.xml')
+                if not os.path.isfile(strings_xml_file):
+                    self.log.error("strings.xml file does not exist %s", strings_xml_file)
+                    continue
+                
+                attribute_name = app_manifest.version_name.split('/')[1]
+                attribute_value = self.get_version_name_from_strings_xml(strings_xml_file, attribute_name)
+                if attribute_value is not None:
+                    app_manifest.version_name = attribute_value.strip()
+            
+            if app_manifest.version_code.startswith('@string/'):
+                strings_xml_file = os.path.join(os.path.dirname(manifest_file), 'res', 'values', 'strings.xml')
+                if not os.path.isfile(strings_xml_file):
+                    self.log.error("strings.xml file does not exist %s", strings_xml_file)
+                    continue
+                
+                attribute_name = app_manifest.version_code.split('/')[1]
+                attribute_value = self.get_version_name_from_strings_xml(strings_xml_file, attribute_name)
+                if attribute_value is not None:
+                    app_manifest.version_code = attribute_value.strip()
+                
             if self.document_exists(manifest_collection, app_manifest):
                 self.log.info("Already Exists.")
                 continue
@@ -100,8 +123,14 @@ class ManifestFeatures(object):
             self.log.error("Error in apktool yaml file:", exc)
         except AttributeError as exc:
             self.log.error("sdk versions info is missing", exc)
-
-    
+        
+    def get_version_name_from_strings_xml(self, strings_xml_file, attribute_name):
+        tree = ET.parse(strings_xml_file)
+        root = tree.getroot()
+        for element in root.findall('string'):
+            if(element.get('name') == attribute_name):
+                return element.text
+        
     def main(self):
         start_time = datetime.datetime.now()
         # Configure logging
@@ -154,13 +183,12 @@ class ManifestFeatures(object):
             logging_level = levels[min(len(levels) - 1, options.verbose)]
             print("logging level: ", logging_level)
             print("verbose: ", options.verbose)
-
             # set the file logger level if it exists
             if logging_file:
                 logging_file.setLevel(logging_level)
-
-        if options.depth_value:
+        if options.depth_value is not None:
             self.DIR_DEPTH_SEARCH = options.depth_value
+        
         # Check arguments
         if os.path.isdir(args[0]):
             self.start_main(args[0])
@@ -179,6 +207,8 @@ class ManifestFeatures(object):
         '''
         depth = self.DIR_DEPTH_SEARCH
         path_separator = '*/'
+        if depth < 1:
+            path_separator = ''
         while depth > 1:
             path_separator += path_separator
             depth -= 1
