@@ -78,6 +78,17 @@ The following commands are available:
 
         ruby ./mongodb_driver.rb find_top_bottom_apps_not_in_any_permission ./ -v -l,error ./neither_in.log -f Free -m 100 -P android.permission.BLUETOOTH,android.permission.BLUETOOTH_ADMIN,android.permission.BLUETOOTH_PRIVILEGED
 
-10. Get the version code for a list of package names. Get a maximum of two versions per package name. [We will use the output of the example above (#10) as the input file]
+10. Get the version code for a list of package names. Get a maximum of two versions per package name. [We will use the output of the example above (#8) as the input file]
 
         ruby ./mongodb_driver.rb find_version_code ./ -k bottom_either_free-BLUETOOTH-BLUETOOTH_ADMIN-BLUETOOTH_PRIVILEGED-apps.txt -m 2 -v -l ./log-version-finder.log,error
+
+11. Write the description for apps listed by package name and version code in a CSV file. [We will use the output of the example above (#10) as the input file]
+
+		$ cat ./version_code.csv
+		package_name,version_code,download_count
+		com.google.android.apps.maps,701000803,500000000
+		..........
+		
+		
+		ruby ./mongodb_driver.rb write_apps_description_by_package_name ./out  -k ./version_code.csv -l ~/description_log.log
+
