@@ -119,13 +119,15 @@ class MongodbDriver
     opts = "{:fields => ['n', 'desc', 'verc']}"
     File.open(@package_names_file, 'r').each_with_index do |line, index|
       next if index == 0 #skips first line that contains the header info (apk_name, download_count)
-      package_name = line.split(',')[0]
-      query = "{'n' => '#{package_name}'}"
+      items = line.split(',')
+      package_name = items[0]
+      version_code = items[1]
+      query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
       @collection.find(eval(query), eval(opts)).each do |doc|
         name = doc["n"]
         desc = doc["desc"]
         verc = doc["verc"]
-        out_file = File.join(@out_dir, name + "-" + "verc" + ".description.txt")
+        out_file = File.join(@out_dir, name + "-" + verc + ".description.txt")
         File.open(out_file, 'w') { |result_file| result_file.write(desc) }
         Logging.logger.info("The app's description has been written to: #{out_file}")
       end
