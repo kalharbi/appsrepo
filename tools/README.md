@@ -19,15 +19,26 @@ and stores the extracted files for each apk file into one directory.
 #### Usage:
 
 ```
-Usage: python apktool_executor.py [options] apk_names_file source_directory target_directory
+Usage: python apktool_executor.py apk_source_directory target_directory [options]
+       
+Required arguments:
 
-   Options:
-     --version            show program's version number and exit
-     -h, --help           show this help message and exit
-     -l FILE, --log=FILE  write logs to FILE.
-     -v, --verbose        Increase verbosity.
-     -c, --custom         search for apk files using the custom directory naming
-                          scheme. e.g, dir/c/com/a/amazon/com.amazon
+       apk_source_directory: A directory that contains APK files.
+       target_directory: The target directory the unpacked APKs will be saved at. 
+                         Each APK file will be unpacked and saved in a separate
+                         directory inside target_directry.
+
+Options:
+
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         increase verbosity.
+  -f FILE, --file=FILE  read apk names from a file that contains a list of APK
+	                names.
+  -c, --custom          search for apk files using the custom directory naming
+                        scheme. e.g, dir/c/com/a/amazon/com.amazon
+
 ```
 
 ###2- Dare Executor  *[dare_executor.sh]*
