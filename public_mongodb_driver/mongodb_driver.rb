@@ -257,7 +257,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opts_for_top)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']? doc['verc'] : ''
+        version_code = doc['verc'].nil? ? '' : doc['verc']
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -283,7 +283,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']? doc['verc'] : ''
+        version_code = doc['verc'].nil? ? '' : doc['verc']
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -355,7 +355,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opts_for_top)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']? doc['verc'] : ''
+        version_code = doc['verc'].nil? ? '' : doc['verc']
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -381,7 +381,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']? doc['verc'] : ''
+        version_code = doc['verc'].nil? ? '' : doc['verc']
         download_count = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
