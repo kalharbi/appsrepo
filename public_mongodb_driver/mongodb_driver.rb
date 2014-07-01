@@ -208,15 +208,13 @@ class MongodbDriver
     Logging.logger.info("Apps additional info have been written to: #{out_file}")
   end
   
-  # Run mapreduce to find unique top/bottom apps that use any of the given permissions.
-  # That's it, find top and bottom downloaded apps that use any of the specified permissions.
+  # Find top/bottom apps that use any of the given permissions.
   def find_top_bottom_apps_in_any_permission
     collection_name = nil
     file_name = nil
     query = nil
     
-    # Prepare the collection that will be passed to the mapreduce function.
-    # The goal is to limit the mapreduce operation to a subset of the collection.
+    # Prepare the query to the collection.
     if(!@per_list.nil?)
       per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
       file_name_per_part = '-'
@@ -242,71 +240,79 @@ class MongodbDriver
       return
     end
     
-    # Phase 1: Perform map-reduce and output to a collection named collection_name
-    # MapReduce Options Hash. 
-    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
-    # map and reduces functions written in JavaScript
-    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
-    reduce = 'function(key, values){ return 1; };'
-    # Perform map-reduce operation on the public collection.
-    @collection.map_reduce(map, reduce, eval(opts))
-    
-    custom_collection = @db.collection(collection_name)
-    
-    # Phase2: Query the output collection
+    # Result files
     top_file_name = 'top_either_' + file_name
     bottom_file_name = 'bottom_either_' + file_name
-    opts_for_top = nil
-    opt_for_bottom = nil
-    if(!@limit.nil?)
-      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]], :limit => #@limit}"
-      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]], :limit => #@limit}"
-    else
-      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]]}"
-      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]]}"
-    end
+    # Set the sort order for top/bottom results
+    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]]}"
+    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]]}"
+    
     # write the results into two files
     #1) Write the results of top apps.
-    name_hd = "apk_name, download_count"
+    count = 0
+    top_package_names_list = []
+    name_hd = "apk_name,version_code,download_count"
     top_out_file = File.join(@out_dir, top_file_name)
     File.open(top_out_file, 'w') do |file|
       file.puts(name_hd)
-      custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
-        name = doc['_id']['apk_name']
-        dct = doc['_id']['download']
-        line = name + ", " + dct.to_s
-        Logging.logger.info(line)
-        file.puts(line)
+      @collection.find(eval(query), eval(opts_for_top)).each do |doc|
+        name = doc['n']
+        version_code = doc['verc']
+        dct = doc['dct']
+        # Limit the results to a number of rows.
+        if !@price.nil? and count >= @limit
+          break
+        end
+        # Return unique package names
+        if not top_package_names_list.include? name
+          top_package_names_list << name
+          line = name + "," + version_code + "," + dct.to_s
+          Logging.logger.info(line)
+          file.puts(line)
+        end
+        if !@price.nil?
+          count += 1
+        end
       end
     end
     #2) Write the results of bottom apps.
+    count = 0
+    bottom_package_names_list = []
     bottom_out_file = File.join(@out_dir, bottom_file_name)
     File.open(bottom_out_file, 'w') do |file|
       file.puts(name_hd)
-      custom_collection.find(Hash.new(0), eval(opt_for_bottom)).each do |doc|
-        name = doc['_id']['apk_name']
-        dct = doc['_id']['download']
-        line = name + ", " + dct.to_s
-        Logging.logger.info(line)
-        file.puts(line)
+      @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
+        name = doc['n']
+        version_code = doc['verc']
+        dct = doc['dct']
+        # Limit the results to a number of rows.
+        if !@price.nil? and count >= @limit
+          break
+        end
+        # Return unique package names
+        if not bottom_package_names_list.include? name
+          bottom_package_names_list << name
+          line = name + "," + version_code + "," + dct.to_s
+          Logging.logger.info(line)
+          file.puts(line)
+        end
+        if !@price.nil?
+          count += 1
+        end
       end
     end
-    # Drop the temporarily collection
-    custom_collection.drop()
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")          
     
   end
   
-  # Run mapreduce to find unique top/bottom apps that use neither of the given permissions.
-  # That's it, find top and bottom downloaded apps that do not use any of the specified permissions.
+  # Find top/bottom apps that use neither of the given permissions.
   def find_top_bottom_apps_not_in_any_permission
     collection_name = nil
     file_name = nil
     query = nil
     
-    # Prepare the collection that will be passed to the mapreduce function.
-    # The goal is to limit the mapreduce operation to a subset of the collection.
+    # Prepare the query to the collection.
     if(!@per_list.nil?)
       per_values = @per_list.join(',') # combine the permissions in a single comma separated string.
       file_name_per_part = '-'
@@ -332,57 +338,67 @@ class MongodbDriver
       return
     end
     
-    # Phase 1: Perform map-reduce and output to a collection named collection_name
-    # MapReduce Options Hash. 
-    opts = "{ :query => #{query}, :out => '#{collection_name}' }"
-    # map and reduces functions written in JavaScript
-    map = 'function(){emit( {apk_name: this.n, download: this.dct}, {count: 1});};'
-    reduce = 'function(key, values){ return 1; };'
-    # Perform map-reduce operation on the public collection.
-    @collection.map_reduce(map, reduce, eval(opts))
-    
-    custom_collection = @db.collection(collection_name)
-    
-    # Phase2: Query the output collection
+    # Result files
     top_file_name = 'top_neither_' + file_name
     bottom_file_name = 'bottom_neither_' + file_name
-    opts_for_top = nil
-    opt_for_bottom = nil
-    if(!@limit.nil?)
-      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]], :limit => #@limit}"
-      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]], :limit => #@limit}"
-    else
-      opts_for_top = "{ :sort => [['_id.download', Mongo::DESCENDING]]}"
-      opt_for_bottom ="{ :sort => [['_id.download', Mongo::ASCENDING]]}"
-    end
+    # Set the sort order for top/bottom results
+    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]]}"
+    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]]}"
+    
     # write the results into two files
     #1) Write the results of top apps.
-    name_hd = "apk_name, download_count"
+    count = 0
+    top_package_names_list = []
+    name_hd = "apk_name,version_code,download_count"
     top_out_file = File.join(@out_dir, top_file_name)
     File.open(top_out_file, 'w') do |file|
       file.puts(name_hd)
-      custom_collection.find(Hash.new(0), eval(opts_for_top)).each do |doc|
-        name = doc['_id']['apk_name']
-        dct = doc['_id']['download']
-        line = name + ", " + dct.to_s
-        Logging.logger.info(line)
-        file.puts(line)
+      @collection.find(eval(query), eval(opts_for_top)).each do |doc|
+        name = doc['n']
+        version_code = doc['verc']
+        dct = doc['dct']
+        # Limit the results to a number of rows.
+        if !@price.nil? and count >= @limit
+          break
+        end
+        # Return unique package names
+        if not top_package_names_list.include? name
+          top_package_names_list << name
+          line = name + "," + version_code + "," + dct.to_s
+          Logging.logger.info(line)
+          file.puts(line)
+        end
+        if !@price.nil?
+          count += 1
+        end
       end
     end
     #2) Write the results of bottom apps.
+    count = 0
+    bottom_package_names_list = []
     bottom_out_file = File.join(@out_dir, bottom_file_name)
     File.open(bottom_out_file, 'w') do |file|
       file.puts(name_hd)
-      custom_collection.find(Hash.new(0), eval(opt_for_bottom)).each do |doc|
-        name = doc['_id']['apk_name']
-        dct = doc['_id']['download']
-        line = name + ", " + dct.to_s
-        Logging.logger.info(line)
-        file.puts(line)
+      @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
+        name = doc['n']
+        version_code = doc['verc']
+        download_count = doc['dct']
+        # Limit the results to a number of rows.
+        if !@price.nil? and count >= @limit
+          break
+        end
+        # Return unique package names
+        if not bottom_package_names_list.include? name
+          bottom_package_names_list << name
+          line = name + "," + version_code + "," + download_count.to_s
+          Logging.logger.info(line)
+          file.puts(line)
+        end
+        if !@price.nil?
+          count += 1
+        end
       end
     end
-    # Drop the temporarily collection
-    custom_collection.drop()
     Logging.logger.info("The top apps list has been written to: #{top_out_file}")
     Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
