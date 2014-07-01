@@ -227,13 +227,13 @@ class MongodbDriver
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list }, 'verc' => {'$ne' => nil} }"
-        file_name = "free" + "#{file_name_per_part}" + "apps.txt"
+        file_name = "free" + "#{file_name_per_part}" + "apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' }}"
-        file_name = "paid" + "#{file_name_per_part}" + "apps.txt"
+        file_name = "paid" + "#{file_name_per_part}" + "apps.csv"
       else
         query = "{'per' => { $in: '#@per_list' } }"
-        file_name = "#{file_name_per_part}" + "apps.txt"
+        file_name = "#{file_name_per_part}" + "apps.csv"
       end
     else
       Logging.logger.error("Permission list is empty.")
@@ -269,9 +269,9 @@ class MongodbDriver
           line = name + "," + version_code + "," + dct.to_s
           Logging.logger.info(line)
           file.puts(line)
-        end
-        if !@price.nil?
-          count += 1
+          if !@price.nil?
+            count += 1
+          end
         end
       end
     end
@@ -295,9 +295,9 @@ class MongodbDriver
           line = name + "," + version_code + "," + dct.to_s
           Logging.logger.info(line)
           file.puts(line)
-        end
-        if !@price.nil?
-          count += 1
+          if !@price.nil?
+            count += 1
+          end
         end
       end
     end
@@ -325,13 +325,13 @@ class MongodbDriver
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
         query = "{ 'pri' => 'Free', 'per' => { '$nin' => #@per_list }, 'verc' => {'$ne' => nil} }"
-        file_name = "free" + "#{file_name_per_part}" + "apps.txt"
+        file_name = "free" + "#{file_name_per_part}" + "apps.csv"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $nin: '#@per_list' } }"
-        file_name = "paid" + "#{file_name_per_part}" + "apps.txt"
+        file_name = "paid" + "#{file_name_per_part}" + "apps.csv"
       else
         query = "{'per' => { $nin: '#@per_list' } }"
-        file_name = "#{file_name_per_part}" + "apps.txt"
+        file_name = "#{file_name_per_part}" + "apps.csv"
       end
     else
       Logging.logger.error("Permission list is empty.")
@@ -367,9 +367,9 @@ class MongodbDriver
           line = name + "," + version_code + "," + dct.to_s
           Logging.logger.info(line)
           file.puts(line)
-        end
-        if !@price.nil?
-          count += 1
+          if !@price.nil?
+            count += 1
+          end
         end
       end
     end
@@ -393,9 +393,9 @@ class MongodbDriver
           line = name + "," + version_code + "," + download_count.to_s
           Logging.logger.info(line)
           file.puts(line)
-        end
-        if !@price.nil?
-          count += 1
+          if !@price.nil?
+            count += 1
+          end
         end
       end
     end
