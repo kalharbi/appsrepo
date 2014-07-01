@@ -646,7 +646,7 @@ class MongodbDriver
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value', 'is localhost.') do |host_name|
           @host = host_name
         end
-        opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port ', 'number value is 27017.') do |port_num|
+        opts.on('-p','--port <port>', Integer, 'The port number that the mongod instance is listening. Default port ', 'number value is 27017.') do |port_num|
           @port = port_num
         end
         opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses,or a', 'list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
@@ -662,7 +662,7 @@ class MongodbDriver
         opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps.', 'Valid values are free or paid') do |fee_value|
           @price = fee_value
         end
-        opts.on('-m','--max <value>', 'The maximum number of documents to return.') do |max_value|
+        opts.on('-m','--max <value>', Integer, 'The maximum number of documents to return.') do |max_value|
           @limit = max_value
         end
         opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done.') do
