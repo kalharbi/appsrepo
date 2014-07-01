@@ -226,10 +226,10 @@ class MongodbDriver
         file_name_per_part << p.split('.')[-1] + '-'
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list } }"
+        query = "{ 'pri' => 'Free', 'per' => { '$in' => #@per_list }, 'verc' => {'$ne' => nil} }"
         file_name = "free" + "#{file_name_per_part}" + "apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
-        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' } }"
+        query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $in: '#@per_list' }}"
         file_name = "paid" + "#{file_name_per_part}" + "apps.txt"
       else
         query = "{'per' => { $in: '#@per_list' } }"
@@ -257,7 +257,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opts_for_top)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']
+        version_code = doc['verc']? doc['verc'] : ''
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -283,7 +283,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']
+        version_code = doc['verc']? doc['verc'] : ''
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -324,7 +324,7 @@ class MongodbDriver
         file_name_per_part << p.split('.')[-1] + '-'
       end
       if(!@price.nil? and @price.casecmp("free") == 0)
-        query = "{ 'pri' => 'Free', 'per' => { '$nin' => #@per_list } }"
+        query = "{ 'pri' => 'Free', 'per' => { '$nin' => #@per_list }, 'verc' => {'$ne' => nil} }"
         file_name = "free" + "#{file_name_per_part}" + "apps.txt"
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $nin: '#@per_list' } }"
@@ -355,7 +355,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opts_for_top)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']
+        version_code = doc['verc']? doc['verc'] : ''
         dct = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
@@ -381,7 +381,7 @@ class MongodbDriver
       file.puts(name_hd)
       @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
         name = doc['n']
-        version_code = doc['verc']
+        version_code = doc['verc']? doc['verc'] : ''
         download_count = doc['dct']
         # Limit the results to a number of rows.
         if !@price.nil? and count >= @limit
