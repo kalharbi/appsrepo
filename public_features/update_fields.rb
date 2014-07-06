@@ -43,7 +43,7 @@ class UpdateFields
     version_code = document['verc']
     id = document['_id']
     selector_query = "{'_id' => BSON::ObjectId('#{id}')}"
-    updated_fields = "{'$set' => {'t' => '#{title}', 'crt' => '#{developer}'} }"
+    updated_fields = '{"$set" => {"t" => "#{title}", "crt" => "#{developer}"} }'
     response = collection.update(eval(selector_query), eval(updated_fields))
     if response['updatedExisting'] == true
       @update_count += 1
