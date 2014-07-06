@@ -64,9 +64,16 @@ class UpdateFields
     file_name = File.basename(json_file,".json")
     package_name = remove_download_date_from_apk_name(file_name)
     @logger.info("processing JSON file: #{json_file}")
-    f = File.read(json_file)
-    data = JSON.parse(f)
-    return if data.nil?
+    f = nil
+    data = nil
+    begin
+      f = File.read(json_file)
+      data = JSON.parse(f)
+      return if data.nil?
+    rescue Exception => e
+      @error_logger.error("Error in JSON file: #{json_file} - #{e.message}")
+      return
+    end
     # Get version name and version code info from aapt tool
     version_info = get_version_info(File.join(File.dirname(json_file), File.basename(json_file, ".json") + ".apk"))
     return if version_info.length == 0
