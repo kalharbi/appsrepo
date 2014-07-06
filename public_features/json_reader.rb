@@ -27,7 +27,7 @@ class JsonReader
     app.title = data["title"]
     app.playStoreURL = data["playStoreURL"]
     app.category = data["category"]
-    app.price = data["price"]
+    app.price = get_price_value(data["price"])
     app.datePublished = convert_string_to_date(data["datePublished"])
     app.operatingSystems = data["operatingSystems"]
     app.ratingsCount = data["ratingsCount"]
@@ -66,6 +66,13 @@ class JsonReader
     new_review
   end
   
+  def get_price_value(price)
+    if !price.nil? and price.eql? '0'
+      price = 'Free'
+    end
+    price
+  end
+
   # Remove the download date from the apk name.
   # This is done because the crwaler appends the download date into the file name
   # Example: com.google.android.apps.googlevoice.20130926 ->com.google.android.apps.googlevoice
