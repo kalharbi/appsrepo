@@ -160,8 +160,8 @@ class UpdateFields
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file>', Array, 'Write error level logs to the specified file.') do |log_file|
-          @error_logger = Logger.new File.new(log_file)
+        opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
+          @error_logger = Logger.new File.new(log_file, 'a+')
           @error_logger.level = Logger::Error
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
