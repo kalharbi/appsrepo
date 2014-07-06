@@ -133,3 +133,22 @@ This is an example of running the query:
     }]
 }
 ```
+- - -
+
+# Update Fields
+The ```update_fields.rb``` script is used to update field in the public collection.
+
+## Usage
+```
+Usage: update_fields.rb {UpdateTitleAndDeveloper} {json_file | json_directory} [OPTIONS]
+    -h, --help                       Show this help message and exit.
+    -l, --log <log_file>             Write error level logs to the specified file.
+    -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
+    -p, --port <port>                The port number that the mongod instance is listening. The Default port number is 27017.
+```
+
+### Example:
+```
+ruby update_fields.rb UpdateTitleAndDeveloper /path_to_the_updated_json_files
+
+```
