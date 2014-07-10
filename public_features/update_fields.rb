@@ -4,9 +4,8 @@ require 'rubygems'
 require 'json'
 require 'mongo'
 require 'optparse'
-require 'logger'
+require 'logging'
 require_relative 'files_finder'
-require_relative '../utils/settings'
 require_relative 'aapt_executor'
 
 class UpdateFields
@@ -15,20 +14,28 @@ class UpdateFields
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   attr_reader :host, :port
-  attr_accessor :error_logger, :update_count
+  attr_accessor :error_logger, :logger, :update_count
 
   def initialize
     @host = "localhost"
     @port = 27017
     @update_count = 0
-    @logger = Logger.new(STDOUT)
-    file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
-    file = File.open(file_name, 'a+')
-    @error_logger = Logger.new(file)
-    @error_logger.level = Logger::ERROR
   end
   
   private
+  def config_logging(log_file = nil)
+    @logger = Logging.logger(STDOUT)
+    @logger.level = :info
+    @error_logger = Logging.logger['UpdateFields']
+    @error_logger.level = :error
+    if log_file.nil?
+      file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
+      log_file = File.open(file_name, 'a+')
+    end
+    @error_logger.add_appenders(
+          Logging.appenders.file(log_file))
+  end
+  
   def connect_mongodb
     mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
@@ -160,6 +167,7 @@ class UpdateFields
   
   public
   def command_line(args)
+    log_file_name = nil
     begin
       opt_parser = OptionParser.new do |opts|
         opts.banner = @@usage
@@ -168,8 +176,7 @@ class UpdateFields
           exit
         end
         opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
-          @error_logger = Logger.new File.new(log_file, 'a+')
-          @error_logger.level = Logger::Error
+          log_file_name = log_file
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
           @host = host_name
@@ -205,6 +212,7 @@ class UpdateFields
       puts "Error source is not specified."
       abort(@@usage)
     end
+    config_logging(log_file_name)
     source = File.absolute_path(args[1])
     start_main(cmd, source)
   end
