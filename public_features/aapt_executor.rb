@@ -1,4 +1,3 @@
-require_relative '../utils/logging'
 require_relative '../utils/settings'
 
 class AaptExecutor
