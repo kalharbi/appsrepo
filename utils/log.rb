@@ -43,7 +43,7 @@ class Log
   end
   
   def warning(msg)
-    @logger.warning(msg)
+    @logger.warn(msg)
   end
   
   def info(msg)
