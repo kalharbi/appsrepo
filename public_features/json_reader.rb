@@ -2,12 +2,12 @@ require 'json'
 require 'date'
 require_relative 'app'
 require_relative 'app_review'
-require_relative '../utils/logging'
+require_relative '../utils/log'
 
 class JsonReader
   attr_reader :json_file
   
-  public 
+  public
   def parse_json_data(json_file)
     begin
       serialized = File.read(json_file)
@@ -15,7 +15,7 @@ class JsonReader
       name = File.basename(json_file,".json")
       app = convert_to_object(name, data)
     rescue Exception => e 
-      Logging.logger.error("Error in JSON file: #{json_file} - #{e.message}")
+      Log.file_logger.error("Error in JSON file: #{json_file} - #{e.message}")
       return nil
     end
   end
@@ -117,7 +117,7 @@ class JsonReader
    begin
      return Date.parse string_date
    rescue ArgumentError => e
-     Logging.logger.error("Date conversion error in file: #{@json_file} - #{e.message}")
+     Log.file_logger.error("Date conversion error in file: #{@json_file} - #{e.message}")
      return string_date
    end
   end

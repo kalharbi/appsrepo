@@ -4,7 +4,7 @@ require 'rubygems'
 require 'json'
 require 'mongo'
 require 'optparse'
-require 'logging'
+require_relative '../utils/log'
 require_relative 'files_finder'
 require_relative 'aapt_executor'
 
@@ -14,7 +14,7 @@ class UpdateFields
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   attr_reader :host, :port
-  attr_accessor :error_logger, :logger, :update_count
+  attr_accessor :update_count
 
   def initialize
     @host = "localhost"
@@ -23,24 +23,11 @@ class UpdateFields
   end
   
   private
-  def config_logging(log_file = nil)
-    @logger = Logging.logger(STDOUT)
-    @logger.level = :info
-    @error_logger = Logging.logger['UpdateFields']
-    @error_logger.level = :error
-    if log_file.nil?
-      file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
-      log_file = File.open(file_name, 'a+')
-    end
-    @error_logger.add_appenders(
-          Logging.appenders.file(log_file))
-  end
-  
   def connect_mongodb
     mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
     collection = db.collection(COLLECTION_NAME)
-    @logger.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
+    Log.logger.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
     collection
   end
   
@@ -54,9 +41,9 @@ class UpdateFields
     response = collection.update(eval(selector_query), eval(updated_fields))
     if response['updatedExisting'] == true
       @update_count += 1
-      @logger.info("Successfully updated the document for package name: #{package_name}, version code: #{version_code}")
+      Log.logger.info("Successfully updated the document for package name: #{package_name}, version code: #{version_code}")
     else
-      @error_logger.error("Failed to update document #{id} for package name: #{package_name}, version code: #{version_code}. Error: #{response.to_s}")
+      Log.file_logger.error("Failed to update document #{id} for package name: #{package_name}, version code: #{version_code}. Error: #{response.to_s}")
     end
   end
   
@@ -70,7 +57,7 @@ class UpdateFields
     # Get package name from file name
     file_name = File.basename(json_file,".json")
     package_name = remove_download_date_from_apk_name(file_name)
-    @logger.info("processing JSON file: #{json_file}")
+    Log.logger.info("processing JSON file: #{json_file}")
     f = nil
     data = nil
     begin
@@ -78,7 +65,7 @@ class UpdateFields
       data = JSON.parse(f)
       return if data.nil?
     rescue Exception => e
-      @error_logger.error("Error in JSON file: #{json_file} - #{e.message}")
+      Log.file_logger.error("Error in JSON file: #{json_file} - #{e.message}")
       return
     end
     # Get version name and version code info from aapt tool
@@ -96,10 +83,10 @@ class UpdateFields
       db_title = doc['t']
       db_developer = doc['crt']
       if db_title.eql? title and db_developer.eql? developer
-        @logger.info("App title and developer info is consistent with the database.")
+        Log.logger.info("App title and developer info is consistent with the database.")
         return
       else
-        @logger.info("App title and developer info is not consistent with the database for package name: #{package_name}, version code: #{version_code}. Updating the database...")
+        Log.logger.info("App title and developer info is not consistent with the database for package name: #{package_name}, version code: #{version_code}. Updating the database...")
         update_title_and_developer(collection, doc, title, developer)
       end
     else
@@ -111,7 +98,7 @@ class UpdateFields
   def get_version_info(apk_file)
     version_info = Hash.new
     if(File.exist? apk_file)
-      @logger.info("Running aapt on APK file: #{apk_file}")
+      Log.logger.info("Running aapt on APK file: #{apk_file}")
       aapt_executor = AaptExecutor.new(apk_file)
       version_info = aapt_executor.get_version_info
     else
@@ -141,7 +128,7 @@ class UpdateFields
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      @logger.info("Searching for .json files at #{source}")
+      Log.logger.info("Searching for .json files at #{source}")
       json_files = FilesFinder.new(source, '.json').find_files(true)
       if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
@@ -212,7 +199,7 @@ class UpdateFields
       puts "Error source is not specified."
       abort(@@usage)
     end
-    config_logging(log_file_name)
+    Log.config_log(log_file_name)
     source = File.absolute_path(args[1])
     start_main(cmd, source)
   end
