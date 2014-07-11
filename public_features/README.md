@@ -18,6 +18,7 @@ Usage: public_main.rb {InsertWithDuplicates | InsertIfNotExists} {json_file | js
     -h, --help                       Show this help message and exit.
     -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
     -p, --port <port>                The port number that the mongod instance is listening. Default port number value is 27017
+    -l, --log <log_file>             Write error level logs to the specified file.
 ```
 
 ##Public Features Collection
