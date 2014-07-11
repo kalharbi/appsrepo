@@ -5,8 +5,9 @@ Store apps' public features into Mongodb.
 * Required:
   * Ruby 1.9 or later.
   * Mongodb 2.4.6 or later.
-  * gem install mongo.
-  * gem install bson.
+  * gem install mongo
+  * gem install bson
+  * gem install logging
 * Recommended:
   * gem update --system
   * gem install bson_ext
@@ -15,7 +16,6 @@ Store apps' public features into Mongodb.
 ```
 Usage: public_main.rb {InsertWithDuplicates | InsertIfNotExists} {json_file | json_directory} [OPTIONS]
     -h, --help                       Show this help message and exit.
-    -l, --log <log_file>             Write error level logs to the specified file.
     -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
     -p, --port <port>                The port number that the mongod instance is listening. Default port number value is 27017
 ```
@@ -141,7 +141,6 @@ The ```update_fields.rb``` script is used to update field in the public collecti
 ```
 Usage: update_fields.rb {UpdateTitleAndDeveloper} {json_file | json_directory} [OPTIONS]
     -h, --help                       Show this help message and exit.
-    -l, --log <log_file>             Write error level logs to the specified file.
     -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
     -p, --port <port>                The port number that the mongod instance is listening. The Default port number is 27017.
 ```
