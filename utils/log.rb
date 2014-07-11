@@ -1,44 +1,44 @@
 require 'logging'
+require 'singleton'
 
-module Log
+class Log
+  include Singleton
   
-  @log_file_name = nil
+  attr_accessor :log_file_name
+  
+  def initialize
+    # set file log name
+    @log_file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
     
-  def Log.config_log(log_file_name = nil)
-    @log_file_name = log_file_name
-  end
-  
-  def Log.logger
-    @logger
-  end
-  
-  def Log.file_logger
-    @file_logger
-  end
-  
-  def self.logger
-    @logger = Logging.logger(STDOUT)
-    @logger.level = :info
-    @logger
-  end
-  
-  def self.file_logger
-    @file_logger = Logging.logger[self]
-    @file_logger.level = :error
-    if @log_file_name.nil?
-      file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
-      @log_file_name = File.open(file_name, 'a+')
-    end
+    # only show "info" or higher messages on STDOUT using the Basic layout
+    Logging.appenders.stdout(:level => :info)
     
+    # send all error log events to the file log as JSON
     Logging.appenders.rolling_file(
-        @log_file_name,
-        :layout => Logging.layouts.pattern(
-            :pattern => '%.1l, [%d] %5l -- %c: %m\n',
-            :date_pattern => "%Y-%m-%dT%H:%M:%S.%s"
-        )
-      )
-    @file_logger.add_appenders @log_file_name
-    
+      @log_file_name,
+      :level  => :error,
+      :age    => 'daily',
+      :layout => Logging.layouts.json
+    )
+    @logger ||= Logging.logger['appsrepo']
+    @logger.level = :info
+    @logger.add_appenders @log_file_name, 'stdout'
+  end
+   
+  def error(msg)
+     @logger.error(msg)
+  end
+  
+  def warning(msg)
+    @logger.warning(msg)
+  end
+  
+  def info(msg)
+    @logger.info(msg)
+  end
+  
+  def debug(msg)
+    @logger.debug(msg)
   end
   
 end
