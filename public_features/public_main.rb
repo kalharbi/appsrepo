@@ -14,7 +14,7 @@ require_relative 'aapt_executor'
 
 class PublicMain
   
-  @@log = Log.instance
+  @@log = nil
   @@usage = "Usage: #{$PROGRAM_NAME} {InsertWithDuplicates | InsertIfNotExists} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
@@ -135,6 +135,7 @@ class PublicMain
 
   public
   def command_line(args)
+    log_file_name = nil
     begin
       opt_parser = OptionParser.new do |opts|
         opts.banner = @@usage
@@ -147,6 +148,9 @@ class PublicMain
         end
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
+        end
+        opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
+          log_file_name = log_file
         end
       end
       opt_parser.parse!
@@ -190,7 +194,8 @@ class PublicMain
       puts "Error source is not specified."
       abort(@@usage)
     end
-    
+    Log.log_file_name = log_file_name
+    @@log = Log.instance
     source = File.absolute_path(args[1])
     start_main(cmd, source)
   end
