@@ -13,12 +13,11 @@ Store apps' public features into Mongodb.
 
 ### Usage:
 ```
-   Usage: public_main.rb {json_file | json_directory} [OPTIONS]
-   Optional arguments: 
-         -h, --help                       Show this help message and exit.
-         -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
-         -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
-         -v, --verbose                    Causes the tool to be verbose to explain what is being done, showing .json files as they are processed.
+Usage: public_main.rb {InsertWithDuplicates | InsertIfNotExists} {json_file | json_directory} [OPTIONS]
+    -h, --help                       Show this help message and exit.
+    -l, --log <log_file>             Write error level logs to the specified file.
+    -H, --host <host_name>           The host name that the mongod is connected to. Default value is localhost.
+    -p, --port <port>                The port number that the mongod instance is listening. Default port number value is 27017
 ```
 
 ##Public Features Collection
