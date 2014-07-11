@@ -102,7 +102,7 @@ class UpdateFields
       aapt_executor = AaptExecutor.new(apk_file)
       version_info = aapt_executor.get_version_info
     else
-      Logging.logger.error("APK file does not exist. #{apk_file}")
+      Log.file_logger.error("APK file does not exist. #{apk_file}")
     end
     version_info
   end

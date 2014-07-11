@@ -1,5 +1,5 @@
 require 'nokogiri'
-require_relative '../utils/logging'
+require_relative '../utils/log'
 
 class HtmlScraper
   attr_reader :html_file
@@ -13,7 +13,7 @@ class HtmlScraper
     begin
       page = Nokogiri::HTML(open(@html_file))
     rescue Errno::ENOENT
-      Logging.logger.error("HTML file does not exist: #@html_file")
+      Log.file_logger.error("HTML file does not exist: #@html_file")
     end
   end
   
@@ -21,7 +21,7 @@ class HtmlScraper
   def get_what_is_new
     page = parse_html_file
     if(page.nil?)
-      Logging.logger.error("Could not read HTML file: #@html_file")
+      Log.file_logger.error("Could not read HTML file: #@html_file")
       return []
     end
     new_changes_list = page.css('div.details-section-contents div.recent-change')

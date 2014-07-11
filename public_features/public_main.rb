@@ -85,7 +85,7 @@ class PublicMain
       html_scraper = HtmlScraper.new(html_file)
       what_is_new = html_scraper.get_what_is_new
     else
-      Log.file_logger.error.error("HTML file does not exist. #{html_file}")
+      Log.file_logger.error("HTML file does not exist. #{html_file}")
     end
     what_is_new
   end
@@ -98,7 +98,7 @@ class PublicMain
       aapt_executor = AaptExecutor.new(apk_file)
       version_info = aapt_executor.get_version_info
     else
-      Log.file_logger.error.error("APK file does not exist. #{apk_file}")
+      Log.file_logger.error("APK file does not exist. #{apk_file}")
     end
     version_info
   end
