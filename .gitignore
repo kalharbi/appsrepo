@@ -15,8 +15,9 @@ dependency-reduced-pom.xml
 local.properties
 .settings/
 
-# Tool log Files
+# log Files
 *.log
+*.log.age
 
 # Intellij
 .idea/
