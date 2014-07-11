@@ -5,6 +5,8 @@ require_relative 'app_review'
 require_relative '../utils/log'
 
 class JsonReader
+  
+  @@log = Log.instance
   attr_reader :json_file
   
   public
@@ -15,7 +17,7 @@ class JsonReader
       name = File.basename(json_file,".json")
       app = convert_to_object(name, data)
     rescue Exception => e 
-      Log.file_logger.error("Error in JSON file: #{json_file} - #{e.message}")
+      @@log.error("Error in JSON file: #{json_file} - #{e.message}")
       return nil
     end
   end
@@ -117,7 +119,7 @@ class JsonReader
    begin
      return Date.parse string_date
    rescue ArgumentError => e
-     Log.file_logger.error("Date conversion error in file: #{@json_file} - #{e.message}")
+     @@log.error("Date conversion error in file: #{@json_file} - #{e.message}")
      return string_date
    end
   end
