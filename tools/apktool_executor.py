@@ -4,102 +4,119 @@ import os
 import datetime
 import logging
 import glob
+import multiprocessing
+from multiprocessing import Pool
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 
+
+log = logging.getLogger("apktool_executor")
+log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
+
+# pickled method defined at the top level of a module to be called by multiple processes.
+# Runs apktool and returns the directory of the unpacked apk file.
+def run_apktool(apk_file, target_dir, framework_dir, tag):
+    print("Running apktool on " + apk_file)
+    apk_name = os.path.basename(os.path.splitext(apk_file)[0])
+    target_dir = os.path.join(target_dir, apk_name)
+    args = ['apktool', 'd', apk_file, '-o', target_dir]
+    if framework_dir:
+        args.append('-p')
+        args.append(framework_dir)
+    elif tag:
+        args.append('-t')
+        args.append(tag)
+    sub_process = Popen(args, stdout=PIPE, stderr=PIPE)
+    out, err = sub_process.communicate()
+    rc = sub_process.returncode
+    if rc == 0:
+        log.info(out)
+    if rc != 0:
+        log.error('Failed to decode apk file: ' + apk_file + '\n' + err)
+    return target_dir
+        
 class ApktoolExecutor(object):
-    
-    apktool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
-                                'bin', 'apktool1.5.2', 'apktool.jar')
-    log = logging.getLogger("apktool_executor")
-    log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
+    # Set the number of worker processes to the number of available CPUs.
+    processes = multiprocessing.cpu_count()
     # Flag that indicates the use of custom directory naming scheme. i.e. dir/c/com/a/amazon/com.amazon
     use_custom_file_search = False
-    
+    # apktool framework tag and dir
+
     def __init__(self):
         self.apk_files = []
+        self.framework_dir = None
+        self.tag = None
     
-    def run_apktool(self, apk_file, target_dir):
-        self.log.info("Running apktool on " + apk_file)
-        apk_name = os.path.basename(os.path.splitext(apk_file)[0])
-        target_dir = os.path.join(target_dir, apk_name)
-        sub_process = Popen(['java', '-jar', self.apktool_path, 'd', apk_file, target_dir], 
-                            stdout=PIPE, stderr=PIPE)
-        out, err = sub_process.communicate()
-        if out:
-            self.log.info(out)
-        if err:
-            self.log.error(err)
-        return target_dir
             
     def start_main(self, apk_names_file, source_dir, target_dir):
+        apk_paths = []
+        # Create pool of worker processes
+        pool = Pool(processes=self.processes)
+        log.info('A pool of %i worker processes has been created', self.processes)
         # If apk list file is not given, run apktool on each apk file in the source directory.
         if not apk_names_file:
             for apk_file in os.listdir(source_dir):
                 if(os.path.splitext(apk_file)[1] == '.apk'):
-                    result_dir = self.run_apktool(os.path.join(source_dir, apk_file), target_dir)
-                    # TODO: fix os.rename bug ('Directory not empty') to rename the unpacked file
-                    # Rename the unpacked apk directory.
-                    #apk_info = self.get_apk_info(result_dir)
-                    #new_name = os.path.join(os.path.dirname(result_dir),
-                                            #apk_info[0] + '-' + apk_info[1])
-                    #os.rename(result_dir, new_name)
-                    self.log.info("APK file has been extracted at: " + result_dir)
-            return
-            
-        with open(apk_names_file, 'r') as f:
-            # skip the first line since it's the header line [apk_name, download_count]
-            next(f)
-            for line in f:
-                arr = [items.strip() for items in line.split(',')]
-                apk_name = arr[0]
-                apk_path = source_dir
-                if apk_name:
-                    if self.use_custom_file_search:
-                        # Use custom directory search to limit the search to the directories of each apk file.
-                        for index, item in enumerate(apk_name.split('.')):
-                            apk_path = os.path.join(apk_path, item[0], item)
-                            if index == 1:
-                                break
-                    apk_file = self.find_apk_file(apk_name, apk_path)
-                    if apk_file:
-                        # Run apktool on the first file in the list
-                        # TODO: Handle multiple versions files.
-                        result_dir = self.run_apktool(apk_file, target_dir)
-                        # TODO: fix os.rename bug ('Directory not empty') to rename the unpacked file
-                        # Rename the unpacked apk directory.
-                        #apk_info = self.get_apk_info(result_dir)
-                        #new_name = os.path.join(os.path.dirname(result_dir),
-                                                #apk_info[0] + '-' + apk_info[1])
-                        #os.rename(result_dir, new_name)
-                        self.log.info("APK file has been extracted at: " + result_dir)
+                    apk_paths.append(os.path.join(source_dir, apk_file))
+        elif apk_names_file:
+            with open(apk_names_file, 'r') as f:
+                # skip the first line since it's the header line [apk_name, download_count]
+                next(f)
+                for line in f:
+                    arr = [items.strip() for items in line.split(',')]
+                    apk_name = arr[0]
+                    apk_path = source_dir
+                    if apk_name:
+                        if self.use_custom_file_search:
+                            # Use custom directory search to limit the search to the directories of each apk file.
+                            for index, item in enumerate(apk_name.split('.')):
+                                apk_path = os.path.join(apk_path, item[0], item)
+                                if index == 1:
+                                    break
+                        apk_paths.append(self.find_apk_file(apk_name, apk_path))
+        if len(apk_paths) > 0:
+            try:
+                # Run apktool on the apk file asynchronously.
+                results = [pool.apply_async(run_apktool, (apk_path, target_dir, self.framework_dir, self.tag)) for apk_path in apk_paths]
+                for r in results:
+                    log.info("APK file has been extracted at: " + r.get())
+                # close the pool to prevent any more tasks from being submitted to the pool.
+                pool.close()
+                # Wait for the worker processes to exit
+                pool.join()
+            except KeyboardInterrupt:
+                print('got ^C while worker processes have outstanding work. Terminating the pool and stopping the worker processes immediately without completing outstanding work..')
+                pool.terminate()
+                print('pool has been terminated.')
+        else:
+            log.error('Failed to find apk files in %s', source_dir)
                         
                 
     def find_apk_file(self, apk_name, source_directory):
         if(not os.path.exists(source_directory)):
-            self.log.error(source_directory + ' No such file or directory.')
+            log.error(source_directory + ' No such file or directory.')
             return None
         
         self.files_listing(os.path.abspath(source_directory), apk_name,'.apk')
         found_apk_files = self.apk_files
         self.apk_files = []
         if len(found_apk_files) == 1:
-            self.log.info('Found APK file:' + found_apk_files[0])
+            log.info('Found APK file:' + found_apk_files[0])
             return found_apk_files[0]
         elif len(found_apk_files) > 1:
-            self.log.warning('Found ' + str(len(found_apk_files))  + ' files for apk ' + apk_name + '. ' +
+            log.warning('Found ' + str(len(found_apk_files))  + ' files for apk ' + apk_name + '. ' +
                              ', '.join([str(x) for x in found_apk_files]))
             return found_apk_files[0]
         elif len(found_apk_files) == 0:
-            self.log.error('Could not find the apk file for ' + apk_name + ' in: '+ 
+            log.error('Could not find the apk file for ' + apk_name + ' in: '+ 
                             source_directory)
         return None
     
     def files_listing(self, source, apk_name, ext_name):
         for item in os.listdir(source):
             file = os.path.join(source, item)
-            self.log.info('searching for ' + apk_name + ' in ' + file)
+            log.info('searching for ' + apk_name + ' in ' + file)
             if(os.path.isdir(file)):
                 self.files_listing(file, apk_name, ext_name)
             elif(os.path.splitext(file)[1].lower() == ext_name and 
@@ -125,8 +142,25 @@ class ApktoolExecutor(object):
             return (package_name, version_name)
         else:
             return (package_name, version_code)
+    
+    @staticmethod
+    # check apktool version.
+    def check_apktool_version():
+        sub_process = Popen(['apktool', '--version'], 
+                            stdout=PIPE, stderr=PIPE)
+        out, err = sub_process.communicate()
+        if out:
+            # Only accept version 2.0 or higher
+            if int(out.strip().split('.')[0]) == 2:
+                print('using apktool version ' + out.strip())
+            else:
+                raise Exception('Unsatisfied dependencies for apktool. ' + 
+                                'Please install apktool version 2.0.0-Beta9 or higher. ' + 
+                                'See the README file for additional information.')
         
     def main(self, args):
+        # check apktool version
+        self.check_apktool_version()
         start_time = datetime.datetime.now()
         # Configure logging
         logging_file = None
@@ -138,10 +172,15 @@ class ApktoolExecutor(object):
         logging_console.setFormatter(formatter)
         logging_console.setLevel(logging.DEBUG)
         # Add the console logger
-        self.log.addHandler(logging_console)
+        log.addHandler(logging_console)
         
         # command line parser
         parser = OptionParser(usage="python %prog apk_source_directory target_directory [options]", version="%prog 1.0")
+        parser.add_option("-p", "--processes", dest="processes", type="int",
+                           help="the number of worker processes to use. " +
+                           "Default is the number of CPUs in the system.")
+        parser.add_option("-w", "--framework", help="forces apktool to use framework files located in <FRAMEWORK_DIR>.", dest="framework_dir")
+        parser.add_option("-t", "--tag", help="forces apktool to use framework files tagged by <TAG>.", dest="tag")
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
@@ -154,12 +193,18 @@ class ApktoolExecutor(object):
         (options, args) = parser.parse_args()
         if len(args) != 2:
             parser.error("incorrect number of arguments.")
+        if options.processes:
+            self.processes = options.processes
+        if options.framework_dir:
+            self.framework_dir = options.framework_dir
+        if options.tag:
+            self.tag = options.tag
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
             logging_file.setLevel(logging_level)
             logging_file.setFormatter(formatter)
-            self.log.addHandler(logging_file)
+            log.addHandler(logging_file)
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
