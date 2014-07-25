@@ -16,17 +16,30 @@ A python script that runs [apktool]('https://code.google.com/p/android-apktool/'
 a list of apk names as input, finds their apk files, runs apktool on each apk file, 
 and stores the extracted files for each apk file into one directory.
 
+#### Dependencies
+*  [apktool version 2.0.0-Beta9]('http://connortumbleson.com/2014/02/apktool-2-0-0-beta-9-released/') or higher. For installation instructions, see [install apktool.]('https://code.google.com/p/android-apktool/wiki/Install')
+
 #### Usage:
 
 ```
 Usage: python apktool_executor.py apk_source_directory target_directory [options]
-       
-Required arguments:
 
-       apk_source_directory: A directory that contains APK files.
-       target_directory: The target directory the unpacked APKs will be saved at. 
-                         Each APK file will be unpacked and saved in a separate
-                         directory inside target_directry.
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -p PROCESSES, --processes=PROCESSES
+                        the number of worker processes to use. Default is the
+                        number of CPUs in the system.
+  -w FRAMEWORK_DIR, --framework=FRAMEWORK_DIR
+                        forces apktool to use framework files located in
+                        <FRAMEWORK_DIR>.
+  -t TAG, --tag=TAG     forces apktool to use framework files tagged by <TAG>.
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         increase verbosity.
+  -f FILE, --file=FILE  read apk names from a file that contains a list of APK
+                        names.
+  -c, --custom          search for apk files using the custom directory naming
+                        scheme. e.g, dir/c/com/a/amazon/com.amazon
 
 Options:
 
@@ -40,7 +53,8 @@ Options:
                         scheme. e.g, dir/c/com/a/amazon/com.amazon
 
 ```
-
+#### Example:
+``` python apktool_executor.py ~/apk_files/ ~/unpacked/ -t nexus10 -l ./log_apktool.log ```
 ###2- Dare Executor  *[dare_executor.sh]*
 A shell script that runs [dare]('http://siis.cse.psu.edu/dare/') on a group of apps.
 
