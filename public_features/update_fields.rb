@@ -4,28 +4,23 @@ require 'rubygems'
 require 'json'
 require 'mongo'
 require 'optparse'
-require 'logger'
+require_relative '../utils/log'
 require_relative 'files_finder'
-require_relative '../utils/settings'
 require_relative 'aapt_executor'
 
 class UpdateFields
-
+  
+  @@log = Log.instance
   @@usage = "Usage: #{$PROGRAM_NAME} {UpdateTitleAndDeveloper} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   attr_reader :host, :port
-  attr_accessor :error_logger, :update_count
+  attr_accessor :update_count
 
   def initialize
     @host = "localhost"
     @port = 27017
     @update_count = 0
-    @logger = Logger.new(STDOUT)
-    file_name = $PROGRAM_NAME + '-'  + Time.new.strftime("%Y-%m-%d") + ".log"
-    file = File.open(file_name, 'a+')
-    @error_logger = Logger.new(file)
-    @error_logger.level = Logger::ERROR
   end
   
   private
@@ -33,7 +28,7 @@ class UpdateFields
     mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
     collection = db.collection(COLLECTION_NAME)
-    @logger.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
+    @@log.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
     collection
   end
   
@@ -47,9 +42,9 @@ class UpdateFields
     response = collection.update(eval(selector_query), eval(updated_fields))
     if response['updatedExisting'] == true
       @update_count += 1
-      @logger.info("Successfully updated the document for package name: #{package_name}, version code: #{version_code}")
+      @@log.info("Successfully updated the document for package name: #{package_name}, version code: #{version_code}")
     else
-      @error_logger.error("Failed to update document #{id} for package name: #{package_name}, version code: #{version_code}. Error: #{response.to_s}")
+      @@log.error("Failed to update document #{id} for package name: #{package_name}, version code: #{version_code}. Error: #{response.to_s}")
     end
   end
   
@@ -63,7 +58,7 @@ class UpdateFields
     # Get package name from file name
     file_name = File.basename(json_file,".json")
     package_name = remove_download_date_from_apk_name(file_name)
-    @logger.info("processing JSON file: #{json_file}")
+    @@log.info("processing JSON file: #{json_file}")
     f = nil
     data = nil
     begin
@@ -71,7 +66,7 @@ class UpdateFields
       data = JSON.parse(f)
       return if data.nil?
     rescue Exception => e
-      @error_logger.error("Error in JSON file: #{json_file} - #{e.message}")
+      @@log.error("Error in JSON file: #{json_file} - #{e.message}")
       return
     end
     # Get version name and version code info from aapt tool
@@ -89,10 +84,10 @@ class UpdateFields
       db_title = doc['t']
       db_developer = doc['crt']
       if db_title.eql? title and db_developer.eql? developer
-        @logger.info("App title and developer info is consistent with the database.")
+        @@log.info("App title and developer info is consistent with the database.")
         return
       else
-        @logger.info("App title and developer info is not consistent with the database for package name: #{package_name}, version code: #{version_code}. Updating the database...")
+        @@log.info("App title and developer info is not consistent with the database for package name: #{package_name}, version code: #{version_code}. Updating the database...")
         update_title_and_developer(collection, doc, title, developer)
       end
     else
@@ -104,11 +99,11 @@ class UpdateFields
   def get_version_info(apk_file)
     version_info = Hash.new
     if(File.exist? apk_file)
-      @logger.info("Running aapt on APK file: #{apk_file}")
+      @@log.info("Running aapt on APK file: #{apk_file}")
       aapt_executor = AaptExecutor.new(apk_file)
       version_info = aapt_executor.get_version_info
     else
-      Logging.logger.error("APK file does not exist. #{apk_file}")
+      @@log.error("APK file does not exist. #{apk_file}")
     end
     version_info
   end
@@ -134,7 +129,7 @@ class UpdateFields
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      @logger.info("Searching for .json files at #{source}")
+      @@log.info("Searching for .json files at #{source}")
       json_files = FilesFinder.new(source, '.json').find_files(true)
       if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
@@ -166,10 +161,6 @@ class UpdateFields
         opts.on('-h','--help', 'Show this help message and exit.') do
           puts opts
           exit
-        end
-        opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
-          @error_logger = Logger.new File.new(log_file, 'a+')
-          @error_logger.level = Logger::Error
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
           @host = host_name

@@ -4,10 +4,11 @@ require 'mongo'
 require 'optparse'
 require 'whatlanguage'
 require 'time'
-require_relative '../utils/logging'
+require_relative '../utils/log'
 
 class MongodbDriver
-
+  
+  @@log = nil
   @@usage = "Usage: ruby #{$PROGRAM_NAME} <command> <out_dir> [OPTIONS]"
   @@cmd_desc = "\n\nThe following commands are available:\n\n" +
                "    find_apps_by_permission -P <permission_name> \n    find_top_apps\n    find_bottom_apps  \n" + 
@@ -43,7 +44,7 @@ class MongodbDriver
     mongo_client = Mongo::Connection.new(@host, @port)
     @db = mongo_client.db(DB_NAME)
     @collection = @db.collection(COLLECTION_NAME)
-    Logging.logger.info("Connected to database #{DB_NAME}, collection #{COLLECTION_NAME}")
+    @@log.info("Connected to database #{DB_NAME}, collection #{COLLECTION_NAME}")
     @collection
   end
 
@@ -66,10 +67,10 @@ class MongodbDriver
       @collection.find(eval(query), eval(opts) ).each do |doc|
         name = doc["n"]
         file.puts(name)
-        Logging.logger.info(name)
+        @@log.info(name)
       end
     end
-    Logging.logger.info("The apps list has been written to: #{out_file}")
+    @@log.info("The apps list has been written to: #{out_file}")
   end
   
   # Find apps that have at least one permission and write the description if it's English
@@ -89,7 +90,7 @@ class MongodbDriver
       next unless desc.language.to_s.eql? "english" || desc.split.size > 10
       out_file = File.join(@out_dir, name + ".raw.txt")
       File.open(out_file, 'w') { |file| file.write(desc) }
-      Logging.logger.info("The app's description has been written to: #{out_file}")
+      @@log.info("The app's description has been written to: #{out_file}")
     end
   end
   
@@ -110,7 +111,7 @@ class MongodbDriver
       next unless desc.language.to_s.eql? "english" || desc.split.size > 10
       out_file = File.join(@out_dir, name + ".raw.txt")
       File.open(out_file, 'w') { |file| file.write(desc) }
-      Logging.logger.info("The app's description has been written to: #{out_file}")
+      @@log.info("The app's description has been written to: #{out_file}")
     end
   end
   
@@ -129,7 +130,7 @@ class MongodbDriver
         verc = doc["verc"]
         out_file = File.join(@out_dir, name + "-" + verc + ".description.txt")
         File.open(out_file, 'w') { |result_file| result_file.write(desc) }
-        Logging.logger.info("The app's description has been written to: #{out_file}")
+        @@log.info("The app's description has been written to: #{out_file}")
       end
     end
   end
@@ -151,7 +152,7 @@ class MongodbDriver
         verc = doc["verc"]
         dct = doc["dct"]
         if(verc.nil?)
-          Logging.logger.error("Missing version code for package #{name}")
+          @@log.error("Missing version code for package #{name}")
           next
         end
         line = name + "," + verc + "," + dct.to_s
@@ -167,7 +168,7 @@ class MongodbDriver
         file.puts(entry)
       end
     end
-    Logging.logger.info("Package names and version codes have been written to: #{out_file}")
+    @@log.info("Package names and version codes have been written to: #{out_file}")
   end
   
   # Find additional info for a list of package names and version code values
@@ -205,7 +206,7 @@ class MongodbDriver
         file.puts(entry)
       end
     end
-    Logging.logger.info("Apps additional info have been written to: #{out_file}")
+    @@log.info("Apps additional info have been written to: #{out_file}")
   end
   
   # Find top/bottom apps that use any of the given permissions.
@@ -236,7 +237,7 @@ class MongodbDriver
         file_name = "#{file_name_per_part}" + "apps.csv"
       end
     else
-      Logging.logger.error("Permission list is empty.")
+      @@log.error("Permission list is empty.")
       return
     end
     
@@ -267,7 +268,7 @@ class MongodbDriver
         if not top_package_names_list.include? name
           top_package_names_list << name
           line = name + "," + version_code + "," + dct.to_s
-          Logging.logger.info(line)
+          @@log.info(line)
           file.puts(line)
           if !@price.nil?
             count += 1
@@ -293,7 +294,7 @@ class MongodbDriver
         if not bottom_package_names_list.include? name
           bottom_package_names_list << name
           line = name + "," + version_code + "," + dct.to_s
-          Logging.logger.info(line)
+          @@log.info(line)
           file.puts(line)
           if !@price.nil?
             count += 1
@@ -301,8 +302,8 @@ class MongodbDriver
         end
       end
     end
-    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
-    Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")          
+    @@log.info("The top apps list has been written to: #{top_out_file}")
+    @@log.info("The bottom apps list has been written to: #{bottom_out_file}")          
     
   end
   
@@ -334,7 +335,7 @@ class MongodbDriver
         file_name = "#{file_name_per_part}" + "apps.csv"
       end
     else
-      Logging.logger.error("Permission list is empty.")
+      @@log.error("Permission list is empty.")
       return
     end
     
@@ -365,7 +366,7 @@ class MongodbDriver
         if not top_package_names_list.include? name
           top_package_names_list << name
           line = name + "," + version_code + "," + dct.to_s
-          Logging.logger.info(line)
+          @@log.info(line)
           file.puts(line)
           if !@price.nil?
             count += 1
@@ -391,7 +392,7 @@ class MongodbDriver
         if not bottom_package_names_list.include? name
           bottom_package_names_list << name
           line = name + "," + version_code + "," + download_count.to_s
-          Logging.logger.info(line)
+          @@log.info(line)
           file.puts(line)
           if !@price.nil?
             count += 1
@@ -399,8 +400,8 @@ class MongodbDriver
         end
       end
     end
-    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
-    Logging.logger.info("The bottom apps list has been written to: #{bottom_out_file}")    
+    @@log.info("The top apps list has been written to: #{top_out_file}")
+    @@log.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
   
   # Find top apps that have version code numbers.
@@ -461,13 +462,13 @@ class MongodbDriver
         name = doc['_id']['apk_name']
         dct = doc['_id']['download']
         line = name + "," + dct.to_s
-        Logging.logger.info(line)
+        @@log.info(line)
         file.puts(line)
       end
     end
     # Drop the temporarily collection
     custom_collection.drop()
-    Logging.logger.info("The top apps list has been written to: #{top_out_file}")
+    @@log.info("The top apps list has been written to: #{top_out_file}")
   end
   
   # Find bottom apps that have version code numbers.
@@ -528,13 +529,13 @@ class MongodbDriver
         name = doc['_id']['apk_name']
         dct = doc['_id']['download']
         line = name + "," + dct.to_s
-        Logging.logger.info(line)
+        @@log.info(line)
         file.puts(line)
       end
     end
     # Drop the temporarily collection
     custom_collection.drop()
-    Logging.logger.info("The bottom apps list has been written to: #{out_file}")
+    @@log.info("The bottom apps list has been written to: #{out_file}")
   end
 
   def start_main(out_dir, cmd)
@@ -623,11 +624,12 @@ class MongodbDriver
     
     end_time = Time.now
     elapsed_time = end_time - beginning_time
-    Logging.logger.info("Finished after #{Time.at(elapsed_time).utc.strftime("%H:%M:%S")}")
+    @@log.info("Finished after #{Time.at(elapsed_time).utc.strftime("%H:%M:%S")}")
   end
 
   public
   def command_line(args)
+    log_file_name = nil
     begin
       opt_parser = OptionParser.new do |opts|
         opts.banner = @@usage + @@cmd_desc
@@ -635,13 +637,8 @@ class MongodbDriver
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level', 'such as error or info. The default logging level is info.') do |log_options|
-          log_level = 'info'
-          if(!log_options[1].nil?)
-            log_level = log_options[1]
-          end
-          config = {"dev" => log_options[0], "level" => log_level}
-          Logging.config_log(config)
+        opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
+          log_file_name = log_file
         end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value', 'is localhost.') do |host_name|
           @host = host_name
@@ -719,6 +716,8 @@ class MongodbDriver
       puts("Results output direcotry is missing.")
       abort(@@usage)
     else
+      Log.log_file_name = log_file_name
+      @@log = Log.instance
       out_dir = File.absolute_path(args[1])
       start_main(out_dir, cmd)
     end

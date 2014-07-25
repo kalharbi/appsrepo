@@ -8,17 +8,18 @@ require_relative 'app'
 require_relative 'json_reader'
 require_relative 'files_finder'
 require_relative 'html_scraper'
-require_relative '../utils/logging'
+require_relative '../utils/log'
 require_relative '../utils/settings'
 require_relative 'aapt_executor'
 
 class PublicMain
-
+  
+  @@log = nil
   @@usage = "Usage: #{$PROGRAM_NAME} {InsertWithDuplicates | InsertIfNotExists} {json_file | json_directory} [OPTIONS]"
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
   attr_reader :host, :port, :verbose
-
+  
   def initialize
     @host = "localhost"
     @port = 27017
@@ -30,17 +31,13 @@ class PublicMain
     mongo_client = Mongo::Connection.new(@host, @port)
     db = mongo_client.db(DB_NAME)
     collection = db.collection(COLLECTION_NAME)
-    Logging.logger.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
+    @@log.info("Connected to database: #{DB_NAME}, collection: #{COLLECTION_NAME}")
     collection
   end
 
   def insert_document_with_duplicates(collection, document)
     id = collection.insert(document)
-    msg = "Inserted a new document for apk: #{document["n"]}, document id = #{id}"
-    if(@verbose)
-      puts msg
-    end
-    Logging.logger.info(msg)
+    @@log.info("Inserted a new document for apk: #{document["n"]}, document id = #{id}")
   end
   
   # Insert unique documents into MongoDB with a unique package name and version code.
@@ -52,24 +49,16 @@ class PublicMain
     cursor = collection.find(eval(query))
     if !cursor.has_next?
       id = collection.insert(document)
-      msg = "Inserted a new document for apk: #{apk}, version code: #{version_code}, version name: #{version_name}, document id = #{id}"
-      if(@verbose)
-        puts msg
-      end
-      Logging.logger.info(msg)
+      @@log.info("Inserted a new document for apk: #{apk}, version code: #{version_code}, version name: #{version_name}, document id = #{id}")
     else
-      msg = "Document already exists for apk: #{apk}, version code: #{version_code}, version name: #{version_name}"
-      if(@verbose)
-        puts msg
-      end
-      Logging.logger.info(msg)
+      @@log.info("Document already exists for apk: #{apk}, version code: #{version_code}, version name: #{version_name}")
     end
   end
 
   def document_reader(cmd, collection, json_file)
     # Get public features info from the JSON file
     json_reader = JsonReader.new
-    Logging.logger.info("processing JSON file: #{json_file}")
+    @@log.info("processing JSON file: #{json_file}")
     app_obj = json_reader.parse_json_data(json_file)
     return if app_obj.nil?
     # Get what's new information from the html file.
@@ -93,11 +82,11 @@ class PublicMain
   def get_what_is_new(html_file)
     what_is_new = []
     if(File.exist? html_file)
-      Logging.logger.info("Parsing HTML file: #{html_file}")
+      @@log.info("Parsing HTML file: #{html_file}")
       html_scraper = HtmlScraper.new(html_file)
       what_is_new = html_scraper.get_what_is_new
     else
-      Logging.logger.error("HTML file does not exist. #{html_file}")
+      @@log.error("HTML file does not exist. #{html_file}")
     end
     what_is_new
   end
@@ -106,11 +95,11 @@ class PublicMain
   def get_version_info(apk_file)
     version_info = Hash.new
     if(File.exist? apk_file)
-      Logging.logger.info("Running aapt on APK file: #{apk_file}")
+      @@log.info("Running aapt on APK file: #{apk_file}")
       aapt_executor = AaptExecutor.new(apk_file)
       version_info = aapt_executor.get_version_info
     else
-      Logging.logger.error("APK file does not exist. #{apk_file}")
+      @@log.error("APK file does not exist. #{apk_file}")
     end
     version_info
   end
@@ -121,7 +110,7 @@ class PublicMain
       puts "Error: No such file or directory"
       abort(@@usage)
     elsif(File.directory?(source))
-      Logging.logger.info("Searching for .json files at #{source}")
+      @@log.info("Searching for .json files at #{source}")
       json_files = FilesFinder.new(source, '.json').find_files(@verbose)
       if(json_files.nil?)
         puts "The specified directory does not contain .json file(s)."
@@ -146,6 +135,7 @@ class PublicMain
 
   public
   def command_line(args)
+    log_file_name = nil
     begin
       opt_parser = OptionParser.new do |opts|
         opts.banner = @@usage
@@ -153,23 +143,15 @@ class PublicMain
           puts opts
           exit
         end
-        opts.on('-l','--log <log_file,[level]>', Array, 'Write logs to the specified file with the given logging level such as error or info. The default logging level is info.') do |log_options|
-	  log_level = 'info'
-	  if(!log_options[1].nil?)
-	    log_level = log_options[1]
-	  end
-	  config = {"dev" => log_options[0], "level" => log_level}
-	  Logging.config_log(config)
-        end
         opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value is localhost.') do |host_name|
           @host = host_name
         end
         opts.on('-p','--port <port>', 'The port number that the mongod instance is listening. Default port number value is 27017.') do |port_num|
           @port = port_num
         end
-	opts.on('-v', '--verbose', 'Causes the tool to be verbose to explain what is being done, showing .json files as they are processed.') do
-	  @verbose = true
-	end
+        opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
+          log_file_name = log_file
+        end
       end
       opt_parser.parse!
     rescue OptionParser::AmbiguousArgument
@@ -212,7 +194,8 @@ class PublicMain
       puts "Error source is not specified."
       abort(@@usage)
     end
-    
+    Log.log_file_name = log_file_name
+    @@log = Log.instance
     source = File.absolute_path(args[1])
     start_main(cmd, source)
   end
