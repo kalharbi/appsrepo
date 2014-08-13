@@ -566,11 +566,14 @@ class MongodbDriver
       find_bottom_apps
     elsif(cmd.eql? "find_top_bottom_apps_in_any_permission")
       if(@per_list.nil?)
-        puts "Please use the -P option to specify the permissions in a comma-separated list."
-        abort(@@usage)
-      else
-        find_top_bottom_apps_in_any_permission
+        if(@per_name.nil?)
+          puts "Please use the -P option to specify a permission or a set of permissions in a comma-separated values format."
+          abort(@@usage)
+        else
+          @per_list = [@per_name]
+        end
       end
+      find_top_bottom_apps_in_any_permission
     elsif(cmd.eql? "find_top_bottom_apps_not_in_any_permission")
       if(@per_list.nil?)
         if(@per_name.nil?)
