@@ -51,7 +51,7 @@ class MongodbDriver
   # Find apps by permission and price. Write their names to a file in the target directory
   def find_apps_by_permission
     query = "{'per' => '#@per_name'}"
-    opts = "{:fields => ['n']}"
+    opts = "{:fields => ['n'], :timeout => false}"
     out_file_name = "#@per_name-all_apps.txt"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
@@ -76,7 +76,7 @@ class MongodbDriver
   # Find apps that have at least one permission and write the description if it's English
   def write_description_for_all_apps_with_at_least_one_permission
     query = "{'per' => {'$not' => {'$size' => 0} } }"
-    opts = "{:fields => ['n', 'desc', 'per']}"
+    opts = "{:fields => ['n', 'desc', 'per'], :timeout => false}"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
         query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => 'Free' }"
@@ -97,7 +97,7 @@ class MongodbDriver
   # Find apps by permission and write the description if it's English
   def write_apps_description_by_permission
     query = "{'per' => '#@per_name' }"
-    opts = "{:fields => ['n', 'desc', 'per']}"
+    opts = "{:fields => ['n', 'desc', 'per'], :timeout => false}"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
        query = "{'per' => '#@per_name', 'pri' => 'Free' }"
@@ -117,7 +117,7 @@ class MongodbDriver
   
   # Find apps by apk name and write their description if it's English
   def write_apps_description_by_package_name
-    opts = "{:fields => ['n', 'desc', 'verc']}"
+    opts = "{:fields => ['n', 'desc', 'verc'], :timeout => false}"
     File.open(@package_names_file, 'r').each_with_index do |line, index|
       next if index == 0 #skips first line that contains the header info (apk_name, download_count)
       items = line.split(',')
@@ -137,9 +137,9 @@ class MongodbDriver
   
   # Find version code for a list of package names
   def find_version_code
-    opts = "{:fields => ['n', 'verc', 'dct']}"
+    opts = "{:fields => ['n', 'verc', 'dct'], :timeout => false}"
     if(!@limit.nil?)
-      opts = "{:fields => ['n', 'verc', 'dct'], :limit => #@limit}"
+      opts = "{:fields => ['n', 'verc', 'dct'], :limit => #@limit, :timeout => false}"
     end
     
     result_arr = []
@@ -173,7 +173,7 @@ class MongodbDriver
   
   # Find additional info for a list of package names and version code values
   def find_app_info
-    opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per']}"
+    opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per'], :timeout => false}"
     
     result_arr = []
     File.open(@package_names_file, 'r').each_with_index do |line, index|
@@ -245,8 +245,8 @@ class MongodbDriver
     top_file_name = 'top_either_' + file_name
     bottom_file_name = 'bottom_either_' + file_name
     # Set the sort order for top/bottom results
-    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]]}"
-    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]]}"
+    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
+    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]], :timeout => false}"
     
     # write the results into two files
     #1) Write the results of top apps.
@@ -343,8 +343,8 @@ class MongodbDriver
     top_file_name = 'top_neither_' + file_name
     bottom_file_name = 'bottom_neither_' + file_name
     # Set the sort order for top/bottom results
-    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]]}"
-    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]]}"
+    opts_for_top = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
+    opt_for_bottom ="{ :sort => [['dct', Mongo::ASCENDING]], :timeout => false}"
     
     # write the results into two files
     #1) Write the results of top apps.
@@ -407,7 +407,7 @@ class MongodbDriver
   # Find top apps that have version code numbers.
   def find_top_apps
     query = "{}"
-    opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit}"
+    opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :limit => #@limit, :timeout => false}"
     file_name = "top_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
@@ -474,7 +474,7 @@ class MongodbDriver
   # Find bottom apps that have version code numbers.
   def find_bottom_apps
     query = "{}"
-    opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit}"
+    opts = "{ :fields => ['n', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit, :timeout => false}"
     file_name = "bottom_apps.csv"
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
