@@ -132,7 +132,7 @@ class MongodbDriver
     end
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
-       query = "'pri' => 'Free' }"
+       query = "{'pri' => 'Free' }"
       elsif(@price.casecmp("paid") == 0)
         query = "{'pri' => {'$ne' => 'Free'} }"
       end
