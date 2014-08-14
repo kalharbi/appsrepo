@@ -17,12 +17,14 @@ class MongodbDriver
                "    write_description_for_all_apps_with_at_least_one_permission\n" +
                "    write_apps_description_by_permission -P <permission_name>\n" +
                "    write_apps_description_by_package_name -k <file_names_of_packages>\n" +
+               "    write_apps_description\n" + 
                "    find_version_code -k <file_names_of_packages>\n" +
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "\n\n The following options are available:\n\n"
     
   DB_NAME = "apps"
   COLLECTION_NAME = "public"
+  @mongo_client
   @db
   @collection
   @out_dir
@@ -41,13 +43,18 @@ class MongodbDriver
   
   private
   def connect_mongodb
-    mongo_client = Mongo::Connection.new(@host, @port)
-    @db = mongo_client.db(DB_NAME)
+    @mongo_client = Mongo::MongoClient.new(@host, @port)
+    @db = @mongo_client.db(DB_NAME)
     @collection = @db.collection(COLLECTION_NAME)
     @@log.info("Connected to database #{DB_NAME}, collection #{COLLECTION_NAME}")
     @collection
   end
-
+  
+  # Close the connection to the database
+  def close_mongodb_connection
+    @mongo_client.close()
+  end
+  
   # Find apps by permission and price. Write their names to a file in the target directory
   def find_apps_by_permission
     query = "{'per' => '#@per_name'}"
@@ -94,15 +101,15 @@ class MongodbDriver
     end
   end
   
-  # Find apps by permission and write the description if it's English
-  def write_apps_description_by_permission
-    query = "{'per' => '#@per_name' }"
+  # Find apps that have at least one permission and write the description if it's English
+  def write_description_for_all_apps_with_at_least_one_permission
+    query = "{'per' => {'$not' => {'$size' => 0} } }"
     opts = "{:fields => ['n', 'desc', 'per'], :timeout => false}"
     if(!@price.nil?)
       if(@price.casecmp("free") == 0)
-       query = "{'per' => '#@per_name', 'pri' => 'Free' }"
+        query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => 'Free' }"
       elsif(@price.casecmp("paid") == 0)
-        query = "{'per' => '#@per_name', 'pri' => {'$ne' => 'Free'} }"
+        query = "{'per' => {'$not' => {'$size' => 0} }, 'pri' => {'$ne' => 'Free'} }"
       end
     end
     @collection.find(eval(query), eval(opts)).each do |doc|
@@ -112,6 +119,38 @@ class MongodbDriver
       out_file = File.join(@out_dir, name + ".raw.txt")
       File.open(out_file, 'w') { |file| file.write(desc) }
       @@log.info("The app's description has been written to: #{out_file}")
+    end
+  end
+  
+  # Write the description for all apps if it's English
+  def write_apps_description
+    puts "in write_apps_description..."
+    query = "{}"
+    opts = "{:fields => ['n', 'verc', 'desc'], :timeout => false}"
+    if(!@limit.nil?)
+      opts = "{:fields => ['n', 'verc', 'desc'], :timeout => false, :limit => #@limit}"
+    end
+    if(!@price.nil?)
+      if(@price.casecmp("free") == 0)
+       query = "'pri' => 'Free' }"
+      elsif(@price.casecmp("paid") == 0)
+        query = "{'pri' => {'$ne' => 'Free'} }"
+      end
+    end
+    @collection.find(eval(query), eval(opts)) do |cursor|
+      cursor.each do |doc|
+        name = doc["n"]
+        verc = doc["verc"]
+        # paid apps have no version code, so use ? mark
+        if verc.nil?
+          verc = '?'
+        end
+        desc = doc["desc"]
+        next unless desc.language.to_s.eql? "english" || desc.split.size > 10
+        out_file = File.join(@out_dir, name + "-" + verc.to_s + ".raw.txt")
+        File.open(out_file, 'w') { |file| file.write(desc) }
+        @@log.info("The app's description has been written to: #{out_file}")
+      end
     end
   end
   
@@ -603,6 +642,8 @@ class MongodbDriver
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
       end
+    elsif(cmd.eql? "write_apps_description")
+      write_apps_description
     elsif(cmd.eql? "find_version_code")
       if(@package_names_file.nil?)
         puts "Error: Please use the -k option to specify the file that contains package names."
@@ -625,6 +666,7 @@ class MongodbDriver
       end
     end
     
+    close_mongodb_connection
     end_time = Time.now
     elapsed_time = end_time - beginning_time
     @@log.info("Finished after #{Time.at(elapsed_time).utc.strftime("%H:%M:%S")}")
@@ -706,6 +748,8 @@ class MongodbDriver
       cmd = "write_apps_description_by_package_name"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
       cmd = "write_description_for_all_apps_with_at_least_one_permission"
+    elsif(args[0].eql? "write_apps_description")
+      cmd = "write_apps_description"
     elsif(args[0].eql? "find_version_code")
       cmd = "find_version_code"
     elsif(args[0].eql? "find_app_info")
