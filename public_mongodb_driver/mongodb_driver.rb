@@ -21,11 +21,13 @@ class MongodbDriver
                "    find_version_code -k <file_names_of_packages>\n" +
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "\n\n The following options are available:\n\n"
-    
-  DB_NAME = "apps"
-  COLLECTION_NAME = "public"
+ 
   @mongo_client
   @db
+  @db_name
+  @db_user
+  @db_pw
+  @db_collection_name
   @collection
   @out_dir
   @package_names_file
@@ -38,15 +40,19 @@ class MongodbDriver
   def initialize
     @host = "localhost"
     @port = 27017
-    @limit = 500
+    @db_name = "apps"
+    @db_collection_name = "public"
   end
   
   private
   def connect_mongodb
     @mongo_client = Mongo::MongoClient.new(@host, @port)
-    @db = @mongo_client.db(DB_NAME)
-    @collection = @db.collection(COLLECTION_NAME)
-    @@log.info("Connected to database #{DB_NAME}, collection #{COLLECTION_NAME}")
+    @db = @mongo_client.db(@db_name)
+    if(!@db_user.nil? and !@db_pw.nil?)
+      @db.authenticate(@db_user, @db_pw)
+    end
+    @collection = @db.collection(@db_collection_name)
+    @@log.info("Connected to database #{@db_name}, collection #{@db_collection_name}")
     @collection
   end
   
@@ -163,13 +169,15 @@ class MongodbDriver
       package_name = items[0]
       version_code = items[1]
       query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc["n"]
-        desc = doc["desc"]
-        verc = doc["verc"]
-        out_file = File.join(@out_dir, name + "-" + verc + ".description.txt")
-        File.open(out_file, 'w') { |result_file| result_file.write(desc) }
-        @@log.info("The app's description has been written to: #{out_file}")
+      @collection.find(eval(query), eval(opts)) do |cursor|
+        cursor.each do |doc|
+          name = doc["n"]
+          desc = doc["desc"]
+          verc = doc["verc"]
+          out_file = File.join(@out_dir, name + "-" + verc + ".description.txt")
+          File.open(out_file, 'w') { |result_file| result_file.write(desc) }
+          @@log.info("The app's description has been written to: #{out_file}")
+        end
       end
     end
   end
@@ -186,16 +194,18 @@ class MongodbDriver
       next if index == 0 #skips first line that contains the header info (apk_name, download_count)
       package_name = line.split(',')[0]
       query = "{'n' => '#{package_name}'}"
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        name = doc["n"]
-        verc = doc["verc"]
-        dct = doc["dct"]
-        if(verc.nil?)
-          @@log.error("Missing version code for package #{name}")
-          next
+      @collection.find(eval(query), eval(opts)) do |cursor|
+        cursor.each do |doc|
+          name = doc["n"]
+          verc = doc["verc"]
+          dct = doc["dct"]
+          if(verc.nil?)
+            @@log.error("Missing version code for package #{name}")
+            next
+          end
+          line = name + "," + verc + "," + dct.to_s
+          result_arr << line
         end
-        line = name + "," + verc + "," + dct.to_s
-        result_arr << line
       end
     end
     # Write results to  file
@@ -221,19 +231,21 @@ class MongodbDriver
       package_name = items[0]
       version_code = items[1]
       query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
-      @collection.find(eval(query), eval(opts)).each do |doc|
-        title = doc["t"]
-        package_name = doc["n"]
-        version_name = doc["vern"]
-        category = doc["cat"]
-        rating = doc["rate"]
-        download_count = doc["dct"]
-        date_published = doc["dtp"]
-        developer = doc["crt"]
-        permission_size = doc["per"].length
-        line = title + "," + package_name + "," + version_name  + "," + category + "," + rating + 
-               "," + download_count.to_s + "," + date_published + "," + developer + "," + permission_size.to_s
-        result_arr << line
+      @collection.find(eval(query), eval(opts)) do |cursor|
+        cursor.each do |doc|
+          title = doc["t"]
+          package_name = doc["n"]
+          version_name = doc["vern"]
+          category = doc["cat"]
+          rating = doc["rate"]
+          download_count = doc["dct"]
+          date_published = doc["dtp"]
+          developer = doc["crt"]
+          permission_size = doc["per"].length
+          line = title + "," + package_name + "," + version_name  + "," + category + "," + rating + 
+                 "," + download_count.to_s + "," + date_published + "," + developer + "," + permission_size.to_s
+          result_arr << line
+        end
       end
     end
     # Write results to  file
@@ -295,22 +307,24 @@ class MongodbDriver
     top_out_file = File.join(@out_dir, top_file_name)
     File.open(top_out_file, 'w') do |file|
       file.puts(name_hd)
-      @collection.find(eval(query), eval(opts_for_top)).each do |doc|
-        name = doc['n']
-        version_code = doc['verc'].nil? ? '' : doc['verc']
-        dct = doc['dct']
-        # Limit the results to a number of rows.
-        if !@price.nil? and count >= @limit
-          break
-        end
-        # Return unique package names
-        if not top_package_names_list.include? name
-          top_package_names_list << name
-          line = name + "," + version_code + "," + dct.to_s
-          @@log.info(line)
-          file.puts(line)
-          if !@price.nil?
-            count += 1
+      @collection.find(eval(query), eval(opts_for_top)) do |cursor|
+        cursor.each do |doc|
+          name = doc['n']
+          version_code = doc['verc'].nil? ? '' : doc['verc']
+          dct = doc['dct']
+          # Limit the results to a number of rows.
+          if !@price.nil? and count >= @limit
+            break
+          end
+          # Return unique package names
+          if not top_package_names_list.include? name
+            top_package_names_list << name
+            line = name + "," + version_code + "," + dct.to_s
+            @@log.info(line)
+            file.puts(line)
+            if !@price.nil?
+              count += 1
+            end
           end
         end
       end
@@ -321,22 +335,24 @@ class MongodbDriver
     bottom_out_file = File.join(@out_dir, bottom_file_name)
     File.open(bottom_out_file, 'w') do |file|
       file.puts(name_hd)
-      @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
-        name = doc['n']
-        version_code = doc['verc'].nil? ? '' : doc['verc']
-        dct = doc['dct']
-        # Limit the results to a number of rows.
-        if !@price.nil? and count >= @limit
-          break
-        end
-        # Return unique package names
-        if not bottom_package_names_list.include? name
-          bottom_package_names_list << name
-          line = name + "," + version_code + "," + dct.to_s
-          @@log.info(line)
-          file.puts(line)
-          if !@price.nil?
-            count += 1
+      @collection.find(eval(query), eval(opt_for_bottom)) do |cursor|
+        cursor.each do |doc|
+          name = doc['n']
+          version_code = doc['verc'].nil? ? '' : doc['verc']
+          dct = doc['dct']
+          # Limit the results to a number of rows.
+          if !@price.nil? and count >= @limit
+            break
+          end
+          # Return unique package names
+          if not bottom_package_names_list.include? name
+            bottom_package_names_list << name
+            line = name + "," + version_code + "," + dct.to_s
+            @@log.info(line)
+            file.puts(line)
+            if !@price.nil?
+              count += 1
+            end
           end
         end
       end
@@ -393,22 +409,24 @@ class MongodbDriver
     top_out_file = File.join(@out_dir, top_file_name)
     File.open(top_out_file, 'w') do |file|
       file.puts(name_hd)
-      @collection.find(eval(query), eval(opts_for_top)).each do |doc|
-        name = doc['n']
-        version_code = doc['verc'].nil? ? '' : doc['verc']
-        dct = doc['dct']
-        # Limit the results to a number of rows.
-        if !@price.nil? and count >= @limit
-          break
-        end
-        # Return unique package names
-        if not top_package_names_list.include? name
-          top_package_names_list << name
-          line = name + "," + version_code + "," + dct.to_s
-          @@log.info(line)
-          file.puts(line)
-          if !@price.nil?
-            count += 1
+      @collection.find(eval(query), eval(opts_for_top)) do |cursor|
+        cursor.each do |doc|
+          name = doc['n']
+          version_code = doc['verc'].nil? ? '' : doc['verc']
+          dct = doc['dct']
+          # Limit the results to a number of rows.
+          if !@price.nil? and count >= @limit
+            break
+          end
+          # Return unique package names
+          if not top_package_names_list.include? name
+            top_package_names_list << name
+            line = name + "," + version_code + "," + dct.to_s
+            @@log.info(line)
+            file.puts(line)
+            if !@price.nil?
+              count += 1
+            end
           end
         end
       end
@@ -419,22 +437,24 @@ class MongodbDriver
     bottom_out_file = File.join(@out_dir, bottom_file_name)
     File.open(bottom_out_file, 'w') do |file|
       file.puts(name_hd)
-      @collection.find(eval(query), eval(opt_for_bottom)).each do |doc|
-        name = doc['n']
-        version_code = doc['verc'].nil? ? '' : doc['verc']
-        download_count = doc['dct']
-        # Limit the results to a number of rows.
-        if !@price.nil? and count >= @limit
-          break
-        end
-        # Return unique package names
-        if not bottom_package_names_list.include? name
-          bottom_package_names_list << name
-          line = name + "," + version_code + "," + download_count.to_s
-          @@log.info(line)
-          file.puts(line)
-          if !@price.nil?
-            count += 1
+      @collection.find(eval(query), eval(opt_for_bottom)) do |cursor|
+        cursor.each do |doc|
+          name = doc['n']
+          version_code = doc['verc'].nil? ? '' : doc['verc']
+          download_count = doc['dct']
+          # Limit the results to a number of rows.
+          if !@price.nil? and count >= @limit
+            break
+          end
+          # Return unique package names
+          if not bottom_package_names_list.include? name
+            bottom_package_names_list << name
+            line = name + "," + version_code + "," + download_count.to_s
+            @@log.info(line)
+            file.puts(line)
+            if !@price.nil?
+              count += 1
+            end
           end
         end
       end
@@ -685,11 +705,23 @@ class MongodbDriver
         opts.on('-l','--log <log_file>', 'Write error level logs to the specified file.') do |log_file|
           log_file_name = log_file
         end
-        opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to. Default value', 'is localhost.') do |host_name|
+        opts.on('-H','--host <host_name>', 'The host name that the mongod is connected to.', 'Default value is localhost.') do |host_name|
           @host = host_name
         end
-        opts.on('-p','--port <port>', Integer, 'The port number that the mongod instance is listening. Default port ', 'number value is 27017.') do |port_num|
+        opts.on('-p','--port <port>', Integer, 'The port number that the mongod instance is listening.', 'Default port number is 27017.') do |port_num|
           @port = port_num
+        end
+        opts.on('-u','--user <user_name>', 'A username with which to authenticate to a MongoDB database', 'that uses authentication. Use it in conjunction with the --password.') do |user_name|
+          @db_user = user_name
+        end
+        opts.on('-s','--password <password>', 'A password with which to authenticate to a MongoDB database', 'that uses authentication. Use it in conjunction with the --user.') do |password|
+          @db_pw = password
+        end
+        opts.on('-d','--database <database>', 'The name of the database that holds the public collection in MongoDB.', 'Default value is apps') do |dbname|
+          @db_name = dbname
+        end
+        opts.on('-c','--database <database>', 'The name of the public collection in MongoDB.', 'Default value is public') do |dbcollection|
+          @db_collection_name = dbcollection
         end
         opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses,or a', 'list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
           if(per_name.include? ',')
