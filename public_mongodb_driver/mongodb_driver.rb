@@ -234,23 +234,24 @@ class MongodbDriver
       @collection.find(eval(query), eval(opts)) do |cursor|
         cursor.each do |doc|
           title = doc["t"]
-          package_name = doc["n"]
           version_name = doc["vern"]
           category = doc["cat"]
           rating = doc["rate"]
           download_count = doc["dct"]
           date_published = doc["dtp"]
           developer = doc["crt"]
-          permission_size = doc["per"].length
-          line = title + "," + package_name + "," + version_name  + "," + category + "," + rating + 
-                 "," + download_count.to_s + "," + date_published + "," + developer + "," + permission_size.to_s
+          permission_list = doc["per"]
+          permission_size = permission_list.length
+          line = package_name + "," + version_code + "," + version_name  + "," + title + "," +
+                 category + "," + rating + "," + download_count.to_s + "," + date_published +
+                 "," + developer + "," + permission_size.to_s + "," + permission_list.join('<>')
           result_arr << line
         end
       end
     end
     # Write results to  file
     out_file = File.join(@out_dir, "additional_info.csv")
-    name_hd = "title,package,version_name,category,rating,download,date_published,developer,permissions"
+    name_hd = "package,version_code,version_name,title,category,rating,download,date_published,developer,total_permissions, permissions"
     File.open(out_file, 'w') do |file|
       file.puts(name_hd)
       result_arr.each do |entry|
@@ -385,7 +386,7 @@ class MongodbDriver
       elsif(!@price.nil? and @price.casecmp("paid") == 0)
         query = "{ 'pri' => {'$ne' => 'Free'}, 'per' => { $nin: '#@per_list' } }"
         file_name = "paid" + "#{file_name_per_part}" + "apps.csv"
-      else
+      else  
         query = "{'per' => { $nin: '#@per_list' } }"
         file_name = "#{file_name_per_part}" + "apps.csv"
       end
