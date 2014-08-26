@@ -34,24 +34,14 @@ Options:
                         forces apktool to use framework files located in
                         <FRAMEWORK_DIR>.
   -t TAG, --tag=TAG     forces apktool to use framework files tagged by <TAG>.
+  -s, --no-src          Do not decode sources.
+  -r, --no-res          Do not decode resources.
   -l FILE, --log=FILE   write logs to FILE.
   -v, --verbose         increase verbosity.
   -f FILE, --file=FILE  read apk names from a file that contains a list of APK
                         names.
   -c, --custom          search for apk files using the custom directory naming
                         scheme. e.g, dir/c/com/a/amazon/com.amazon
-
-Options:
-
-  --version             show program's version number and exit
-  -h, --help            show this help message and exit
-  -l FILE, --log=FILE   write logs to FILE.
-  -v, --verbose         increase verbosity.
-  -f FILE, --file=FILE  read apk names from a file that contains a list of APK
-	                names.
-  -c, --custom          search for apk files using the custom directory naming
-                        scheme. e.g, dir/c/com/a/amazon/com.amazon
-
 ```
 #### Example:
 ``` python apktool_executor.py ~/apk_files/ ~/unpacked/ -t nexus10 -l ./log_apktool.log ```

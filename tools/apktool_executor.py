@@ -16,7 +16,7 @@ log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" lev
 
 # pickled method defined at the top level of a module to be called by multiple processes.
 # Runs apktool and returns the directory of the unpacked apk file.
-def run_apktool(apk_file, target_dir, framework_dir, tag):
+def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
     print("Running apktool on " + apk_file)
     apk_name = os.path.basename(os.path.splitext(apk_file)[0])
     target_dir = os.path.join(target_dir, apk_name)
@@ -27,6 +27,10 @@ def run_apktool(apk_file, target_dir, framework_dir, tag):
     elif tag:
         args.append('-t')
         args.append(tag)
+    elif no_src:
+        args.append('-s')
+    elif no_res:
+        args.append('-r')
     sub_process = Popen(args, stdout=PIPE, stderr=PIPE)
     out, err = sub_process.communicate()
     rc = sub_process.returncode
@@ -47,6 +51,8 @@ class ApktoolExecutor(object):
         self.apk_files = []
         self.framework_dir = None
         self.tag = None
+        self.no_src = False
+        self.no_res = False
     
             
     def start_main(self, apk_names_file, source_dir, target_dir):
@@ -78,7 +84,10 @@ class ApktoolExecutor(object):
         if len(apk_paths) > 0:
             try:
                 # Run apktool on the apk file asynchronously.
-                results = [pool.apply_async(run_apktool, (apk_path, target_dir, self.framework_dir, self.tag)) for apk_path in apk_paths]
+                results = [pool.apply_async(run_apktool, (apk_path, target_dir,
+                                                          self.framework_dir, self.tag,
+                                                          self.no_src, self.no_res))
+                                                          for apk_path in apk_paths]
                 for r in results:
                     log.info("APK file has been extracted at: " + r.get())
                 # close the pool to prevent any more tasks from being submitted to the pool.
@@ -181,6 +190,10 @@ class ApktoolExecutor(object):
                            "Default is the number of CPUs in the system.")
         parser.add_option("-w", "--framework", help="forces apktool to use framework files located in <FRAMEWORK_DIR>.", dest="framework_dir")
         parser.add_option("-t", "--tag", help="forces apktool to use framework files tagged by <TAG>.", dest="tag")
+        parser.add_option("-s", "--no-src", help="Do not decode sources.", 
+                          dest="no_src", action='store_true', default=False)
+        parser.add_option("-r", "--no-res", help="Do not decode resources.", 
+                          dest="no_res", action='store_true', default=False)
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
@@ -199,6 +212,10 @@ class ApktoolExecutor(object):
             self.framework_dir = options.framework_dir
         if options.tag:
             self.tag = options.tag
+        if options.no_src:
+            self.no_src = True
+        if options.no_res:
+            self.no_res = True
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
