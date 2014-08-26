@@ -611,10 +611,10 @@ class MongodbDriver
     if(!@price.nil?)
        if(@price.casecmp("free") == 0)
          query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
-         file_name = "top_free_apps.csv"
+         file_name = "top_free_apps_with_multiple_versions.csv"
        elsif(@price.casecmp("paid") == 0)
          query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
-         file_name = "top_paid_apps.csv"
+         file_name = "top_paid_apps_with_multiple_versions.csv"
        end
     end
     count = 0
@@ -657,7 +657,8 @@ class MongodbDriver
     @collection.find(eval(query), eval(opts)) do |cursor|
       cursor.each do |doc|
         name = doc['n']
-        version_code = doc['verc'].nil? ? '' : doc['verc']
+        version_code = doc['verc']
+        next if version_code == nil
         dct = doc['dct']
         version_info = { :n => name, :verc => version_code, :dct => dct}
         versions_list << version_info
