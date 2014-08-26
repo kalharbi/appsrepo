@@ -243,7 +243,7 @@ class MongodbDriver
           developer = doc["crt"]
           permission_list = doc["per"]
           permission_size = permission_list.length
-          line = package_name + "," + '"' + version_code + '"' + "," + version_name  +
+          line = package_name + "," + version_code + "," + '"' + version_name  + '"' +
                            "," + '"' + title + '"' + "," + category +
                            "," + rating + "," + download_count.to_s +
                            "," + date_published + "," + '"' + developer +
