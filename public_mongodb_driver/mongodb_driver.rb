@@ -20,6 +20,7 @@ class MongodbDriver
                "    write_apps_description\n" + 
                "    find_version_code -k <file_names_of_packages>\n" +
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
+               "    find_top_apps_with_multiple_versions\n" +
                "\n\n The following options are available:\n\n"
  
   @mongo_client
@@ -597,7 +598,73 @@ class MongodbDriver
     custom_collection.drop()
     @@log.info("The bottom apps list has been written to: #{out_file}")
   end
-
+  
+  def find_top_apps_with_multiple_versions
+    query = "{}"
+    opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
+    file_name = "top_apps_with_multiple_versions.csv"
+    puts @limit
+    if(!@limit.nil?)
+          opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit, :timeout => false}"
+    end
+    if(!@price.nil?)
+       if(@price.casecmp("free") == 0)
+         query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
+         file_name = "top_free_apps.csv"
+       elsif(@price.casecmp("paid") == 0)
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
+         file_name = "top_paid_apps.csv"
+       end
+    end
+    count = 0
+    name_hd = "apk_name,version_code,download_count"
+    out_file = File.join(@out_dir, file_name)
+    File.open(out_file, 'w') do |file|
+      file.puts(name_hd)
+      apk_name = nil
+      @collection.find(eval(query), eval(opts)) do |cursor|
+        cursor.each do |doc|
+          name = doc['n']
+          version_code = doc['verc'].nil? ? '' : doc['verc']
+          dct = doc['dct']
+          next if name.eql? apk_name
+          apk_name = name
+          versions = get_multiple_versions(name, version_code)
+          if(versions.length > 0)
+            line = name + "," + version_code.to_s + ',' + dct.to_s
+            @@log.info(line)
+            file.puts(line)
+            versions.each do |version_info|
+              line = version_info[:n] + "," + version_info[:verc].to_s + ',' + version_info[:dct].to_s
+              @@log.info(line)
+              file.puts(line)
+            end
+          end
+          # Limit the results to a number of rows.
+          if !@price.nil? and count >= @limit
+            break
+          end
+        end
+      end
+    end
+  end
+  
+  def get_multiple_versions(name, verc)
+    query = "{ 'n' => '#{name}', 'verc' => {'$ne' => '#{verc}' } }"
+    opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
+    versions_list = []
+    @collection.find(eval(query), eval(opts)) do |cursor|
+      cursor.each do |doc|
+        name = doc['n']
+        version_code = doc['verc'].nil? ? '' : doc['verc']
+        dct = doc['dct']
+        version_info = { :n => name, :verc => version_code, :dct => dct}
+        versions_list << version_info
+      end
+    end
+    versions_list
+  end
+  
   def start_main(out_dir, cmd)
     beginning_time = Time.now
     if(!File.directory?(out_dir))
@@ -685,6 +752,8 @@ class MongodbDriver
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
       end
+    elsif(cmd.eql?"find_top_apps_with_multiple_versions")
+      find_top_apps_with_multiple_versions
     end
     
     close_mongodb_connection
@@ -692,7 +761,7 @@ class MongodbDriver
     elapsed_time = end_time - beginning_time
     @@log.info("Finished after #{Time.at(elapsed_time).utc.strftime("%H:%M:%S")}")
   end
-
+  
   public
   def command_line(args)
     log_file_name = nil
@@ -787,6 +856,8 @@ class MongodbDriver
       cmd = "find_version_code"
     elsif(args[0].eql? "find_app_info")
       cmd = "find_app_info"
+    elsif(args[0].eql?"find_top_apps_with_multiple_versions")
+      cmd = "find_top_apps_with_multiple_versions"
     else
       puts "Error: Unknown command."
       abort(@@usage)
