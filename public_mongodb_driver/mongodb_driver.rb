@@ -446,7 +446,7 @@ class MongodbDriver
           version_code = doc['verc'].nil? ? '' : doc['verc']
           download_count = doc['dct']
           # Limit the results to a number of rows.
-          if !@price.nil? and count >= @limit
+          if !@limit.nil? and count >= @limit
             break
           end
           # Return unique package names
@@ -636,13 +636,13 @@ class MongodbDriver
             @@log.info(line)
             file.puts(line)
             versions.each do |version_info|
-              line = version_info[:n] + "," + version_info[:verc].to_s + ',' + version_info[:dct].to_s
+              line = version_info[:n] + "," + version_info[:verc].to_s + "," + version_info[:dct].to_s
               @@log.info(line)
               file.puts(line)
             end
           end
           # Limit the results to a number of rows.
-          if !@price.nil? and count >= @limit
+          if !@limit.nil? and count >= @limit
             break
           end
         end
