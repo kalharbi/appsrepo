@@ -603,6 +603,63 @@ class MongodbDriver
   
   def find_top_apps_with_multiple_versions
     query = "{}"
+    file_name = "top_apps_with_multiple_versions.csv"
+    if(!@limit.nil?)
+          opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DECENDING]], :limit => #@limit, :timeout => false}"
+    end
+    if(!@price.nil?)
+       if(@price.casecmp("free") == 0)
+         query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
+         file_name = "top_free_apps_with_multiple_versions.csv"
+       elsif(@price.casecmp("paid") == 0)
+         query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
+         file_name = "top_paid_apps_with_multiple_versions.csv"
+       end
+    end
+    count = 0
+    name_hd = "apk_name,version_code,download_count"
+    out_file = File.join(@out_dir, file_name)
+    # Phase 1: Perform map-reduce and output to a collection named collection_name
+    # set the result collection name
+    map = {' ' => '', '-' => '_', ':' => '_'}
+    regex = Regexp.new(map.keys.map { |x| Regexp.escape(x) }.join('|'))
+    collection_name = 'top_apps_with_multiple_versions' + '_'+ Time.now.to_s.gsub(regex, map)
+    # MapReduce Options Hash.
+    opts_map_reduce = "{ :query => #{query}, :out => '#{collection_name}' }"
+    # map and reduces functions written in JavaScript
+    map = 'function(){emit( {apk_name: this.n}, {count: 1});};'
+    reduce = 'function(key, values){ var total = 0; for (var i = 0; i < values.length; i++) { total += 1; } return total; };'
+    
+    # Perform map-reduce operation on the public collection.
+    @collection.map_reduce(map, reduce, eval(opts_map_reduce))
+    custom_collection = @db.collection(collection_name)
+    # Phase2: Query the output collection and write the results
+    count = 0
+    name_hd = "apk_name,version_code,download_count"
+    out_file = File.join(@out_dir, file_name)
+    File.open(out_file, 'w') do |file|
+      file.puts(name_hd)
+      # get package names that have appeared at least twice in the map-reduce output collection
+      custom_collection.find(eval("{ 'value' => { '$gte' => 2 } }")).each do |doc|
+        name = doc['_id']['apk_name']
+        versions = get_multiple_versions(name)
+        if(versions.length > 0)
+          versions.each do |version_code|
+            line = name + "," + version_code.to_s
+            @@log.info(line)
+            file.puts(line)
+            # Limit the results to a number of rows.
+            if !@limit.nil? and count >= @limit
+              break
+            end
+          end
+        end
+      end
+    end
+    custom_collection.drop()
+  end
+  def find_top_apps_with_multiple_versionsX
+    query = "{}"
     opts = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
     file_name = "top_apps_with_multiple_versions.csv"
     if(!@limit.nil?)
@@ -623,7 +680,7 @@ class MongodbDriver
     File.open(out_file, 'w') do |file|
       file.puts(name_hd)
       package_list = []
-      @collection.find(eval(query), eval(opts)) do |cursor|
+      @collection.distinct(:n, eval(query), eval(opts)) do |cursor|
         cursor.each do |doc|
           name = doc['n']
           next if package_list.include?(name)
