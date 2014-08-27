@@ -646,7 +646,7 @@ class MongodbDriver
   end
   
   def get_multiple_versions(name)
-    query = "{'n' => '#{name}'}"
+    query = "{'n' => '#{name}', 'verc' => {'$ne' => nil} }"
     opts = "{:timeout => false}"
     version_code_list = []
     # Get a distinct values of version codes
