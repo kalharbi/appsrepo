@@ -131,7 +131,6 @@ class MongodbDriver
   
   # Write the description for all apps if it's English
   def write_apps_description
-    puts "in write_apps_description..."
     query = "{}"
     opts = "{:fields => ['n', 'verc', 'desc'], :timeout => false}"
     if(!@limit.nil?)
@@ -604,9 +603,8 @@ class MongodbDriver
   
   def find_top_apps_with_multiple_versions
     query = "{}"
-    opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
+    opts = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
     file_name = "top_apps_with_multiple_versions.csv"
-    puts @limit
     if(!@limit.nil?)
           opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit, :timeout => false}"
     end
@@ -624,21 +622,16 @@ class MongodbDriver
     out_file = File.join(@out_dir, file_name)
     File.open(out_file, 'w') do |file|
       file.puts(name_hd)
-      apk_name = nil
+      package_list = []
       @collection.find(eval(query), eval(opts)) do |cursor|
         cursor.each do |doc|
           name = doc['n']
-          version_code = doc['verc'].nil? ? '' : doc['verc']
-          dct = doc['dct']
-          next if name.eql? apk_name
-          apk_name = name
-          versions = get_multiple_versions(name, version_code)
+          next if package_list.include?(name)
+          package_list << name
+          versions = get_multiple_versions(name)
           if(versions.length > 0)
-            line = name + "," + version_code.to_s + ',' + dct.to_s
-            @@log.info(line)
-            file.puts(line)
-            versions.each do |version_info|
-              line = version_info[:n] + "," + version_info[:verc].to_s + "," + version_info[:dct].to_s
+            versions.each do |version_code|
+              line = name + "," + version_code.to_s
               @@log.info(line)
               file.puts(line)
             end
@@ -652,21 +645,15 @@ class MongodbDriver
     end
   end
   
-  def get_multiple_versions(name, verc)
-    query = "{ 'n' => '#{name}', 'verc' => {'$ne' => '#{verc}' } }"
-    opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
-    versions_list = []
-    @collection.find(eval(query), eval(opts)) do |cursor|
-      cursor.each do |doc|
-        name = doc['n']
-        version_code = doc['verc']
-        next if version_code == nil
-        dct = doc['dct']
-        version_info = { :n => name, :verc => version_code, :dct => dct}
-        versions_list << version_info
-      end
+  def get_multiple_versions(name)
+    query = "{'n' => '#{name}'}"
+    opts = "{:timeout => false}"
+    version_code_list = []
+    # Get a distinct values of version codes
+    @collection.distinct('verc', eval(query)).each do |version_code|
+      version_code_list << version_code
     end
-    versions_list
+    version_code_list
   end
   
   def start_main(out_dir, cmd)
