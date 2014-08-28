@@ -53,6 +53,7 @@ class ApktoolExecutor(object):
         self.tag = None
         self.no_src = False
         self.no_res = False
+        self.ordered = False
     
             
     def start_main(self, apk_names_file, source_dir, target_dir):
@@ -83,6 +84,10 @@ class ApktoolExecutor(object):
                         apk_paths.append(self.find_apk_file(apk_name, apk_path))
         if len(apk_paths) > 0:
             try:
+                # Check if files must be ordered
+                if self.ordered:
+                    log.info('Sorting apk files by modified date.')
+                    apk_paths.sort(key=lambda x: os.path.getmtime(x))
                 # Run apktool on the apk file asynchronously.
                 results = [pool.apply_async(run_apktool, (apk_path, target_dir,
                                                           self.framework_dir, self.tag,
@@ -200,6 +205,7 @@ class ApktoolExecutor(object):
                           action='count', help='increase verbosity.')
         parser.add_option('-f', '--file', dest="apk_names_list_file",
                           metavar="FILE", default=0, help='read apk names from a file that contains a list of APK names.')
+        parser.add_option('-o', '--ordered', help='Sort apk files by date.', dest='ordered', action='store_true', default=False)
         parser.add_option('-c', '--custom', dest="custom_search", action='store_true', default=False,
                           help="search for apk files using the custom directory naming scheme. e.g, dir/c/com/a/amazon/com.amazon")
                           
@@ -216,6 +222,8 @@ class ApktoolExecutor(object):
             self.no_src = True
         if options.no_res:
             self.no_res = True
+        if options.ordered:
+            self.ordered = True
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
