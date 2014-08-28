@@ -223,16 +223,21 @@ class MongodbDriver
   # Find additional info for a list of package names and version code values
   def find_app_info
     opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per'], :timeout => false}"
-    
-    result_arr = []
+    # Write results to  file
+    filename = File.join(@out_dir, "additional_info.csv")
+    header = "package,version_code,version_name,title,category,rating,download,date_published,developer,total_permissions,permissions"
+    out_file = File.open(filename, 'w')
+    out_file.write(header + "\n")
     File.open(@package_names_file, 'r').each_with_index do |line, index|
-      next if index == 0 #skips first line that contains the header info (apk_name, download_count)
+      next if index == 0 or line.chomp.empty? #skips empty line or the first line that contains the header info (apk_name, download_count)
       items = line.split(',')
       package_name = items[0]
-      version_code = items[1]
-      query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
-      @collection.find(eval(query), eval(opts)) do |cursor|
+      version_code = items[1].strip
+      query = {:n => package_name, :verc => version_code }
+      found = false
+      @collection.find(query, eval(opts)) do |cursor|
         cursor.each do |doc|
+          found = true
           title = doc["t"]
           version_name = doc["vern"]
           category = doc["cat"]
@@ -248,20 +253,16 @@ class MongodbDriver
                            "," + date_published + "," + '"' + developer +
                            '"' + "," + permission_size.to_s + "," +
                            '"' + permission_list.join(',') + '"'
-          result_arr << line
+          @@log.info("Writing app info for #{package_name}-#{version_code}")
+          out_file.write(line + "\n")
         end
       end
-    end
-    # Write results to  file
-    out_file = File.join(@out_dir, "additional_info.csv")
-    name_hd = "package,version_code,version_name,title,category,rating,download,date_published,developer,total_permissions, permissions"
-    File.open(out_file, 'w') do |file|
-      file.puts(name_hd)
-      result_arr.each do |entry|
-        file.puts(entry)
+      if(!found)
+        @@log.error("Failed to find additional info for #{package_name}-#{version_code}")
       end
     end
-    @@log.info("Apps additional info have been written to: #{out_file}")
+    out_file.close()
+    @@log.info("The result has been saved at: #{filename}")
   end
   
   # Find top/bottom apps that use any of the given permissions.
@@ -658,6 +659,7 @@ class MongodbDriver
     end
     custom_collection.drop()
   end
+  
   def find_top_apps_with_multiple_versionsX
     query = "{}"
     opts = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
