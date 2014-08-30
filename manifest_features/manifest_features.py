@@ -58,13 +58,22 @@ class ManifestFeatures(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
-            if app_manifest.version_code is None or app_manifest.version_name is None:
+            
+            # set min/max sdk version values
+            if app_manifest.min_sdk_version is None or app_manifest.max_sdk_version is None:
                 apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
                                                  'apktool.yml')
                 app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
-                if app_sdk_versions is None: continue
-                app_manifest.set_sdk_versions(app_sdk_versions[0],
-                                              app_sdk_versions[1])
+                if app_sdk_versions is None:
+                    self.log.error('Failed to find sdk versions in ' + manifest_file)
+                else:
+                    app_manifest.set_sdk_versions(app_sdk_versions[0], app_sdk_versions[1])
+            # set version values
+            if app_manifest.version_name is None or app_manifest.version_code is None:
+                app_versions = self.get_app_versions(apktool_yaml_file)
+                app_manifest.version_code = app_versions[0]
+                app_manifest.version_name = app_versions[1]
+            
             if app_manifest.version_name.startswith('@string/'):
                 strings_xml_file = os.path.join(os.path.dirname(manifest_file), 'res', 'values', 'strings.xml')
                 if not os.path.isfile(strings_xml_file):
@@ -118,11 +127,36 @@ class ManifestFeatures(object):
                                                            None)
             target_sdk_version = doc.get('sdkInfo', None).get(
                 'targetSdkVersion', None)
+            if min_sdk_version is not None:
+                min_sdk_version = int(min_sdk_version)
+            if target_sdk_version is not None:
+                target_sdk_version = int(target_sdk_version)
             return min_sdk_version, target_sdk_version
         except yaml.YAMLError as exc:
             self.log.error("Error in apktool yaml file:", exc)
         except AttributeError as exc:
             self.log.error("sdk versions info is missing", exc)
+    
+    def get_app_versions(self, yaml_file):
+        # Read apktool.yaml to get the version code and name values
+        try:
+            self.log.info("Processing file %s.", yaml_file)
+            if not os.path.isfile(yaml_file):
+                self.log.error("YAML file does not exist %s", yaml_file)
+                return None
+            doc = None
+            with open(yaml_file, 'r') as f:
+                doc = yaml.load(f)
+            version_code = doc.get('versionInfo', None).get('versionCode',
+                                                           None)
+            version_name = doc.get('versionInfo', None).get(
+                'versionName', None)
+            return version_code, version_name
+        except yaml.YAMLError as exc:
+            self.log.error("Error in apktool yaml file:", exc)
+        except AttributeError as exc:
+            self.log.error("sdk versions info is missing", exc)
+        
         
     def get_version_name_from_strings_xml(self, strings_xml_file, attribute_name):
         tree = ET.parse(strings_xml_file)
