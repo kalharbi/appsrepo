@@ -15,6 +15,14 @@ class ManifestDriver(object):
     HOST_NAME = "localhost"
     log = logging.getLogger("manifest_driver")
     log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
+    cmd_desc = """\nThe following commands are available:
+                       find_app_activities -p <permission_name>
+                       find_all_packages_and_versions
+                       find_additional_info
+                       find_apps_by_target_sdk_version -s <sdk_version>
+                       find_apps_by_min_sdk_version -s <sdk_version>
+                       find_apps_by_max_sdk_version -s <sdk_version>
+                       """
     
     def connect_mongodb(self):
         try:
@@ -28,6 +36,76 @@ class ManifestDriver(object):
             sys.exit("ERROR: Connection to the database failed or is lost.")
         except InvalidName:
             sys.exit("ERROR: Invalid database name")
+    
+    def find_apps_by_target_sdk_version(self, target_sdk, target_dir):
+        query = {"target_sdk_version": target_sdk}
+        opts = {"package":1, "version_code":1, "target_sdk_version":1, 
+                "min_sdk_version":1, "max_sdk_version":1}
+        manifest_collection = self.connect_mongodb()
+        cursor = manifest_collection.find(query, opts)
+        if cursor.count() == 0:
+            self.log.error('No documents that match the query criteria.')
+            return
+        result_file_name = os.path.join(os.path.abspath(target_dir),
+                                    'apps_by_target_sdk_version-' + str(target_sdk) + '.csv')
+        result_file = open(result_file_name, 'w')
+        result_file.write('package,version_code,target_sdk,min_sdk,max_sdk' + '\n')
+        for entry in cursor:
+            package = entry['package'] 
+            verc = entry['version_code']
+            target_sdk = str(entry['target_sdk_version'])
+            min_sdk = str(entry['min_sdk_version']) if 'min_sdk_version' in entry.keys() else ''
+            max_sdk = str(entry['max_sdk_version']) if 'max_sdk_version' in entry.keys() else ''
+            result_file.write(package + ',' + verc + ',' + target_sdk + ',' + 
+                              min_sdk + ',' + max_sdk + '\n')
+        result_file.close()
+    
+    def find_apps_by_min_sdk_version(self, min_sdk, target_dir):
+        query = {"min_sdk_version": min_sdk}
+        opts = {"package":1, "version_code":1, "min_sdk_version":1,
+                "target_sdk_version":1, "max_sdk_version":1}
+        manifest_collection = self.connect_mongodb()
+        cursor = manifest_collection.find(query, opts)
+        if cursor.count() == 0:
+            self.log.error('No documents that match the query criteria.')
+            return
+        result_file_name = os.path.join(os.path.abspath(target_dir),
+                                    'apps_by_min_sdk_version-' + str(min_sdk) + '.csv')
+        result_file = open(result_file_name, 'w')
+        result_file.write('package,version_code,min_sdk,max_sdk,target_sdk' + '\n')
+        for entry in cursor:
+            package = entry['package'] 
+            verc = entry['version_code']
+            min_sdk = str(entry['min_sdk_version'])
+            max_sdk = str(entry['max_sdk_version']) if 'max_sdk_version' in entry.keys() else ''
+            target_sdk = str(entry['target_sdk_version']) if 'target_sdk_version' in entry.keys() else ''
+            result_file.write(package + ',' + verc + ',' + min_sdk + ',' + 
+                              max_sdk + ',' + target_sdk + '\n')
+        result_file.close()
+    
+    def find_apps_by_max_sdk_version(self, max_sdk, target_dir):
+        query = {"max_sdk_version": max_sdk}
+        opts = {"package":1, "version_code":1, "max_sdk_version":1,
+                "target_sdk_version":1, "min_sdk_version":1}
+        result_file_name = os.path.join(os.path.abspath(target_dir),
+                                    'apps_by_max_sdk_version-' + str(max_sdk) + '.csv')
+        manifest_collection = self.connect_mongodb()
+        cursor = manifest_collection.find(query, opts)
+        if cursor.count() == 0:
+            self.log.error('No documents that match the query criteria.')
+            return
+        result_file = open(result_file_name, 'w')
+        result_file.write('package,version_code,max_sdk,target_sdk,min_sdk' + '\n')    
+        
+        for entry in cursor:
+            package = entry['package'] 
+            verc = entry['version_code']
+            max_sdk = str(entry['max_sdk_version'])
+            target_sdk = str(entry['target_sdk_version']) if 'target_sdk_version' in entry.keys() else ''
+            min_sdk = str(entry['min_sdk_version']) if 'min_sdk_version' in entry.keys() else ''
+            result_file.write(package + ',' + verc + ',' + max_sdk + ',' + 
+                              target_sdk + ',' + min_sdk + '\n')
+        result_file.close()
     
     def find_activities(self, package_name, version_code, out_dir):
         self.log.info("package name: " + package_name + ". version code:" + version_code)
@@ -154,7 +232,7 @@ class ManifestDriver(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] {find_app_activities | find_all_packages_and_versions | find_additional_info} out_dir ", version="%prog 1.0")
+        parser = OptionParser(usage="%prog {cmd} <out_dir> [OPTIONS]\n" + self.cmd_desc, version="%prog 1.0")
         parser.add_option('-p', '--package', dest="package_name",
                           help='App package name.')
         parser.add_option('-r', '--ver', dest="app_version_code",
@@ -163,6 +241,8 @@ class ManifestDriver(object):
                           metavar="FILE", default=0, help='read package and version code values from a file.')
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
+        parser.add_option('-s', '--sdk-version', dest="sdk", type='int',
+                          help='Android sdk version, an integer designating Android API Level number.')
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='Increase verbosity.')
                           
@@ -214,6 +294,27 @@ class ManifestDriver(object):
                 self.find_all_packages_and_versions(out_dir)
             elif(args[0] == 'find_additional_info'):
                 self.find_additional_info(package_names_file, out_dir)
+            elif(args[0] == 'find_apps_by_target_sdk_version'):
+                if options.sdk:
+                    self.find_apps_by_target_sdk_version(options.sdk, out_dir)
+                else:
+                    sys.exit("Error: please specify the target sdk number using the -s option."
+                             "\nExample usage: " + os.path.basename(__file__) +
+                             " find_apps_by_target_sdk_version ./out_dir -s 18 ")
+            elif(args[0] == 'find_apps_by_min_sdk_version'):
+                if options.sdk:
+                    self.find_apps_by_min_sdk_version(options.sdk, out_dir)
+                else:
+                    sys.exit("Error: please specify the minimum supported sdk number using the -s option."
+                             "\nExample usage: " + os.path.basename(__file__) +
+                             " find_apps_by_min_sdk_version ./out_dir -s 18 ")
+            elif(args[0] == 'find_apps_by_max_sdk_version'):
+                if options.sdk:
+                    self.find_apps_by_max_sdk_version(options.sdk, out_dir)
+                else:
+                    sys.exit("Error: please specify the maximum supported sdk number using the -s option."
+                             "\nExample usage: " + os.path.basename(__file__) +
+                             " find_apps_by_max_sdk_version ./out_dir -s 18 ")
             else:
                sys.exit("Error: unknown command.") 
         else:
