@@ -232,22 +232,24 @@ class ManifestDriver(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog {cmd} <out_dir> [OPTIONS]\n" + self.cmd_desc, version="%prog 1.0")
+        parser = OptionParser(usage="%prog {cmd} [OPTIONS]\n" + self.cmd_desc, version="%prog 1.0")
         parser.add_option('-p', '--package', dest="package_name",
                           help='App package name.')
         parser.add_option('-r', '--ver', dest="app_version_code",
                           help='App version code.')
-        parser.add_option('-f', '--file', dest="apk_names_list_file",
-                          metavar="FILE", default=0, help='read package and version code values from a file.')
-        parser.add_option("-l", "--log", dest="log_file",
-                          help="write logs to FILE.", metavar="FILE")
         parser.add_option('-s', '--sdk-version', dest="sdk", type='int',
                           help='Android sdk version, an integer designating Android API Level number.')
+        parser.add_option('-f', '--file', dest="apk_names_list_file",
+                          metavar="FILE", default=0, help='read package and version code values from a file.')
+        parser.add_option("-o", "--out-dir", dest="out_dir",
+                          help="write output files to the given DIR. Default is the current working directory.", metavar="DIR")
+        parser.add_option("-l", "--log", dest="log_file",
+                          help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='Increase verbosity.')
                           
         (options, args) = parser.parse_args()
-        if len(args) != 2:
+        if len(args) != 1:
             parser.error("incorrect number of arguments.")
         if options.log_file:
             if os.path.exists(options.log_file):
@@ -267,7 +269,11 @@ class ManifestDriver(object):
             # set the file logger level if it exists
             if logging_file:
                 logging_file.setLevel(logging_level)
-        
+        out_dir = os.path.dirname(os.path.realpath(__file__))
+        if options.out_dir:
+            if not os.path.isdir(options.out_dir):
+                sys.exit('Error: ' + options.out_dir + ' No such directory.')
+            out_dir = os.path.abspath(options.out_dir)
         # Get apk file names
         package_names_file = None
         if options.apk_names_list_file:
@@ -275,12 +281,6 @@ class ManifestDriver(object):
                 package_names_file = options.apk_names_list_file
             else:
                 sys.exit("Error: APK names list file " + options.apk_names_list_file + " does not exist.")
-        # Check target directory
-        out_dir = None
-        if os.path.isdir(args[1]):
-            out_dir = args[1]
-        else:
-            sys.exit("Error: target directory " + args[1] + " does not exist.")
         
         if args[0]:
             if(args[0] == "find_app_activities"):
