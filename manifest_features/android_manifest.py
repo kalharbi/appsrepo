@@ -69,6 +69,15 @@ class AndroidManifest(object):
         self.min_sdk_version = min_sdk_version
         self.target_sdk_version = target_sdk_version
         self.max_sdk_version = max_sdk_version
+    
+    def set_uses_min_sdk(self, min_sdk_version):
+        self.min_sdk_version = min_sdk_version
+    
+    def set_uses_max_sdk(self, max_sdk_version):
+        self.max_sdk_version = max_sdk_version
+        
+    def set_uses_target_sdk(self, target_sdk_version):
+        self.target_sdk_version = target_sdk_version
 
     def set_uses_configuration(self, req_five_way_nav, req_hard_keyboard,
                                req_keyboard_type, req_navigation,

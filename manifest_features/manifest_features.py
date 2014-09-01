@@ -59,15 +59,20 @@ class ManifestFeatures(object):
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
             
-            # set min/max sdk version values
-            if app_manifest.min_sdk_version is None or app_manifest.max_sdk_version is None:
+            # set min,max, target sdk version values
+            if app_manifest.min_sdk_version is None or app_manifest.max_sdk_version is None or app_manifest.target_sdk_version is None:
                 apktool_yaml_file = os.path.join(os.path.dirname(manifest_file),
                                                  'apktool.yml')
                 app_sdk_versions = self.get_app_sdk_versions(apktool_yaml_file)
                 if app_sdk_versions is None:
-                    self.log.error('Failed to find sdk versions in ' + manifest_file)
+                    self.log.warning('No sdk versions found in ' + apktool_yaml_file)
                 else:
-                    app_manifest.set_sdk_versions(app_sdk_versions[0], app_sdk_versions[1])
+                    if app_sdk_versions[0]:
+                        app_manifest.set_uses_min_sdk(app_sdk_versions[0])
+                    if app_sdk_versions[1]:
+                        app_manifest.set_uses_max_sdk(app_sdk_versions[1])
+                    if app_sdk_versions[2]:
+                        app_manifest.set_uses_target_sdk(app_sdk_versions[2])
             # set version values
             if app_manifest.version_name is None or app_manifest.version_code is None:
                 app_versions = self.get_app_versions(apktool_yaml_file)
@@ -114,7 +119,7 @@ class ManifestFeatures(object):
                 dir_name, self.DIR_DEPTH_SEARCH)
 
     def get_app_sdk_versions(self, yaml_file):
-        # Read apktool.yaml to get the min and target sdk versions
+        # Read apktool.yaml to get the min, max, and target sdk versions
         try:
             self.log.info("Processing file %s.", yaml_file)
             if not os.path.isfile(yaml_file):
@@ -125,13 +130,17 @@ class ManifestFeatures(object):
                 doc = yaml.load(f)
             min_sdk_version = doc.get('sdkInfo', None).get('minSdkVersion',
                                                            None)
+            max_sdk_version = doc.get('sdkInfo', None).get('maxSdkVersion',
+                                                           None)
             target_sdk_version = doc.get('sdkInfo', None).get(
                 'targetSdkVersion', None)
             if min_sdk_version is not None:
                 min_sdk_version = int(min_sdk_version)
+            if max_sdk_version is not None:
+                max_sdk_version = int(max_sdk_version)
             if target_sdk_version is not None:
                 target_sdk_version = int(target_sdk_version)
-            return min_sdk_version, target_sdk_version
+            return min_sdk_version, max_sdk_version, target_sdk_version
         except yaml.YAMLError as exc:
             self.log.error("Error in apktool yaml file:", exc)
         except AttributeError as exc:
