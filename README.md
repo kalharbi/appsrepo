@@ -27,7 +27,7 @@ Python & shell script tools for batch processing a list of apk files.
 - - -
 
 ## Sample APK Files
-- 10 apps, two versions each, sdk target 17. [Download](https://drive.google.com/file/d/0Byamwcm0_ml5SjJvZlpNV2lERkk/edit?usp=sharing)
-- 100 apps, two versions each. [Download](https://drive.google.com/file/d/0Byamwcm0_ml5SUhUTTdTZUVIYmc/edit?usp=sharing)
-- Android Framework files for the following devices: Samsung Galaxy S3, Google Nexus 10, and Google Nexus5. [Download](https://drive.google.com/file/d/0Byamwcm0_ml5SFpVclR3YzlvZms/edit?usp=sharing)
+- 10 apps, two versions each, sdk target 17. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5SjJvZlpNV2lERkk)
+- 100 apps, two versions each. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5SUhUTTdTZUVIYmc)
+- Android Framework files for the following devices: Samsung Galaxy S3, Google Nexus 10, and Google Nexus5. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5SFpVclR3YzlvZms)
 
