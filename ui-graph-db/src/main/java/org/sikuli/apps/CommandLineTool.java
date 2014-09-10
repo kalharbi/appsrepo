@@ -82,6 +82,12 @@ public class CommandLineTool {
 					System.out.write(errorMessage.getBytes());
 				}
 			}
+			if (cmd.hasOption("dbpath")) {
+				Constants.DB_PATH = cmd.getOptionValue("dbpath");
+			}
+			if (cmd.hasOption("neo4jpath")) {
+				Constants.NEO_HOME = cmd.getOptionValue("neo4jpath");
+			}
 			// get directory path argument.
 			final String[] remainingArguments = cmd.getArgs();
 			if (remainingArguments == null || remainingArguments.length != 1) {
@@ -175,6 +181,14 @@ public class CommandLineTool {
 		Option logFileOption = OptionBuilder.withArgName("FILE").hasArg()
 				.withDescription("Write logs to FILE.").withLongOpt("log")
 				.create("l");
+		
+		Option dbpathOption = OptionBuilder.withArgName("DIR").hasArg()
+				.withDescription("The database path.").withLongOpt("DIR")
+				.create("d");
+		
+		Option neo4jpathOption = OptionBuilder.withArgName("DIR").hasArg()
+				.withDescription("neo4j HOME directory.").withLongOpt("DIR")
+				.create("n");
 
 		Option workerThreadsOption = OptionBuilder
 				.withArgName("nthreads")
@@ -187,6 +201,8 @@ public class CommandLineTool {
 		gnuOptions.addOption(helpOption);
 		gnuOptions.addOption(versionOption);
 		gnuOptions.addOption(logFileOption);
+		gnuOptions.addOption(dbpathOption);
+		gnuOptions.addOption(neo4jpathOption);
 		gnuOptions.addOption(workerThreadsOption);
 
 		return gnuOptions;

@@ -109,6 +109,10 @@ public class App {
 		CommandLineTool cmd = new CommandLineTool();
 		cmd.parseCommandLine(args);
 		File[] apkDirs = cmd.getApkDirs();
+		if(Constants.NEO_HOME == null || Constants.DB_PATH == null){
+			System.err.println("Please specify Neo4j_HOME (-n) and the dbpath (-d)");
+			System.exit(-1);
+		}
 		if (apkDirs != null && apkDirs.length > 0) {
 			app.startUIGraph(apkDirs);
 		}

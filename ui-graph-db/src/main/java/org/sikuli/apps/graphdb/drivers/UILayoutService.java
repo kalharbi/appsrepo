@@ -20,21 +20,20 @@ import org.sikuli.apps.graphdb.model.RelationshipTypes;
 import org.sikuli.apps.graphdb.model.ViewElement;
 import org.sikuli.apps.graphdb.model.ViewGroupElement;
 import org.sikuli.apps.graphdb.model.ViewProperty;
+import org.sikuli.apps.utils.Constants;
 
 public class UILayoutService {
 
-	private static final String DB_PATH = "/Users/khalid/neo4j-data/appsgraph/";
-	private static final String NEO_HOME = "/Users/Khalid/dev/neo4j/neo4j-community-2.1.3/";
-	// private static final String NEO_HOME =
-	// "/Users/khalid/tools/neo4j-community-2.1.3/";
+	//private static final String DB_PATH = "/Users/khalid/neo4j-data/appsgraph/";
+	//private static final String NEO_HOME = "/Users/Khalid/dev/neo4j/neo4j-community-2.1.3/";
 
 	private final GraphDatabaseService graphDb;
 	private final ExecutionEngine engine;
 
 	public UILayoutService() {
 		this.graphDb = new GraphDatabaseFactory()
-				.newEmbeddedDatabaseBuilder(DB_PATH)
-				.loadPropertiesFromFile(NEO_HOME + "conf/neo4j.properties")
+				.newEmbeddedDatabaseBuilder(Constants.DB_PATH)
+				.loadPropertiesFromFile(Constants.NEO_HOME + "conf/neo4j.properties")
 				.newGraphDatabase();
 		registerShutdownHook(this.graphDb);
 		this.engine = new ExecutionEngine(graphDb);
