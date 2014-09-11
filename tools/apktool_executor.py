@@ -20,6 +20,12 @@ def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
     print("Running apktool on " + apk_file)
     apk_name = os.path.basename(os.path.splitext(apk_file)[0])
     target_dir = os.path.join(target_dir, apk_name)
+    
+    # skip the target directory if it already exists
+    if os.path.exists(target_dir):
+        log.info("Target directory already exists")
+        return
+        
     args = ['apktool', 'd', apk_file, '-o', target_dir]
     if framework_dir:
         args.append('-p')
@@ -94,7 +100,8 @@ class ApktoolExecutor(object):
                                                           self.no_src, self.no_res))
                                                           for apk_path in apk_paths]
                 for r in results:
-                    log.info("APK file has been extracted at: " + r.get())
+                    if(r != None):
+                        log.info("APK file has been extracted at: " + r.get())
                 # close the pool to prevent any more tasks from being submitted to the pool.
                 pool.close()
                 # Wait for the worker processes to exit
