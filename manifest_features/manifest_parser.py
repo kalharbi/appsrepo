@@ -1,6 +1,7 @@
 import xml.sax
 from xml.sax import ContentHandler
-
+from xml.sax import SAXException
+from xml.sax import SAXParseException
 from android_manifest import AndroidManifest
 from helpers.intent_filter import IntentFilter
 from helpers.meta_data import MetaData
@@ -784,5 +785,9 @@ class ManifestParser(ContentHandler):
         self.app_manifest.set_uses_library(name, required)
 
     def parse(self, source):
-        xml.sax.parse(source, self)
+        try:
+            xml.sax.parse(source, self)
+        except (SAXException, SAXParseException) as e:
+            return None
+        except 
         return self.app_manifest

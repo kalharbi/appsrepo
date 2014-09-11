@@ -58,6 +58,9 @@ class ManifestFeatures(object):
         for manifest_file in manifest_files:
             self.log.info("Processing file: %s.", manifest_file)
             app_manifest = ManifestParser().parse(manifest_file)
+            if app_manifest is None:
+                self.log.error('Failed to parse AndroidManifest file: %s', manifest_file)
+                continue
             
             # set min,max, target sdk version values
             if app_manifest.min_sdk_version is None or app_manifest.max_sdk_version is None or app_manifest.target_sdk_version is None:
@@ -76,6 +79,9 @@ class ManifestFeatures(object):
             # set version values
             if app_manifest.version_name is None or app_manifest.version_code is None:
                 app_versions = self.get_app_versions(apktool_yaml_file)
+                if app_versions is None:
+                    self.log.error('%s is not found.',apktool_yaml_file)
+                    continue
                 app_manifest.version_code = app_versions[0]
                 app_manifest.version_name = app_versions[1]
             
@@ -224,8 +230,6 @@ class ManifestFeatures(object):
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
-            print("logging level: ", logging_level)
-            print("verbose: ", options.verbose)
             # set the file logger level if it exists
             if logging_file:
                 logging_file.setLevel(logging_level)
