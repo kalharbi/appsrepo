@@ -86,10 +86,10 @@ class SmaliApiMethods(object):
                         grep_out_file = r.get()
                         if grep_out_file is not None:
                             log.info("The output has been written at: %s", grep_out_file)
-                    # close the pool to prevent any more tasks from being submitted to the pool.
-                    pool.close()
-                    # Wait for the worker processes to exit
-                    pool.join()
+                # close the pool to prevent any more tasks from being submitted to the pool.
+                pool.close()
+                # Wait for the worker processes to exit
+                pool.join()
             except KeyboardInterrupt:
                 print('got ^C while worker processes have outstanding work. Terminating the pool and stopping the worker processes immediately without completing outstanding work..')
                 pool.terminate()
