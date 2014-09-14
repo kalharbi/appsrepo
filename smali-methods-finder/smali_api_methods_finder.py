@@ -38,7 +38,7 @@ class SmaliApiMethodsFinder(object):
     def __init__(self):
         self.ordered = False
     
-    def start_main(self, search_word, source_dir, target_dir):
+    def start_main(self, search_word, source_dir, target_dir, command):
         pool = Pool(processes=self.processes)
         log.info('A pool of %i worker processes has been created', self.processes)
         count = 0
@@ -50,9 +50,9 @@ class SmaliApiMethodsFinder(object):
         if len(smali_methods_file_list) > 0:
             try:
                 # output file
-                result_file_name = os.path.join(target_dir, 'find_' + search_word + '.csv')
+                result_file_name = os.path.join(target_dir, 'find_' + command + '.csv')
                 result_file = open(result_file_name, 'w')
-                result_file.write('package,version_code,' + search_word + '\n')
+                result_file.write('package,version_code,' + command + '\n')
                 # Check if files must be ordered
                 if self.ordered:
                     log.info('Sorting the smali text files by modified date.')
@@ -78,7 +78,7 @@ class SmaliApiMethodsFinder(object):
                 pool.terminate()
                 print('pool has been terminated.')
         else:
-            log.error('Failed to find apk files in %s', source_dir)
+            log.error('Failed to find smali.txt files in %s', source_dir)
 
         
     def main(self, args):
@@ -133,10 +133,14 @@ class SmaliApiMethodsFinder(object):
             # set the file logger level if it exists
             if logging_file:
                 logging_file.setLevel(logging_level)
-        
+        # Check search word
+        command = args[0]
+        if args[0] == 'fragment':
+            command = 'fragment'
+            args[0] = r"Landroid/app/Fragment\|Landroid/app/DialogFragment\|Landroid/app/ListFragment\|Landroid/app/PreferenceFragment\|Landroid/app/WebViewFragment"
         # Check arguments
         if os.path.isdir(args[1]) and os.path.isdir(args[2]):
-            self.start_main(args[0], args[1], args[2])
+            self.start_main(args[0], args[1], args[2], command)
         else:
             sys.exit("Error: No such directory.")
 
