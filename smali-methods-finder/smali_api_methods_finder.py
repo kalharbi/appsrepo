@@ -110,6 +110,8 @@ class SmaliApiMethodsFinder(object):
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='Increase verbosity.')
+        parser.add_option('-f', '--out-file', dest="out_file_name",
+                          help='The name of the output file.')
         (options, args) = parser.parse_args()
         if len(args) != 3:
             parser.error("incorrect number of arguments.")
@@ -135,6 +137,8 @@ class SmaliApiMethodsFinder(object):
                 logging_file.setLevel(logging_level)
         # Check search word
         command = args[0]
+        if options.out_file_name:
+            command = options.out_file_name
         if args[0] == 'fragment':
             command = 'fragment'
             args[0] = r"Landroid/app/Fragment\|Landroid/app/DialogFragment\|Landroid/app/ListFragment\|Landroid/app/PreferenceFragment\|Landroid/app/WebViewFragment"
