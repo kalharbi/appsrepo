@@ -18,6 +18,7 @@ class MongodbDriver
                "    write_apps_description_by_permission -P <permission_name>\n" +
                "    write_apps_description_by_package_name -k <file_names_of_packages>\n" +
                "    write_apps_description\n" + 
+               "    write_whats_new_section_by_package_name -k <file_names_of_packages>\n" +
                "    find_version_code -k <file_names_of_packages>\n" +
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "    find_top_apps_with_multiple_versions\n" +
@@ -177,6 +178,33 @@ class MongodbDriver
           out_file = File.join(@out_dir, name + "-" + verc + ".description.txt")
           File.open(out_file, 'w') { |result_file| result_file.write(desc) }
           @@log.info("The app's description has been written to: #{out_file}")
+        end
+      end
+    end
+  end
+  
+  # Find apps by package name and write their what's new section for the latest release
+  def write_whats_new_section_by_package_name
+    opts = "{:fields => ['n', 'new', 'verc'], :sort => [['verc', Mongo::DESCENDING]], :timeout => false}"
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 #skips first line that contains the header info (apk_name, download_count)
+      items = line.split(',')
+      package_name = items[0]
+      query = "{'n' => '#{package_name}'}"
+      #query = "{'n' => '#{package_name}', 'verc' => '#{version_code}' }"
+      @collection.find(eval(query), eval(opts)) do |cursor|
+        cursor.each do |doc|
+          name = doc["n"]
+          new_section = doc["new"]
+          verc = doc["verc"]
+          if new_section.nil? or verc.nil?
+            break;
+          end
+          out_file = File.join(@out_dir, name + "-" + verc + ".new_section.txt")
+          File.open(out_file, 'w') { |result_file| result_file.write(new_section) }
+          @@log.info("The app's description has been written to: #{out_file}")
+          # Write what's new for the latest release only
+          break
         end
       end
     end
@@ -792,6 +820,16 @@ class MongodbDriver
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
       end
+    elsif(cmd.eql? "write_whats_new_section_by_package_name")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the file that contains package names."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        write_whats_new_section_by_package_name
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
     elsif(cmd.eql? "find_app_info")
       if(@package_names_file.nil?)
         puts "Error: Please use the -k option to specify the file that contains package names and version code values."
@@ -900,6 +938,8 @@ class MongodbDriver
       cmd = "write_apps_description_by_package_name"
     elsif(args[0].eql? "write_description_for_all_apps_with_at_least_one_permission")
       cmd = "write_description_for_all_apps_with_at_least_one_permission"
+    elsif(args[0].eql? "write_whats_new_section_by_package_name")
+      cmd = "write_whats_new_section_by_package_name"
     elsif(args[0].eql? "write_apps_description")
       cmd = "write_apps_description"
     elsif(args[0].eql? "find_version_code")
