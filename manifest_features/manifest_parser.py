@@ -120,8 +120,12 @@ class ManifestParser(ContentHandler):
         self.meta_data_receiver = []
         self.grant_uri_permission = []
         self.path_permission = []
+        self.unrecognized = False
 
     def startElement(self, name, attrs):
+        # Wait for the end of unrecognized elements to parsing invalid elements.
+        if self.unrecognized:
+            return
         if name == 'manifest':
             self.flags['in_manifest'] = True
             self.do_manifest(attrs)
@@ -200,6 +204,10 @@ class ManifestParser(ContentHandler):
         elif name == 'uses-library':
             self.flags['in_uses_library'] = True
             self.do_uses_library(attrs)
+        else:
+            print("Error: Unrecognized XML element " + name)
+            # This is important because some manifest files contain typos making unrecognized elements
+            self.unrecognized = True
 
     def endElement(self, name):
         if name == 'in_manifest':
@@ -274,6 +282,8 @@ class ManifestParser(ContentHandler):
             self.flags['in_path_permission'] = False
         elif name == 'uses-library':
             self.flags['uses_library'] = False
+        else:
+            self.unrecognized = False
 
     # Get element's content
     def characters(self, content):
@@ -789,5 +799,4 @@ class ManifestParser(ContentHandler):
             xml.sax.parse(source, self)
         except (SAXException, SAXParseException) as e:
             return None
-        except 
         return self.app_manifest
