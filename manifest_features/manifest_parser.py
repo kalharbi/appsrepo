@@ -591,6 +591,8 @@ class ManifestParser(ContentHandler):
     def do_action(self, attrs):
         # <action android:name="string" /> is only contained in
         # <intent-filter> element
+        if self.flags['in_intent_filter'] == False:
+            return
         if self.flags['in_action'] and self.flags['in_activity']:
             self.intent_filter_activity.set_action(
                 attrs.get('android:name', None))
@@ -607,6 +609,8 @@ class ManifestParser(ContentHandler):
     def do_category(self, attrs):
         # <category android:name="string" /> is only contained in
         # <intent-filter> element
+        if self.flags['in_intent_filter'] == False:
+            return
         if self.flags['in_category'] and self.flags['in_activity']:
             self.intent_filter_activity.set_category(
                 attrs.get('android:name', None))
@@ -623,6 +627,8 @@ class ManifestParser(ContentHandler):
     def do_data(self, attrs):
         # <data android:host="string"... /> is only contained in
         # <intent-filter> element
+        if self.flags['in_intent_filter'] == False:
+            return
         scheme = attrs.get('android:scheme', None)
         host = attrs.get('android:host', None)
         path = attrs.get('android:path', None)
