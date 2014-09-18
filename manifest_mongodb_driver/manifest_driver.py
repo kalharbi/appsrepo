@@ -22,6 +22,7 @@ class ManifestDriver(object):
                        find_apps_by_target_sdk_version -s <sdk_version>
                        find_apps_by_min_sdk_version -s <sdk_version>
                        find_apps_by_max_sdk_version -s <sdk_version>
+                       find_all_app_widgets -f <package_names_file>
                        """
     
     def connect_mongodb(self):
@@ -98,7 +99,7 @@ class ManifestDriver(object):
         result_file.write('package,version_code,max_sdk,target_sdk,min_sdk' + '\n')    
         
         for entry in cursor:
-            package = entry['package'] 
+            package = entry['package']
             verc = entry['version_code']
             max_sdk = str(entry['max_sdk_version'])
             target_sdk = str(entry['target_sdk_version']) if 'target_sdk_version' in entry.keys() else ''
@@ -141,6 +142,54 @@ class ManifestDriver(object):
                            version_code + " doesn't exist or has no activities.")
         result_file.close()
     
+    # Find app widgets and return their layout file paths
+    # Similar to this example: db.manifest.find({'package':'com.weather.Weather', 'receivers.metaData.name': 'android.appwidget.provider'}, 
+    #                                           {'receivers.metaData.resource':1}).pretty()
+    def find_all_app_widgets(self, out_dir, pacakge_names_file):
+        self.log.info("Finding all apps' widgets.")
+        result_file = None
+        try:
+            result_file_name = os.path.join(os.path.abspath(out_dir),  'appswidgets.txt')
+            result_file = open(result_file_name, 'w')
+            result_file.write("package,version_code,widgets_count\n")
+        except IOError as detail:
+            print(detail)
+            sys.exit()
+        manifest_collection = self.connect_mongodb()
+        
+        # 1 ) Get package names and versions
+        with open(pacakge_names_file, 'r') as f:
+            # skip the first line since it's the header line [apk_name, download_count]
+            next(f)
+            for line in f:
+                arr = [items.strip() for items in line.split(',')]
+                package_name = arr[0]
+                version_code = arr[1]
+                query = {"package": package_name, "version_code": version_code, "receivers.metaData.name" : "android.appwidget.provider" }
+                cursor = manifest_collection.find(query)
+                if cursor.count() > 0:
+                    for entry in cursor:
+                        count = 0
+                        receivers = entry['receivers']
+                        for receiver in receivers:
+                            receiver_name = receiver['receiver']['name']
+                            try:
+                                if receiver['metaData']:
+                                    for meta in receiver['metaData']:
+                                        if meta['name'] == 'android.appwidget.provider':
+                                            count += 1
+                            except KeyError:
+                                continue
+                            finally:
+                                self.log.info(receiver_name)
+                        result_file.write(package_name + ',' + version_code + ',' + str(count) + '\n')
+                else:
+                    self.log.error("Error: The package " + package_name + ", version code: " +
+                                    version_code + " doesn't exist or has no receivers.")
+                    result_file.write(package_name + ',' + version_code + ',0' + '\n')
+            result_file.close()
+    
+        
     def find_all_packages_and_versions(self, out_dir):
         self.log.info("Trying to find all package names and version code values...")
         result_file = None
@@ -315,6 +364,8 @@ class ManifestDriver(object):
                     sys.exit("Error: please specify the maximum supported sdk number using the -s option."
                              "\nExample usage: " + os.path.basename(__file__) +
                              " find_apps_by_max_sdk_version ./out_dir -s 18 ")
+            elif(args[0] == 'find_all_app_widgets'):
+                self.find_all_app_widgets(out_dir, package_names_file)
             else:
                sys.exit("Error: unknown command.") 
         else:
