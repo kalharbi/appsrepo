@@ -274,13 +274,19 @@ class MongodbDriver
           date_published = doc["dtp"]
           developer = doc["crt"]
           permission_list = doc["per"]
-          permission_size = permission_list.length
+          permission_list_system_only = []
+          permission_list.each do |permission|
+            if permission.start_with? 'android.permission'
+              permission_list_system_only << permission
+            end
+          end
+          permission_size = permission_list_system_only.length
           line = package_name + "," + version_code + "," + '"' + version_name  + '"' +
                            "," + '"' + title + '"' + "," + category +
                            "," + rating + "," + download_count.to_s +
                            "," + date_published + "," + '"' + developer +
                            '"' + "," + permission_size.to_s + "," +
-                           '"' + permission_list.join(',') + '"'
+                           '"' + permission_list_system_only.join(',') + '"'
           @@log.info("Writing app info for #{package_name}-#{version_code}")
           out_file.write(line + "\n")
         end
