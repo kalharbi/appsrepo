@@ -7,9 +7,30 @@ class IntentFilter(object):
         self.category = None
         self.data = []
         self.action = []
-
+        
+    def get_name(self):
+        return self.name
+        
+    def get_icon(self):
+        return self.icon
+    
+    def get_label(self):
+        return self.label
+        
+    def get_priority(self):
+        return self.priority
+    
+    def get_category(self):
+        return self.category
+        
     def set_category(self, name):
         self.category = name
+         
+    def get_data(self):
+        return self.data
+    
+    def get_action(self):
+        return self.action
 
     def set_data(self, scheme, host, port, path, pathPattern, pathPrefix,
                  mimeType):

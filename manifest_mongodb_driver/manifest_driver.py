@@ -17,6 +17,7 @@ class ManifestDriver(object):
     log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
     cmd_desc = """\nThe following commands are available:
                        find_app_activities -p <permission_name>
+                       find_all_activities -f <package_names_file>
                        find_all_packages_and_versions
                        find_additional_info
                        find_apps_by_target_sdk_version -s <sdk_version>
@@ -107,7 +108,46 @@ class ManifestDriver(object):
             result_file.write(package + ',' + verc + ',' + max_sdk + ',' + 
                               target_sdk + ',' + min_sdk + '\n')
         result_file.close()
-    
+    # Find app widgets and return their layout file paths
+    # Similar to this example: db.manifest.find({'package':'com.weather.Weather', 'receivers.metaData.name': 'android.appwidget.provider'}, 
+    #                                           {'receivers.metaData.resource':1}).pretty()
+    def find_all_activities(self, out_dir, pacakge_names_file):
+        self.log.info("Finding all apps' activities.")
+        result_file = None
+        try:
+            result_file_name = os.path.join(os.path.abspath(out_dir),  'appsactivities.csv')
+            result_file = open(result_file_name, 'w')
+            result_file.write("package,version_code,activities_count\n")
+        except IOError as detail:
+            print(detail)
+            sys.exit()
+        manifest_collection = self.connect_mongodb()
+        
+        # 1 ) Get package names and versions
+        with open(pacakge_names_file, 'r') as f:
+            # skip the first line since it's the header line [apk_name, download_count]
+            next(f)
+            for line in f:
+                arr = [items.strip() for items in line.split(',')]
+                package_name = arr[0]
+                version_code = arr[1]
+                #opts = {'activities' : 1}
+                query = {"package": package_name, "version_code": str(version_code)}
+                cursor = manifest_collection.find(query)
+                if cursor.count() > 0:
+                    for entry in cursor:
+                        try:
+                            count = 0
+                            activities = entry['activities']
+                            result_file.write(package_name + ',' + version_code + ',' + str(len(activities)) + '\n')
+                        except KeyError:
+                            continue
+                else:
+                    self.log.error("Error: The package " + package_name + ", version code: " +
+                                    version_code + " doesn't exist or has no receivers.")
+                    result_file.write(package_name + ',' + version_code + ',0' + '\n')
+            result_file.close()
+            
     def find_activities(self, package_name, version_code, out_dir):
         self.log.info("package name: " + package_name + ". version code:" + version_code)
         result_file = None
@@ -119,8 +159,10 @@ class ManifestDriver(object):
             print(detail)
             sys.exit()
         manifest_collection = self.connect_mongodb()
-        cursor = manifest_collection.find({"package": package_name,
-                                  "version_code" : version_code}, {'activities' :1})
+        opts = {'activities' : 1}
+        query = {"package": package_name, "version_code" : version_code}
+        cursor = manifest_collection.find(query, find)
+        
         if cursor.count() > 0:
             for entry in cursor:
                 activities = entry['activities']
@@ -136,7 +178,7 @@ class ManifestDriver(object):
                         continue
                     finally:
                         self.log.info(activity_name)
-                        result_file.write(activity_name + '\n')
+                esult_file.write(activity_name + '\n')
         else:
             self.log.error("Error: The package " + package_name + ", version code: " +
                            version_code + " doesn't exist or has no activities.")
@@ -341,6 +383,10 @@ class ManifestDriver(object):
                              " find_app_activities ~/target_dir -p <package_name> -r <version_name>")
             elif(args[0] == 'find_all_packages_and_versions'):
                 self.find_all_packages_and_versions(out_dir)
+            elif(args[0] == 'find_all_app_widgets'):
+                self.find_all_app_widgets(out_dir, package_names_file)
+            elif(args[0] == 'find_all_activities'):
+                self.find_all_activities(out_dir, package_names_file)
             elif(args[0] == 'find_additional_info'):
                 self.find_additional_info(package_names_file, out_dir)
             elif(args[0] == 'find_apps_by_target_sdk_version'):
@@ -364,8 +410,6 @@ class ManifestDriver(object):
                     sys.exit("Error: please specify the maximum supported sdk number using the -s option."
                              "\nExample usage: " + os.path.basename(__file__) +
                              " find_apps_by_max_sdk_version ./out_dir -s 18 ")
-            elif(args[0] == 'find_all_app_widgets'):
-                self.find_all_app_widgets(out_dir, package_names_file)
             else:
                sys.exit("Error: unknown command.") 
         else:

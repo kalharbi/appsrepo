@@ -108,7 +108,7 @@ class ManifestFeatures(object):
                     app_manifest.version_code = attribute_value.strip()
                 
             if self.document_exists(manifest_collection, app_manifest):
-                self.log.info("Already Exists.")
+                self.log.info("%s, %s already exists.", app_manifest.package, app_manifest.version_name)
                 continue
             else:
                 json_manifest = json.dumps(app_manifest, indent=2,
