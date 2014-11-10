@@ -51,6 +51,7 @@ public class PackageInfo {
         }
         return null;
     }
+
     /**
      * Returns version name and version code values from AndroidManifest.xml.
      *

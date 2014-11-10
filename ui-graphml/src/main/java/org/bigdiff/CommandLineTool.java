@@ -33,6 +33,7 @@ public class CommandLineTool {
     private File[] apkDirs = null;
 
     File logFile = null;
+
     /**
      * Parse command-line arguments.
      *
@@ -59,10 +60,10 @@ public class CommandLineTool {
                 System.exit(0);
             }
             if (cmdParameters.logFile != null) {
-                if(! cmdParameters.logFile.isDirectory()){
+                if (!cmdParameters.logFile.isDirectory()) {
                     throw new ParameterException("The path to the log directory is missing or does not exist.");
                 }
-                logFile = new File(cmdParameters.logFile, "ui-graphML-" + System.currentTimeMillis()+".log");
+                logFile = new File(cmdParameters.logFile, "ui-graphML-" + System.currentTimeMillis() + ".log");
             }
             if (cmdParameters.parameters == null || cmdParameters.parameters.size() != 1) {
                 throw new ParameterException("The directory path of unpacked apk file(s) is not specified.");
@@ -79,6 +80,7 @@ public class CommandLineTool {
             jCommander.usage();
         }
     }
+
     //TODO: Fix log file
     private void setupLogger(File logFile) {
         RollingFileAppender<ILoggingEvent> rollingFileAppender = new RollingFileAppender<ILoggingEvent>();
@@ -161,7 +163,7 @@ public class CommandLineTool {
         return apkDirs;
     }
 
-    public String getLogFilePath(){
+    public String getLogFilePath() {
         /*if(this.logFile !=null){
             return this.logFile.getAbsolutePath();
         }*/

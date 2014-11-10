@@ -244,7 +244,7 @@ public class LayoutParser {
             } else {
                 resourceValue = value;
             }
-            if(resourceValue == null){
+            if (resourceValue == null) {
                 resourceValue = value;
             }
             attributes.put(key, resourceValue);
@@ -321,9 +321,9 @@ public class LayoutParser {
                 break;
             }
         }
-        if (value !=null && value.startsWith("@")) {
+        if (value != null && value.startsWith("@")) {
             // Ignore multiple XML elements values for now.
-            if (! value.contains(" ")) {
+            if (!value.contains(" ")) {
                 try {
                     String resName = value.substring(value.indexOf("@") + 1, value.indexOf("/"));
                     value = searchAllResourcesValues(valuesDir, resName,
