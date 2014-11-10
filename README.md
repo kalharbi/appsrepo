@@ -22,8 +22,14 @@ This tool parses AndroidManifest.xml files and stores them into a MongoDB collec
 This is the Python MongoDB driver for the manifest collection of the database. It retrieves AndroidManifest features from MongoDB and stores the results into text files.
 
 ### 7- [Android UI GraphML Writer](ui-graphml/)
-This tool writes the UIs of Android apps in a GraphML format, a file format for graphs. It parses layout and resources files, identifies the relationships between UI components, stores the result in a GraphML file that describes the structural properties of the UI. The GraphML file can be imported into the tinkerpop stack or any graph databse (e.g, neo4j, titan, etc).
-### 8- [Tools](tools/)
+This tool writes the UIs of Android apps in a GraphML format, a file format for graphs. It parses layout and resources files, 
+identifies the relationships between UI components, stores the result in a GraphML file that describes the structural properties of the UI.
+The GraphML file can be imported into the tinkerpop stack or any graph databse (e.g, neo4j, titan, etc).
+
+### 8- [Android UI GraphDB Writer](ui-graphdb-writer/)
+This tool takes the input of the Android UI GraphML Writer (#7) as an input and loads it into the graph database (neo4j).
+
+### 9- [Tools](tools/)
 Python & shell script tools for batch processing a list of apk files.
 
 - - -
