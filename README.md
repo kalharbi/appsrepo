@@ -1,7 +1,7 @@
 appsrepo
 ========
 
-A tool chain that extracts, analyzes, loads, and retrives Android apps.
+appsrepo: A tool chain for extracting, analyzing, loading, and retrieving Android apps from NoSQL databases.
 
 ### 1- [APK Bucket](apk_bucket/)
 This includes a Python tool that stores apk files in a common MongoDB bucket using GridFS, and a Java based tool that retrieves them.
