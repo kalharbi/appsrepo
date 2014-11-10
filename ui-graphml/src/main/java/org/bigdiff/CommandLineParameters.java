@@ -1,7 +1,6 @@
 package org.bigdiff;
 
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
 
 import java.io.File;
 import java.util.ArrayList;
