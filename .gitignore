@@ -25,8 +25,9 @@ local.properties
 *.log
 *.log.age
 
-# Intellij
+# Intellij IDEA
 .idea/
+*.iml
 
 # Mac
 .DS_Store
