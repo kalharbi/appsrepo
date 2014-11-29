@@ -20,8 +20,6 @@ class ApkBucket(object):
 
     DB_NAME = "apps"
     BUCKET_NAME = "apk"
-    PORT_NUMBER = 27017
-    HOST_NAME = "localhost"
 
     log = logging.getLogger("manifest_features")
     log.setLevel(
@@ -29,20 +27,23 @@ class ApkBucket(object):
     config = ConfigParser.ConfigParser()
 
     def __init__(self):
+        self.host_name = "localhost"
+        self.port_number = 27017
         self.apk_files = []
         self.config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "config", "apk_bucket.conf"))
 
     def connect_mongodb(self):
         try:
-            client = MongoClient(self.HOST_NAME, self.PORT_NUMBER)
+            client = MongoClient(self.host_name, self.port_number)
             db = client[self.DB_NAME]
             apk_bucket_collection = gridfs.GridFS(db, collection=self.BUCKET_NAME)
-            self.log.info("Connected to database: %s Collection: %s.",
-                          self.DB_NAME,
-                          self.BUCKET_NAME)
+            self.log.info("Connected to %s:%s, database: %s, Collection: %s.",
+                          self.host_name, self.port_number, self.DB_NAME, self.BUCKET_NAME)
             return apk_bucket_collection
         except ConnectionFailure:
-            sys.exit("ERROR: Connection to the database failed or is lost.")
+            print("Connected to {host}:{port}, database: {db} Collection: {collection}. failed or is lost.".format(
+                          host=self.host_name, port=self.port_number, db=self.DB_NAME, collection=self.BUCKET_NAME))
+            sys.exit(1)
         except InvalidName:
             sys.exit("ERROR: Invalid database name")
 
@@ -154,10 +155,19 @@ class ApkBucket(object):
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='increase verbosity.')
+        parser.add_option('-H','--host', dest ='host_name', 
+                          help= 'The host name that the mongod is connected to. Default value is localhost.',
+                          default='localhost')
+        parser.add_option('-p','--port', dest='port_number', type='int', default=27017,
+                          help='The port number that the mongod instance is listening. Default port number value is 27017.')
 
         (options, args) = parser.parse_args()
         if len(args) != 1:
             parser.error("Invalid number of arguments.")
+        if options.host_name:
+            self.host_name = options.host_name
+        if options.port_number:
+            self.port_number = options.port_number
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
