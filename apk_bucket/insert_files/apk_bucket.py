@@ -59,10 +59,12 @@ class ApkBucket(object):
         # Get all apk files and save them into a global variable named 'apk_files'
         self.find_apk_files(source_directory)
         for apk_file in self.apk_files:
-            # Check file size
-            stat_info = os.stat(apk_file)
-            if(stat_info.st_size == 0):
-                self.log.error("Empty APK file: %s", apk_file)
+            try:
+                if(os.path.getsize(apk_file) == 0):
+                    self.log.error("Empty APK file: %s", apk_file)
+                    continue
+            except OSError as e:
+                self.log.error("APK file doesn't exist or inaccessible: %s. %s", apk_file, str(e))
                 continue
             app_info = self.get_app_info(apk_file)
             if app_info is None: continue
