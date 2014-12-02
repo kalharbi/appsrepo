@@ -45,13 +45,18 @@ class PublicMain
     apk = document['n']
     version_code = document['verc']
     version_name = document['vern']
+    publish_date = document['dtp']
     query = "{'n' => '#{apk}', 'verc' => '#{version_code}'}"
-    cursor = collection.find(eval(query))
-    if !cursor.has_next?
+    # for paid apps, use the release date as a key instead of version code.
+    if version_name.nil? and version_code.nil?
+      query = "{'n' => '#{apk}', 'dtp' => '#{publish_date}'}"
+    end
+    cursor = collection.find_one(eval(query))
+    if cursor.nil?
       id = collection.insert(document)
       @@log.info("Inserted a new document for apk: #{apk}, version code: #{version_code}, version name: #{version_name}, document id = #{id}")
     else
-      @@log.info("Document already exists for apk: #{apk}, version code: #{version_code}, version name: #{version_name}")
+      @@log.info("Document already exists for apk: #{apk}, version code: #{version_code}, version name: #{version_name}, release date: #{publish_date}")
     end
   end
 
