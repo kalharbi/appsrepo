@@ -33,24 +33,23 @@ class AaptExecutor
     if aapt_out.nil?
       return version_info
     end
-    aapt_out.split('\n').each do |line|
-      segment = line.strip.split(":")
-      if(!segment.nil? and segment.length >1)
-        if(segment[0].eql? "package")
-          package_info = segment[1].strip.split(' ')
-          package_info.each do |info_line|
-            info = info_line.strip.split('=')
-            if(info[0].eql? "versionCode")
-              version_info[:version_code] = info[1].tr("'", "") # Remove the ' character from the string value
-            elsif(info[0].eql? "versionName")
-              version_info[:version_name] = info [1].tr("'", "")
-            end
+    line = aapt_out.lines.first
+    segment = line.strip.split(":")
+    if(!segment.nil? and segment.length >1)
+      if(segment[0].eql? "package")
+        package_info = segment[1].strip.split(' ')
+        package_info.each do |info_line|
+          info = info_line.strip.split('=')
+          if(info[0].eql? "versionCode")
+            version_info[:version_code] = info[1].tr("'", "") 
+            # Remove the ' character from the string value
+          elsif(info[0].eql? "versionName")
+            version_info[:version_name] = info [1].tr("'", "")
           end
-          break # Break from the loop after getting the required verions info
         end
       end
     end
     # Return a hash of version code and version name
     return version_info
   end
- end
+end
