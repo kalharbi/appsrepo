@@ -24,17 +24,19 @@ class ManifestFeatures(object):
 
     DB_NAME = "apps"
     COLLECTION_NAME = "manifest"
-    PORT_NUMBER = 27017
-    HOST_NAME = "localhost"
     # The depth of the directory listing for AndroidManifest.xml
     DIR_DEPTH_SEARCH = 1
     log = logging.getLogger("manifest_features")
     log.setLevel(
         logging.DEBUG)  # The logger's level must be set to the "lowest" level.
 
+    def __init__(self):
+        self.host_name = "localhost"
+        self.port_number = 27017
+        
     def connect_mongodb(self):
         try:
-            client = MongoClient(self.HOST_NAME, self.PORT_NUMBER)
+            client = MongoClient(self.host_name, self.port_number)
             db = client[self.DB_NAME]
             manifest_collection = db[self.COLLECTION_NAME]
             self.log.info("Connected to database: %s Collection: %s.",
@@ -214,6 +216,11 @@ class ManifestFeatures(object):
             dest="depth_value",
             help="The depth of the subdirectories to scan for "
                  "AndroidManifest.xml files.")
+        parser.add_option('-H','--host', dest ='host_name', 
+                          help= 'The host name that the mongod is connected to. Default value is localhost.',
+                          default='localhost')
+        parser.add_option('-p','--port', dest='port_number', type='int', default=27017,
+                          help='The port number that the mongod instance is listening. Default port number value is 27017.')
         (options, args) = parser.parse_args()
         if len(args) != 1:
             parser.error("incorrect number of arguments.")
@@ -235,6 +242,10 @@ class ManifestFeatures(object):
                 logging_file.setLevel(logging_level)
         if options.depth_value is not None:
             self.DIR_DEPTH_SEARCH = options.depth_value
+        if options.host_name:
+            self.host_name = options.host_name
+        if options.port_number:
+            self.port_number = options.port_number
         
         # Check arguments
         if os.path.isdir(args[0]):
