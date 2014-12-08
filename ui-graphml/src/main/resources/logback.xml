@@ -2,7 +2,7 @@
     <contextName>ui-graph-ml</contextName>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date %level %msg%n</pattern>
+            <pattern>%date{ISO8601} %level %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="FILE"
