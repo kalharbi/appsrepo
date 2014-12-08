@@ -199,7 +199,7 @@ class ManifestFeatures(object):
 
         # command line parser
         parser = OptionParser(
-            usage="python %prog [options] apk_dir ",
+            usage="python %prog [options] unpacked_apks_dir ",
             version="%prog 1.1",
             description='The manifest_features tool recursively searches for '
                         'a directory of unpacked apk files, parses their '
