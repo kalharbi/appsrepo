@@ -55,18 +55,19 @@ public class PackageInfo {
     /**
      * Returns version name and version code values from AndroidManifest.xml.
      *
-     * @param androidManifesFile
+     * @param androidManifestFile
      * @return
      */
     public static HashMap<String, String> getVersionFromManifest(
-            File androidManifesFile) {
-        logger.info("Extracting version information from AndroidManifest.xml file");
+            File androidManifestFile) {
+        logger.info("Extracting version information from AndroidManifest.xml file: {}",
+                androidManifestFile.getAbsolutePath());
         HashMap<String, String> appVersion = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory
                     .newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(androidManifesFile);
+            Document doc = builder.parse(androidManifestFile);
             Element rootElement = doc.getDocumentElement();
             String versionCode = rootElement.getAttribute("android:versionCode");
             String versionName = rootElement.getAttribute("android:versionName");
@@ -77,11 +78,14 @@ public class PackageInfo {
                 appVersion.put("versionCode", versionCode);
             }
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.error("SAX Exception while parsing AndroidManifest.xml: {}",
+                    androidManifestFile.getAbsolutePath(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("IO Exception while parsing AndroidManifest.xml: {}",
+                    androidManifestFile.getAbsolutePath(), e);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Parser Configuration Exception while parsing AndroidManifest.xml: {}",
+                    androidManifestFile.getAbsolutePath(), e);
         }
         return appVersion;
     }
@@ -113,9 +117,11 @@ public class PackageInfo {
             }
             inputStream.close();
         } catch (FileNotFoundException e) {
-            logger.error("Error: apktool Yaml file does not exist.");
+            logger.error("Error: apktool Yaml file does not exist. {}",
+                    apktoolYamlFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("Error: IOException while reading apktool Yaml file: ", e);
+            logger.error("Error: IOException while reading apktool Yaml file: {}",
+                    apktoolYamlFile.getAbsolutePath());
         }
         return versionInfo;
     }

@@ -86,7 +86,8 @@ public class AppLayoutsController {
                         graphmlFile.getAbsolutePath());
 
             } else {
-                logger.error("Unable to find package name and version values for {}", apkDir);
+                logger.error("Unable to find package name and version values for {}",
+                        apkDir.getAbsolutePath());
             }
             count++;
         }
