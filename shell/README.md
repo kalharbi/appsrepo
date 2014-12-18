@@ -2,7 +2,9 @@
 This is an interactive shell to query the collection of apps using a Domain Specfic Language (DSL).
 
 ##Usage
-To start the interactive shell, simply run: ``` python shell.py ```
+1. You need to connect to a remote server running a MongoDB instance and a neo4j instance. The databases connection can be passed through an SSH tunnel (port-forwarding through an SSH tunnel). As an alternative to setting up an SSH tunnel manually, you may use the shell script ```connect.sh``` to connect to the remote server.
+2. You may need to edit the configuration file at: ```config/appsrepo-shell.conf``` and change the default port numbers to the one you used while setting up the SSH tunnel.
+3. To start the interactive shell, simply run: ``` python shell.py ```
 You may need to edit the configuration file, ```config/appsrepo-shell.conf```, to change default settings.
 
 ## Domain Specific Language (DSL)
