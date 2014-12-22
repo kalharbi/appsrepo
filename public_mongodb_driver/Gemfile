@@ -1,0 +1,5 @@
+# Public-MongoDB-Client dependencies Gemfile
+source "https://rubygems.org"
+gem 'mongo'
+gem 'whatlanguage'
+gem 'logging', '~> 1.8.2'
