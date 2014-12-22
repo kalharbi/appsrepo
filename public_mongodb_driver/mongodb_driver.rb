@@ -4,6 +4,7 @@ require 'mongo'
 require 'optparse'
 require 'whatlanguage'
 require 'time'
+require 'json'
 require_relative '../utils/log'
 
 class MongodbDriver
@@ -22,6 +23,7 @@ class MongodbDriver
                "    find_version_code -k <file_names_of_packages>\n" +
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "    find_top_apps_with_multiple_versions\n" +
+               "    find_reviews -k <file_names_of_packages>\n" +
                "\n\n The following options are available:\n\n"
  
   @mongo_client
@@ -502,6 +504,35 @@ class MongodbDriver
     @@log.info("The bottom apps list has been written to: #{bottom_out_file}")    
   end
   
+  # Find apps' reviews
+  def find_reviews
+    opts = "{:fields => ['n', 'vern', 'dtp', 'dct', 'verc', 'rev'], :timeout => false}"
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 or line.chomp.empty? #skips empty line or the first line that contains the header info (apk_name, download_count)
+      items = line.split(',')
+      package_name = items[0]
+      version_code = items[1].strip
+      query = {:n => package_name, :verc => version_code }
+      found = false
+      @collection.find(query, eval(opts)) do |cursor|
+        cursor.each do |doc|
+          found = true
+          @@log.info("Writing user reviews for #{doc['n']}-#{doc['verc']}")
+          info = {'package' => doc['n'], 'version_code' => doc['verc'], 'version_name' => doc['vern'],
+               'date_published' => doc['dtp'], 'downloads' => doc['dct'], 'reviews' => doc['rev']}
+          # Write results to  file
+          filename = File.join(@out_dir, doc['n'] + "-" + doc['verc'] + ".json")
+          out_file = File.open(filename, 'w')
+          out_file.write(JSON.pretty_generate(info))
+          out_file.close
+        end
+      end
+      if(!found)
+        @@log.error("Failed to find additional info for #{package_name}-#{version_code}")
+      end
+    end
+  end
+  
   # Find top apps that have version code numbers.
   def find_top_apps
     query = "{}"
@@ -694,50 +725,6 @@ class MongodbDriver
     custom_collection.drop()
   end
   
-  def find_top_apps_with_multiple_versionsX
-    query = "{}"
-    opts = "{ :sort => [['dct', Mongo::DESCENDING]], :timeout => false}"
-    file_name = "top_apps_with_multiple_versions.csv"
-    if(!@limit.nil?)
-          opts = "{ :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::ASCENDING]], :limit => #@limit, :timeout => false}"
-    end
-    if(!@price.nil?)
-       if(@price.casecmp("free") == 0)
-         query = "{ 'pri' => 'Free', 'verc' => {'$ne' => nil} }"
-         file_name = "top_free_apps_with_multiple_versions.csv"
-       elsif(@price.casecmp("paid") == 0)
-         query = "{ 'pri' => {'$ne' => 'Free'}, 'verc' => {'$ne' => nil} }"
-         file_name = "top_paid_apps_with_multiple_versions.csv"
-       end
-    end
-    count = 0
-    name_hd = "apk_name,version_code,download_count"
-    out_file = File.join(@out_dir, file_name)
-    File.open(out_file, 'w') do |file|
-      file.puts(name_hd)
-      package_list = []
-      @collection.distinct(:n, eval(query), eval(opts)) do |cursor|
-        cursor.each do |doc|
-          name = doc['n']
-          next if package_list.include?(name)
-          package_list << name
-          versions = get_multiple_versions(name)
-          if(versions.length > 0)
-            versions.each do |version_code|
-              line = name + "," + version_code.to_s
-              @@log.info(line)
-              file.puts(line)
-            end
-          end
-          # Limit the results to a number of rows.
-          if !@limit.nil? and count >= @limit
-            break
-          end
-        end
-      end
-    end
-  end
-  
   def get_multiple_versions(name)
     query = "{'n' => '#{name}', 'verc' => {'$ne' => nil} }"
     opts = "{:timeout => false}"
@@ -842,6 +829,16 @@ class MongodbDriver
         abort(@@usage)
       elsif File.file?(@package_names_file)
         find_app_info
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
+    elsif(cmd.eql? "find_reviews")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the file that contains package names and version code values."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        find_reviews
       else
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
@@ -954,6 +951,8 @@ class MongodbDriver
       cmd = "find_app_info"
     elsif(args[0].eql?"find_top_apps_with_multiple_versions")
       cmd = "find_top_apps_with_multiple_versions"
+    elsif(args[0].eql? "find_reviews")
+      cmd = "find_reviews"
     else
       puts "Error: Unknown command."
       abort(@@usage)
