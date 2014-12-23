@@ -32,6 +32,9 @@ This tool takes the input of the Android UI GraphML Writer (#7) as an input and 
 ### 9- [Tools](tools/)
 Python & shell script tools for batch processing a list of apk files.
 
+### 10- [Shell](shell/)
+An interactive shell to query the collection of apps using a Domain Specfic Language (DSL).
+
 - - -
 
 ## Sample APK Files
