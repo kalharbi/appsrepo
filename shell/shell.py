@@ -19,12 +19,12 @@ class Console(cmd.Cmd):
     
     def do_EOF(self, args):
         """Exit on system end of file character (e.g., ctrl-D)"""
-        print "\nBye"
+        print("\nBye")
         sys.exit(0)
     
     def do_exit(self, args):
         """Quits the shell."""
-        print "\rBye"
+        print("\rBye")
         sys.exit(0)
     
     def default(self, line):
