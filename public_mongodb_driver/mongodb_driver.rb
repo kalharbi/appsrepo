@@ -506,7 +506,7 @@ class MongodbDriver
   
   # Find apps' reviews
   def find_reviews
-    opts = "{:fields => ['n', 'vern', 'dtp', 'dct', 'verc', 'rev'], :timeout => false}"
+    opts = "{:fields => ['n', 'vern', 'dtp', 'dct', 'rct', 'verc', 'rev'], :timeout => false}"
     File.open(@package_names_file, 'r').each_with_index do |line, index|
       next if index == 0 or line.chomp.empty? #skips empty line or the first line that contains the header info (apk_name, download_count)
       items = line.split(',')
@@ -518,8 +518,10 @@ class MongodbDriver
         cursor.each do |doc|
           found = true
           @@log.info("Writing user reviews for #{doc['n']}-#{doc['verc']}")
-          info = {'package' => doc['n'], 'version_code' => doc['verc'], 'version_name' => doc['vern'],
-               'date_published' => doc['dtp'], 'downloads' => doc['dct'], 'reviews' => doc['rev']}
+          info = {'package' => doc['n'], 'version_code' => doc['verc'], 
+                  'version_name' => doc['vern'],
+                  'date_published' => doc['dtp'], 'downloads' => doc['dct'], 
+                 'total_reviews' => doc['rct'], 'reviews' => doc['rev']}
           # Write results to  file
           filename = File.join(@out_dir, doc['n'] + "-" + doc['verc'] + ".json")
           out_file = File.open(filename, 'w')
