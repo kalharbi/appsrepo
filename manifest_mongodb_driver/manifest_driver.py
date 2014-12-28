@@ -16,6 +16,7 @@ class ManifestDriver(object):
     log = logging.getLogger("manifest_driver")
     log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
     cmd_desc = """\nThe following commands are available:
+                       find_requested_system_permissions -f <package_names_file>
                        find_app_activities -p <permission_name>
                        find_all_activities -f <package_names_file>
                        find_all_packages_and_versions
@@ -144,10 +145,55 @@ class ManifestDriver(object):
                             continue
                 else:
                     self.log.error("Error: The package " + package_name + ", version code: " +
-                                    version_code + " doesn't exist or has no receivers.")
+                                    version_code + " doesn't exist or has no activities.")
                     result_file.write(package_name + ',' + version_code + ',0' + '\n')
             result_file.close()
-            
+    
+    def find_requested_system_permissions(self, pacakge_names_file, out_dir):
+        self.log.info("Finding requested system permissions.")
+        result_file = None
+        try:
+            result_file_name = os.path.join(os.path.abspath(out_dir),  'requested_system_permissions.csv')
+            result_file = open(result_file_name, 'w')
+            result_file.write("package,version_code,total_requested_system_permissions,requested_system_permissions\n")
+        except IOError as detail:
+            print(detail)
+            sys.exit()
+        manifest_collection = self.connect_mongodb()
+        
+        # 1 ) Get package names and versions
+        with open(pacakge_names_file, 'r') as f:
+            # skip the first line since it's the header line [apk_name, download_count]
+            next(f)
+            for line in f:
+                arr = [items.strip() for items in line.split(',')]
+                package_name = arr[0]
+                version_code = arr[1]
+                opts = {'uses_permissions'}
+                query = {"package": package_name, "version_code": str(version_code)}
+                self.log.info("Finding requested permissions for %s-%s.", package_name, version_code)
+                cursor = manifest_collection.find(query, opts)
+                if cursor.count() > 0:
+                    for entry in cursor:
+                        try:
+                            count = 0
+                            used_permissions = entry['uses_permissions']
+                            used_sys_permissions = []
+                            for permission in used_permissions:
+                                if permission['name'].startswith('android.permission'):
+                                    used_sys_permissions.append(permission['name'])
+                                    
+                            result_file.write(package_name + ',' + version_code + ',' +
+                                              str(len(used_sys_permissions)) + ',"' +
+                                              ','.join(used_sys_permissions) + '"' '\n')
+                        except KeyError:
+                            continue
+                else:
+                    self.log.error("Error: The package " + package_name + ", version code: " +
+                                    version_code + " doesn't exist or has no uses_permissions in its manifest.")
+                    result_file.write(package_name + ',' + version_code + ',0,' + '\n')
+            result_file.close()
+        
     def find_activities(self, package_name, version_code, out_dir):
         self.log.info("package name: " + package_name + ". version code:" + version_code)
         result_file = None
@@ -387,6 +433,8 @@ class ManifestDriver(object):
                 self.find_all_app_widgets(out_dir, package_names_file)
             elif(args[0] == 'find_all_activities'):
                 self.find_all_activities(out_dir, package_names_file)
+            elif(args[0] == 'find_requested_system_permissions'):
+                self.find_requested_system_permissions(package_names_file, out_dir)
             elif(args[0] == 'find_additional_info'):
                 self.find_additional_info(package_names_file, out_dir)
             elif(args[0] == 'find_apps_by_target_sdk_version'):
