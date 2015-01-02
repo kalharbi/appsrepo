@@ -24,6 +24,7 @@ class MongodbDriver
                "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "    find_top_apps_with_multiple_versions\n" +
                "    find_reviews -k <file_names_of_packages>\n" +
+               '    find_apps_by_category -g "category_name"'
                "\n\n The following options are available:\n\n"
  
   @mongo_client
@@ -39,6 +40,7 @@ class MongodbDriver
   @per_list = []
   @limit
   @price
+  @category_name
   attr_reader :host, :port, :limit, :price
   
   def initialize
@@ -727,6 +729,40 @@ class MongodbDriver
     custom_collection.drop()
   end
   
+  def find_apps_by_category
+    opts = {:fields => ['n', 'verc'], :timeout => false}
+    query = {:cat => @category_name}
+    file_name = "apps_in_" + @category_name + "_category_.csv".gsub(/\s+/, "")
+    if(!@limit.nil?)
+          opts = { :fields => ['n', 'verc', 'dct'], :sort => [['dct', Mongo::DECENDING]], :limit => @limit, :timeout => false}
+    end
+    if(!@price.nil?)
+       if(@price.casecmp("free") == 0)
+         query = { :pri => 'Free', :verc => {'$ne' => nil}, :cat => @category_name }
+         file_name = "free_apps_in_" + @category_name + "_category_.csv".gsub(/\s+/, "")
+       elsif(@price.casecmp("paid") == 0)
+         query = {:pri => {'$ne' => 'Free'}, :verc => {'$ne' => nil}, :cat => @category_name}
+         file_name = "paid_apps_in_" + @category_name + "_category_.csv".gsub(/\s+/, "")
+       end
+    end
+    count = 0
+    name_hd = "apk_name,version_code"
+    file_name = File.join(@out_dir, file_name)
+    out_file = File.open(file_name, 'w')
+    out_file.puts(name_hd)
+    @collection.find(query, opts) do |cursor|
+      cursor.each do |doc|
+        package_name = doc['n']
+        version_code = doc['verc']
+        next if version_code.nil? or version_code == ''
+        @@log.info("Found app: #{package_name}-#{version_code}")
+        out_file.puts(package_name + "," + version_code.to_s)
+      end
+    end
+    out_file.close
+    @@log.info("The result is save at: " + file_name)
+  end
+  
   def get_multiple_versions(name)
     query = "{'n' => '#{name}', 'verc' => {'$ne' => nil} }"
     opts = "{:timeout => false}"
@@ -847,6 +883,13 @@ class MongodbDriver
       end
     elsif(cmd.eql?"find_top_apps_with_multiple_versions")
       find_top_apps_with_multiple_versions
+    elsif(cmd.eql? "find_apps_by_category")
+      if(@category_name.nil?)
+        puts("Error: Please use the -g option to specify the name of the category.")
+        abort(@@usage)
+      else
+        find_apps_by_category
+      end
     end
     
     close_mongodb_connection
@@ -898,6 +941,9 @@ class MongodbDriver
         end
         opts.on('-f', '--fee <Free|Paid>', 'The fee to indicate whether to return free or paid apps.', 'Valid values are free or paid') do |fee_value|
           @price = fee_value
+        end
+        opts.on('-g', '--category <category_name>', 'The category in which the app is categorized.') do |category_name|
+          @category_name = category_name
         end
         opts.on('-m','--max <value>', Integer, 'The maximum number of documents to return.') do |max_value|
           @limit = max_value
@@ -955,6 +1001,8 @@ class MongodbDriver
       cmd = "find_top_apps_with_multiple_versions"
     elsif(args[0].eql? "find_reviews")
       cmd = "find_reviews"
+    elsif(args[0].eql? "find_apps_by_category")
+      cmd = "find_apps_by_category"
     else
       puts "Error: Unknown command."
       abort(@@usage)
