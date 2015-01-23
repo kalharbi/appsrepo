@@ -1,30 +1,29 @@
+import pprint
 import sys
 import os
-import ConfigParser
+import configparser
 import pymongo
-import logging
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, InvalidName
 
 class QueryManifest(object):
     """ Retreives data from the manifest collection in MongoDB.
     """
-    config = ConfigParser.ConfigParser()
-
+    config = configparser.ConfigParser()
+    
     def __init__(self):
         self.config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "config", "appsrepo-shell.conf"))
         self.host_name = self.config.get('mongodb', 'host')
         self.port_number = int(self.config.get('mongodb', 'port'))
         self.db_name = self.config.get('mongodb', 'db')
         self.collection_name = self.config.get('mongodb', 'manifest_collection')
+        self.pp = pprint.PrettyPrinter()
 
     def __connect_mongodb(self):
         try:
             client = MongoClient(self.host_name, self.port_number)
             db = client[self.db_name]
             collection = db[self.collection_name]
-            logging.info("Connected to %s:%s, database: %s, Collection: %s.",
-                          self.host_name, self.port_number, self.db_name, self.collection_name)
             return collection
         except ConnectionFailure:
             print("Connected to {host}:{port}, database: {db} Collection: {collection}. failed or is lost.".format(
@@ -61,12 +60,12 @@ class QueryManifest(object):
         
     
     def execute_query(self, package_name, version_index, features, functions):
-        if features[0] == 'permissions':
-            if package_name == '*':
-                selection = {}
-            else:
-                selection = {'package': package_name}
-            fields = {'uses_permissions': 1, 'package': 1 ,'version_code': 1, 'version_name' : 1}
+        selection = {'package': package_name}
+        if package_name == '*':
+            selection = {}
+        
+        if features[0] == 'uses_permissions':
+            fields = {'uses_permissions': 1, 'package': 1 ,'version_code': 1, 'version_name' : 1, '_id' : 0}
             cursor = None
             if version_index < 0:
                 version_index = abs(version_index)
@@ -83,6 +82,27 @@ class QueryManifest(object):
                     self.__print_diff_numbers(permissions_count)
             else:
                 logging.error("Undefined function:  '%s' is not defined.", functions[0])
+        else:
+            if functions[0] == 'find()':
+                fields = {'.'.join(features): 1, 'package': 1 ,'version_code': 1, 'version_name' : 1, '_id' : 0}
+                cursor = self.__execute_find_query(selection, fields, 'version_code', 1, version_index)
+                entries = cursor[:]
+                self.__print_dict_entries(entries)
+                if len(functions) == 2 and functions[1] == 'diff()':
+                    cursor.rewind()
+                    if cursor.count() > 1:
+                        for x in range(0, cursor.count()):
+                           if x != cursor.count() - 1:
+                               self.__print_diff_lists(entries[x], entries[x+1])
+            elif functions[0] == 'count()':
+                fields = {'.'.join(features): 1, 'package': 1 ,'version_code': 1, 'version_name' : 1, '_id' : 0}
+                cursor = self.__execute_find_query(selection, fields, 'version_code', 1, version_index)
+                count = self.__get_dict_entries_count(cursor, features[0])
+                if len(functions) == 2 and functions[1] == 'diff()':
+                    self.__print_diff_numbers(count)
+                
+                        
+            
     
     def __get_permissions(self, cursor):
         permissions_list = []
@@ -116,8 +136,35 @@ class QueryManifest(object):
     def __print_diff_lists(self, l1, l2):
         print("+ ")
         added = set(l2) - set(l1)
-        print(','.join(list(added)))
+        for value in added:
+            print(value)
         print("-")
         removed = set(l1) - set(l2)
-        print(','.join(list(removed)))
+        for value in removed:
+            print(value)
+    
+    def __print_diff_dicts(self, d1, d2):
+        print("+ ")
+        added = set(d2.values()) - set(d1.values)
+        for value in added:
+            print(value)
+        print("-")
+        removed = set(d1.values()) - set(d2.values)
+        for value in removed:
+            print(value)
+    
+    def __print_dict_entries(self, entries):
+        for entry in entries:
+            print(entry['package'] + ", version_code: " + entry['version_code'] +
+                  ", version_name: " + entry['version_name'])
+            self.pp.pprint(entry)
+            
+    def __get_dict_entries_count(self, entries, key):
+        entries_count = []
+        for entry in entries:
+            print(entry['package'] + ", version_code: " + entry['version_code'] +
+                  ", version_name: " + entry['version_name'] +  ", total: " +
+                  str(len(entry[key])))
+            entries_count.append(len(entry[key]))
+        return entries_count
         
