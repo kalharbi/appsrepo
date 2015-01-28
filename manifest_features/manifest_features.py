@@ -22,8 +22,6 @@ class ManifestFeatures(object):
     """This script parses AndroidManifest.xml files and stores them in MongoDB.
     """
 
-    DB_NAME = "apps"
-    COLLECTION_NAME = "manifest"
     # The depth of the directory listing for AndroidManifest.xml
     DIR_DEPTH_SEARCH = 1
     log = logging.getLogger("manifest_features")
@@ -33,15 +31,17 @@ class ManifestFeatures(object):
     def __init__(self):
         self.host_name = "localhost"
         self.port_number = 27017
+        self.db_name = 'apps'
+        self.collection_name = 'manifest'
         
     def connect_mongodb(self):
         try:
             client = MongoClient(self.host_name, self.port_number)
-            db = client[self.DB_NAME]
-            manifest_collection = db[self.COLLECTION_NAME]
+            db = client[self.db_name]
+            manifest_collection = db[self.collection_name]
             self.log.info("Connected to database: %s Collection: %s.",
-                          self.DB_NAME,
-                          self.COLLECTION_NAME)
+                          self.db_name,
+                          self.collection_name)
             return manifest_collection
         except ConnectionFailure:
             sys.exit("ERROR: Connection to the database failed or is lost.")
@@ -205,22 +205,21 @@ class ManifestFeatures(object):
                         'a directory of unpacked apk files, parses their '
                         'AndroidManifest.xml files and stores them in a '
                         'MongoDB collection named manifest.')
+        parser.add_option('-H','--host', dest ='host_name',
+                          help= 'The host name that the mongod is connected to. Default value is localhost.',
+                          default='localhost')
+        parser.add_option('-P','--port', dest='port_number', type='int', default=27017,
+                          help='The port number that the mongod instance is listening. Default is 27017.')
+        parser.add_option('-b', '--db', dest= 'db_name', 
+                          help='The name of MongoDB database to store the Manifest features. Default is apps.')
+        parser.add_option('-c', '--collection', dest= 'collection_name', 
+                          help='The name of the MongoDB collection to store the Manifest features. Default is manifest.')
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='Increase verbosity.')
-        parser.add_option(
-            "-d",
-            "--depth",
-            type="int",
-            dest="depth_value",
-            help="The depth of the subdirectories to scan for "
-                 "AndroidManifest.xml files.")
-        parser.add_option('-H','--host', dest ='host_name', 
-                          help= 'The host name that the mongod is connected to. Default value is localhost.',
-                          default='localhost')
-        parser.add_option('-p','--port', dest='port_number', type='int', default=27017,
-                          help='The port number that the mongod instance is listening. Default port number value is 27017.')
+        parser.add_option("-d", "--depth", type="int", dest="depth_value", help="The depth of the subdirectories to scan for "
+                          "AndroidManifest.xml files.")
         (options, args) = parser.parse_args()
         if len(args) != 1:
             parser.error("incorrect number of arguments.")
@@ -234,6 +233,14 @@ class ManifestFeatures(object):
                 logging_file.setLevel(logging_level)
                 logging_file.setFormatter(formatter)
                 self.log.addHandler(logging_file)
+        if options.host_name:
+            self.host_name = options.host_name
+        if options.port_number:
+            self.port_number = options.port_number
+        if options.db_name:
+            self.db_name = options.db_name
+        if options.collection_name:
+            self.collection_name = options.collection_name
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]

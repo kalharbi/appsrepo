@@ -9,10 +9,7 @@ from pymongo import MongoClient
 
 class ManifestDriver(object):
     
-    DB_NAME = "apps"
-    COLLECTION_NAME = "manifest"
-    PORT_NUMBER = 27017
-    HOST_NAME = "localhost"
+
     log = logging.getLogger("manifest_driver")
     log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
     cmd_desc = """\nThe following commands are available:
@@ -26,14 +23,19 @@ class ManifestDriver(object):
                        find_apps_by_max_sdk_version -s <sdk_version>
                        find_all_app_widgets -f <package_names_file>
                        """
-    
+    def __init__(self):
+        self.host_name = "localhost"
+        self.port_number = 27017
+        self.db_name = 'apps'
+        self.collection_name = 'manifest'
+        
     def connect_mongodb(self):
         try:
-            client = MongoClient(self.HOST_NAME, self.PORT_NUMBER)
-            db = client[self.DB_NAME]
-            manifest_collection = db[self.COLLECTION_NAME]
-            self.log.info("Connected to database: %s Collection: %s.",self.DB_NAME,
-                  self.COLLECTION_NAME)
+            client = MongoClient(self.host_name, self.port_number)
+            db = client[self.db_name]
+            manifest_collection = db[self.collection_name]
+            self.log.info("Connected to database: %s Collection: %s.",self.db_name,
+                  self.collection_name)
             return manifest_collection
         except ConnectionFailure:
             sys.exit("ERROR: Connection to the database failed or is lost.")
@@ -382,6 +384,15 @@ class ManifestDriver(object):
                           help="write output files to the given DIR. Default is the current working directory.", metavar="DIR")
         parser.add_option("-l", "--log", dest="log_file",
                           help="write logs to FILE.", metavar="FILE")
+        parser.add_option('-H','--host', dest ='host_name',
+                          help= 'The host name that the mongod is connected to. Default value is localhost.',
+                          default='localhost')
+        parser.add_option('-P','--port', dest='port_number', type='int', default=27017,
+                          help='The port number that the mongod instance is listening. Default is 27017.')
+        parser.add_option('-b', '--db', dest= 'db_name', 
+                          help='The name of MongoDB database to store the Manifest features. Default is apps.')
+        parser.add_option('-c', '--collection', dest= 'collection_name', 
+                          help='The name of the MongoDB collection to store the Manifest features. Default is manifest.')
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='Increase verbosity.')
                           
@@ -418,6 +429,14 @@ class ManifestDriver(object):
                 package_names_file = options.apk_names_list_file
             else:
                 sys.exit("Error: APK names list file " + options.apk_names_list_file + " does not exist.")
+        if options.host_name:
+            self.host_name = options.host_name
+        if options.port_number:
+            self.port_number = options.port_number
+        if options.db_name:
+            self.db_name = options.db_name
+        if options.collection_name:
+            self.collection_name = options.collection_name
         
         if args[0]:
             if(args[0] == "find_app_activities"):
