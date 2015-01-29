@@ -45,6 +45,7 @@ An interactive shell to query the collection of apps using a Domain Specfic Lang
 - 7 apps, two versions each, target sdk 16. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5d3licGJYOVBlb28)
 - 9 apps, two versions each, target sdk 14. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5bHlrOVQ1SlhTcVE)
 - 10 apps, two versions each, minimum sdk 8. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5bm54WGtFa185TTA)
+- 30 apps, two versions each. [Download](https://copy.com/cpTOnNZyG6PKYRG7)
 - 100 apps, two versions each. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5SUhUTTdTZUVIYmc)
 - Android Framework files for the following devices: Samsung Galaxy S3, Google Nexus 10, and Google Nexus5. [Download](https://drive.google.com/uc?export=download&id=0Byamwcm0_ml5SFpVclR3YzlvZms)
 
