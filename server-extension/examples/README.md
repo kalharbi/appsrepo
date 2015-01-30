@@ -62,6 +62,7 @@ Examples
 Examples
 
 1) Custom UI widgets
+
 Custom UI widgets are named after the package name.
 
 ```
@@ -71,6 +72,7 @@ Custom UI widgets are named after the package name.
 ```
 
 2) Resizeable Homescreen widgets
+
 In the AndroidManifest.xml file, there is a receiver tag.
 
 ```
@@ -100,14 +102,34 @@ In the android:resources file, look for the ```<appwidget-provider>``` tag with 
 ```
 
 3) Tab layouts with TabHost
+
 Find a ViewGroup element named TabHost with a view element named TabWidget.
+
+```
+<TabHost android:id="@android:id/tabhost" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <TabWidget android:id="@android:id/tabs" android:background="#ff550000" android:layout_width="fill_parent" android:layout_height="wrap_content" android:divider="@drawable/tab_separator" />
+        <FrameLayout android:id="@android:id/tabcontent" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <TextView android:id="@id/last" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="Last" />
+            <TextView android:id="@id/tags" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="Tags" />
+        </FrameLayout>
+    </LinearLayout>
+</TabHost>
+```
 
 4) Fragments
 
+Search for elements with the ```<fragment>``` tag
+
 5) Horizontal paging
+
+Find elements with the ViewPager ViewGroup element.
 
 6) Action Bar with Tabs
 
 7) Up Navigation
 
 8) Navigation Drawers
+
+Make sure that the root ViewGroup is DrawerLayout and it has 2 children.
