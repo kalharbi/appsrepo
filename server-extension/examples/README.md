@@ -133,3 +133,133 @@ Find elements with the ViewPager ViewGroup element.
 8) Navigation Drawers
 
 Make sure that the root ViewGroup is DrawerLayout and it has 2 children.
+
+## UI Features
+
+Example UI layout screens that one can search for:
+
+1) Example OAuth Login Screen
+```
+<RelativeLayout>
+  <ImageView>
+  <FrameLayout>
+    <LinearLayout>
+      <FrameLayout>
+        <Button />
+      </FrameLayout>
+      <LinearLayout>
+        <FrameLayout>
+          <Button />
+        </FrameLayout>
+          <Button />
+        <FrameLayout>
+        </FrameLayout>
+      </LinearLayout>
+      <TextView />
+    </LinearLayout>
+  </FrameLayout>
+</RelativeLayout>
+```
+
+![Sunrise Login](https://cloud.githubusercontent.com/assets/2602786/6072273/e0e2fc04-ad5c-11e4-9cda-c10f94d9fae3.png)
+
+2) A Calendar screen
+
+```
+<View>
+  <LinearLayout>
+  </LinearLayout>
+  <FrameLayout>
+    <RelativeLayout>
+      <LinearLayout>
+        <FrameLayout>
+          <LinearLayout>
+            <LinearLayout>
+              <TextView /><TextView /><TextView /><TextView /><TextView /><TextView /><TextView />
+              <View />
+            </LinearLayout>
+            <ListView>
+              <View /><View /><View /><View /><View /><View />
+            </ListView>
+          </LinearLayout>
+        </FrameLayout>
+      </LinearLayout>
+    </RelativeLayout>
+  </FrameLayout>
+</View>
+```
+![Calendar](https://cloud.githubusercontent.com/assets/2602786/6072402/9a40fab0-ad5e-11e4-918b-45eef023a0c9.png)
+
+3) Left-column tabular view with chat
+
+```
+<LinearLayout>
+  <FrameLayout>
+    <FrameLayout>
+      <FrameLayout>
+        <ImageView />
+      </FrameLayout>
+      <LinearLayout>
+        <FrameLayout>
+          <ImageView />
+        </FrameLayout>
+        <FrameLayout>
+          <ImageView />
+        </FrameLayout>
+        <ListView>
+          <RelativeLayout>
+            <ImageView />
+          </RelativeLayout>
+        </ListView>
+      </LinearLayout>
+    </FrameLayout>
+  </FrameLayout>
+  <RelativeLayout>
+    <FrameLayout>
+      <FrameLayout>
+        <LinearLayout>
+          <FrameLayout>
+            <LinearLayout>
+              <MultiAutoCompleteTextView />
+            </LinearLayout>
+            <View />
+          </FrameLayout>
+          <ListView />
+        </LinearLayout>
+      </FrameLayout>
+    </FrameLayout>
+    <FrameLayout>
+      <LinearLayout>
+        <View />
+        <LinearLayout>
+          <ImageView />
+          <EditText />
+          <ImageView />
+        </LinearLayout>
+      </LinearLayout>
+    </FrameLayout>
+  </RelativeLayout>
+</LinearLayout>
+```
+
+![Left Tabular Column](https://cloud.githubusercontent.com/assets/2602786/6072786/d75a6036-ad62-11e4-99ba-86e1e9f2e0f3.png)
+
+4) Header Navigation
+
+```
+<FrameLayout>
+  <FrameLayout>
+    <FrameLayout>
+      <FrameLayout>
+        <ImageView />
+      </FrameLayout>
+    </FrameLayout>  
+    <FrameLayout>
+  
+    </FrameLayout>
+  </FrameLayout>
+  <FrameLayout>
+  
+  </FrameLayout>
+</FrameLayout>
+```
