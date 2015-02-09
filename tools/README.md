@@ -94,3 +94,72 @@ Options:
   -l FILE, --log=FILE  write logs to FILE.
   -v, --verbose        Increase verbosity.
 ```
+
+###5- Find APK files *[apk_finder.py]*
+
+This tool recursively searches for apk files in the given directory and writes
+their absoulte paths to a file.
+
+#### Usage:
+
+```
+Usage: apk_finder.py [options] search_directory target_apk_paths_file
+
+apk_finder.py -- Recursively search for apk files in search_directory and
+write their absoulte paths to a file (target_apk_paths_file).
+
+Options:
+  --version            show program's version number and exit
+  -h, --help           show this help message and exit
+  -l FILE, --log=FILE  write logs to FILE.
+
+```
+
+###6- Download APK files from a remote server to a local server *[apk_downloader.py]*
+This tool is used to download apk files from a remote server to a local server.
+
+#### Requirements:
+
+- Before using this tool make sure that you run the *apk_finder.py* tool and supply its output file to this tool.
+- [sshpass]('http://sourceforge.net/projects/sshpass/')
+   - Debian/Ubuntu: ```sudo apt-get install sshpass```
+   - Mac OS X: ```brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb```
+   - From source: [Download the source code]('http://sourceforge.net/projects/sshpass/') and run ```./configure; sudo make install```
+
+#### Usage:
+
+- You will be prompted to enter the passowrd for the remote server.
+
+```
+Usage: apk_downloader.py [options] remote_apk_paths_file local_destination_directory
+
+apk_downloader.py -- Download a list of apk files from a remote server into a
+local server.-- Arguments: <remote_apk_paths_file>: a text file that contains
+the full path names to the apk files at the remote server.
+<local_destination_directory>: a directory at the local server at which the
+apk files are downloaded.
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -H HOST_NAME, --host=HOST_NAME
+                        The host name that the mongod is connected to. Default
+                        value is localhost.
+  -p PORT_NUMBER, --port=PORT_NUMBER
+                        The port number that the mongod instance is listening.
+                        Default is 27017.
+  -b DB_NAME, --db=DB_NAME
+                        The name of MongoDB database to store the apk paths.
+                        Default is apps.
+  -c COLLECTION_NAME, --collection=COLLECTION_NAME
+                        The name of the MongoDB collection to store the paths.
+                        Default is apks.
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         Increase verbosity.
+  -s PROCESSES, --processes=PROCESSES
+                        the number of worker processes to use. Default is the
+                        number of CPUs in the system.
+  
+```
+
+

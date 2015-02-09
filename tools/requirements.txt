@@ -1,0 +1,2 @@
+pymongo >= 2.8
+paramiko >=1.15.2
