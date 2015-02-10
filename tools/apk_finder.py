@@ -10,8 +10,8 @@ class APKFinder(object):
     Recursively search for apk files and write their absoulte paths to a file.
     """
     log = logging.getLogger("apkFinder_log")
-    log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
-
+    # The logger's level must be set to the "lowest" level.
+    log.setLevel(logging.DEBUG)
     def files_listing(self, source_directory, ext_name, out_file):
         for item in os.listdir(source_directory):
             file = os.path.join(source_directory, item)
@@ -25,7 +25,8 @@ class APKFinder(object):
     def start_main(self, search_directory, target_apk_paths_file):
         out_file = open(target_apk_paths_file, 'w')
         self.files_listing(os.path.abspath(search_directory), '.apk', out_file)
-        self.log.info('APK paths have been saved at %s', os.path.abspath(target_apk_paths_file))
+        self.log.info('APK paths have been saved at %s',
+                      os.path.abspath(target_apk_paths_file))
         out_file.close()
         
     
@@ -35,7 +36,8 @@ class APKFinder(object):
         logging_file = None
         logging_level = logging.ERROR
         # Create formatter
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s' +
+                                      ' - %(message)s')
         # Create console logger and set its formatter and level
         logging_console = logging.StreamHandler(sys.stdout)
         logging_console.setFormatter(formatter)
@@ -44,12 +46,14 @@ class APKFinder(object):
         self.log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="%prog [options] search_directory target_apk_paths_file",
-                              description= '%prog -- Recursively search for apk files in search_directory ' +
-                              'and write their absoulte paths to a file (target_apk_paths_file).',
-                              version="%prog 1.0")
-        parser.add_option("-l", "--log", dest="log_file",
-                          help="write logs to FILE.", metavar="FILE")
+        parser = OptionParser(usage = "%prog [options] search_directory " \
+            "target_apk_paths_file",
+            description = "%prog -- Recursively search for apk files in" \
+            "search_directory and write their absoulte paths to a file " \
+            "(target_apk_paths_file).",
+            version = "%prog 1.0")
+        parser.add_option("-l", "--log", dest = "log_file",
+                          help = "write logs to FILE.", metavar = "FILE")
         (options, args) = parser.parse_args()
         if len(args) != 2:
             parser.error("incorrect number of arguments.")
@@ -62,7 +66,8 @@ class APKFinder(object):
         if os.path.isdir(args[0]):
             destination_dir = os.path.abspath(args[0])
         else:
-            sys.exit("Error: local source directory " + args[0] + " does not exist.")
+            sys.exit("Error: local source directory " + args[0] +
+                     " does not exist.")
         if os.path.isfile(args[1]) or os.path.isdir(args[1]):
             sys.exit('Error: target_apk_paths_file already exists')
         
@@ -74,4 +79,4 @@ class APKFinder(object):
         print("======================================================")
         
 if __name__ == '__main__':
-    APKFinder().main(sys.argv[1:]) 
+    APKFinder().main(sys.argv[1:])
