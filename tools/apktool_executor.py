@@ -49,9 +49,8 @@ def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
 class ApktoolExecutor(object):
     # Set the number of worker processes to the number of available CPUs.
     processes = multiprocessing.cpu_count()
-    # Flag that indicates the use of custom directory naming scheme. i.e. dir/c/com/a/amazon/com.amazon
-    use_custom_file_search = False
-    # apktool framework tag and dir
+    # Flag that indicates the use of custom directory naming scheme. 
+    #      Example: dir/c/com/a/amazon/com.amazon
 
     def __init__(self):
         self.apk_files = []
@@ -60,6 +59,8 @@ class ApktoolExecutor(object):
         self.no_src = False
         self.no_res = False
         self.ordered = False
+        self.use_custom_file_search = False
+        self.path_file = None
     
             
     def start_main(self, apk_names_file, source_dir, target_dir):
@@ -67,14 +68,11 @@ class ApktoolExecutor(object):
         # Create pool of worker processes
         pool = Pool(processes=self.processes)
         log.info('A pool of %i worker processes has been created', self.processes)
-        # If apk list file is not given, run apktool on each apk file in the source directory.
-        if not apk_names_file:
-            for apk_file in os.listdir(source_dir):
-                if(os.path.splitext(apk_file)[1] == '.apk'):
-                    apk_paths.append(os.path.join(source_dir, apk_file))
-        elif apk_names_file:
+        # if the package names file is given
+        if apk_names_file:
             with open(apk_names_file, 'r') as f:
-                # skip the first line since it's the header line [apk_name, download_count]
+                # skip the first line since it's the header 
+                # line [apk_name, download_count]
                 next(f)
                 for line in f:
                     arr = [items.strip() for items in line.split(',')]
@@ -82,12 +80,27 @@ class ApktoolExecutor(object):
                     apk_path = source_dir
                     if apk_name:
                         if self.use_custom_file_search:
-                            # Use custom directory search to limit the search to the directories of each apk file.
+                            # Use custom directory search to limit the search
+                            # to the directories of each apk file.
                             for index, item in enumerate(apk_name.split('.')):
                                 apk_path = os.path.join(apk_path, item[0], item)
                                 if index == 1:
                                     break
                         apk_paths.append(self.find_apk_file(apk_name, apk_path))
+        
+        
+        # If the apk path file is given
+        elif self.apk_path:
+            with open(self.apk_path, 'r') as f:
+                for line in f:
+                    apk_paths.append(line)
+        # If apk path file or package list file are not given, 
+        # run apktool on each apk file in the source directory.
+        else:
+            for apk_file in os.listdir(source_dir):
+                if(os.path.splitext(apk_file)[1] == '.apk'):
+                    apk_paths.append(os.path.join(source_dir, apk_file))
+
         if len(apk_paths) > 0:
             try:
                 # Check if files must be ordered
@@ -102,12 +115,15 @@ class ApktoolExecutor(object):
                 for r in results:
                     if(r != None):
                         log.info("APK file has been extracted at: " + r.get())
-                # close the pool to prevent any more tasks from being submitted to the pool.
+                # close the pool to prevent any more tasks from being 
+                # submitted to the pool.
                 pool.close()
                 # Wait for the worker processes to exit
                 pool.join()
             except KeyboardInterrupt:
-                print('got ^C while worker processes have outstanding work. Terminating the pool and stopping the worker processes immediately without completing outstanding work..')
+                print('got ^C while worker processes have outstanding work. '
+                'Terminating the pool and stopping the worker processes'
+                ' immediately without completing outstanding work..')
                 pool.terminate()
                 print('pool has been terminated.')
         else:
@@ -196,12 +212,16 @@ class ApktoolExecutor(object):
         log.addHandler(logging_console)
         
         # command line parser
-        parser = OptionParser(usage="python %prog apk_source_directory target_directory [options]", version="%prog 1.0")
+        parser = OptionParser(usage="python %prog apk_source_directory "
+                             "target_directory [options]", version="%prog 1.0")
         parser.add_option("-p", "--processes", dest="processes", type="int",
                            help="the number of worker processes to use. " +
                            "Default is the number of CPUs in the system.")
-        parser.add_option("-w", "--framework", help="forces apktool to use framework files located in <FRAMEWORK_DIR>.", dest="framework_dir")
-        parser.add_option("-t", "--tag", help="forces apktool to use framework files tagged by <TAG>.", dest="tag")
+        parser.add_option("-w", "--framework", help="forces apktool to use "
+                          "framework files located in <FRAMEWORK_DIR>."
+                          , dest="framework_dir")
+        parser.add_option("-t", "--tag", help="forces apktool to use framework"
+                          " files tagged by <TAG>.", dest="tag")
         parser.add_option("-s", "--no-src", help="Do not decode sources.", 
                           dest="no_src", action='store_true', default=False)
         parser.add_option("-r", "--no-res", help="Do not decode resources.", 
@@ -211,10 +231,18 @@ class ApktoolExecutor(object):
         parser.add_option('-v', '--verbose', dest="verbose", default=0,
                           action='count', help='increase verbosity.')
         parser.add_option('-f', '--file', dest="apk_names_list_file",
-                          metavar="FILE", default=0, help='read apk names from a file that contains a list of APK names.')
-        parser.add_option('-o', '--ordered', help='Sort apk files by date.', dest='ordered', action='store_true', default=False)
-        parser.add_option('-c', '--custom', dest="custom_search", action='store_true', default=False,
-                          help="search for apk files using the custom directory naming scheme. e.g, dir/c/com/a/amazon/com.amazon")
+                          metavar="FILE", help='read apk names from a file '
+                          'that contains a list of APK names.')
+        parser.add_option('-i','--path-file', dest= 'path_file',
+                          metavar='FILE', help= 'read apk path names from a '
+                          'file')
+        parser.add_option('-o', '--ordered', help='Sort apk files by date.', 
+                          dest='ordered', action='store_true', default=False)
+        parser.add_option('-c', '--custom', dest= "custom_search", 
+                          action= 'store_true', default=False,
+                          help="search for apk files using the custom "
+                          "directory naming scheme;"
+                          " e.g., dir/c/com/a/amazon/com.amazon")
                           
         (options, args) = parser.parse_args()
         if len(args) != 2:
@@ -246,6 +274,8 @@ class ApktoolExecutor(object):
                 logging_file.setLevel(logging_level)
         if options.custom_search:
             self.use_custom_file_search = True
+        if options.path_file:
+            self.path_file = option.path_file
         # Get apk file names
         apk_names_file = None
         if options.apk_names_list_file:
