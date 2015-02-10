@@ -8,7 +8,8 @@ The goal of this tool is to import GraphML files into neo4j database. It takes a
 
 
 ### Before you run the tool
-Make sure that you first run the [ui-graphml](../ui-graphml) tool on the unpacked apk files.
+- Make sure that you run the [ui-graphml](../ui-graphml) tool on the unpacked apk files before using this tool.
+- Make sure that neo4j server is not running ```neo4j stop```.
 
 ### After you run the tool
 - start neo4j ```{NEO4J_HOME}/bin/neo4j start```
