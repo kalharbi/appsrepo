@@ -63,6 +63,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <scm>
+        <url>https://github.com/appsrepo</url>
+        <connection>scm:git@github.com:kalharbi/appsrepo.git</connection>
+        <developerConnection>scm:git:git@github.com:kalharbi/appsrepo.git</developerConnection>
+    </scm>
     <build>
         <plugins>
             <plugin>
