@@ -75,10 +75,20 @@ public class LayoutParser {
                 rootElement.setAttribute(tmpId, nodeId);
                 String name = rootElement.getTagName();
                 Map<Object, Object> attributes = getElementAttributes(rootElement);
-                createNode(nodeId, Constants.ROOT,
+                String rootNodeLabel = "";
+                String rootEdgeLabel = "";
+                if(rootElement.hasChildNodes()){
+                    rootNodeLabel = Constants.VIEW_GROUP;
+                    rootEdgeLabel = Constants.HAS_VIEW_GROUP;
+                }
+                else{
+                    rootNodeLabel = Constants.VIEW;
+                    rootEdgeLabel = Constants.HAS_VIEW;
+                }
+                createNode(nodeId, rootNodeLabel,
                         name, attributes);
-                createEdge(Constants.HAS_ROOT, this.parentNodeId, nodeId,
-                        attributes);
+                createEdge(rootEdgeLabel, this.parentNodeId, nodeId,
+                        null);
                 // parse the rest of layout elements recursively
                 parseChildren(rootElement);
             }
@@ -131,14 +141,14 @@ public class LayoutParser {
                     createNode(currentId, Constants.VIEW_GROUP, name,
                             attributes);
                     createEdge(Constants.HAS_VIEW_GROUP, parentId, currentId,
-                            attributes);
+                            null);
                     parseChildren((Element) n);
                 } else {
                     Map<Object, Object> attributes = getElementAttributes((Element) n);
                     createNode(currentId, Constants.VIEW, name,
                             attributes);
                     createEdge(Constants.HAS_VIEW, parentId, currentId,
-                            attributes);
+                            null);
                 }
             }
         }
@@ -180,13 +190,13 @@ public class LayoutParser {
                 createNode(currentId, Constants.VIEW_GROUP, name,
                         attributes);
                 createEdge(Constants.HAS_VIEW_GROUP, parentId, currentId,
-                        attributes);
+                        null);
             } else {
                 Map<Object, Object> attributes = getElementAttributes(e);
                 createNode(currentId, Constants.VIEW, name,
                         attributes);
                 createEdge(Constants.HAS_VIEW, parentId, currentId,
-                        attributes);
+                        null);
             }
             return e;
 
