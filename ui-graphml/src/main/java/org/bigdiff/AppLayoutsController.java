@@ -41,6 +41,13 @@ public class AppLayoutsController {
                 String graphMLFileName = packageName + "-" + versionCode + ".graphml";
                 File graphmlFile = new File(apkDir, Constants.UI_GRAPHML_DIR + File.separator +
                         graphMLFileName);
+                if (graphmlFile.exists()){
+                    if(!graphmlFile.delete()){
+                        logger.error("Failed to delete existing graphml file {}",
+                                graphmlFile.getAbsoluteFile());
+                        continue;
+                    }
+                }
                 try {
                     FileUtils.forceMkdir(graphmlFile.getParentFile());
                 } catch (IOException e) {
