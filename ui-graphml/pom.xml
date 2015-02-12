@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.bigdiff</groupId>
     <artifactId>ui-graphml</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1</version>
     <name>ui-graphml</name>
     <url>http://maven.apache.org</url>
     <dependencies>
@@ -67,7 +65,8 @@
         <url>https://github.com/appsrepo</url>
         <connection>scm:git@github.com:kalharbi/appsrepo.git</connection>
         <developerConnection>scm:git:git@github.com:kalharbi/appsrepo.git</developerConnection>
-    </scm>
+      <tag>ui-graphml-1.1</tag>
+  </scm>
     <build>
         <plugins>
             <plugin>
@@ -82,8 +81,7 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.bigdiff.App</mainClass>
                                 </transformer>
                             </transformers>
