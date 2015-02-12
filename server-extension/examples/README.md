@@ -250,16 +250,39 @@ Example UI layout screens that one can search for:
 <FrameLayout>
   <FrameLayout>
     <FrameLayout>
-      <FrameLayout>
-        <ImageView />
-      </FrameLayout>
-    </FrameLayout>  
-    <FrameLayout>
+      <ImageView />
+    </FrameLayout>
+  </FrameLayout>  
   
+  <FrameLayout>
+    <FrameLayout>
+      <HorizontalScrollView>
+        <LinearLayout>
+          <TextView />
+          <TextView />
+          <TextView />
+        </LinearLayout>
+      </HorizontalScrollView>
     </FrameLayout>
   </FrameLayout>
-  <FrameLayout>
-  
-  </FrameLayout>
 </FrameLayout>
+```
+
+![Title bar](https://cloud.githubusercontent.com/assets/2602786/6156948/d5c9c724-b1fa-11e4-8832-7b7a8d61ebad.png)
+
+5) Information Body
+
+```
+<LinearLayout>
+  <LinearLayout>
+    <LinearLayout>
+      <LinearLayout>
+        <View />
+        <View />
+        <View />
+        <TextView />
+      </LinearLayout>
+    </LinearLayout>
+  </LinearLayout>
+</LinearLayout>
 ```
