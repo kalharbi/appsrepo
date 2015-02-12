@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="emailDialog_email">false</item>
+    <item type="id" name="emailDialog_confirm">false</item>
+    <item type="id" name="emailDialog_cancel">false</item>
+    <item type="id" name="inputDialog_input">false</item>
+    <item type="id" name="inputDialog_confirm">false</item>
+    <item type="id" name="inputDialog_cancel">false</item>
+    <item type="id" name="passwordDialog_password">false</item>
+    <item type="id" name="passwordDialog_confirm">false</item>
+    <item type="id" name="passwordDialog_cancel">false</item>
+    <item type="id" name="passwordDialog_resend">false</item>
+</resources>

@@ -1,0 +1,17 @@
+version: 2.0.0-RC3
+apkFileName: me.pou.app-188.apk
+isFrameworkApk: false
+usesFramework:
+  ids:
+  - 1
+sdkInfo:
+  minSdkVersion: '4'
+  targetSdkVersion: '9'
+packageInfo:
+  forced-package-id: '127'
+versionInfo:
+  versionCode: '188'
+  versionName: 1.4.43
+compressionType: false
+unknownFiles:
+  plasma.properties: '8'

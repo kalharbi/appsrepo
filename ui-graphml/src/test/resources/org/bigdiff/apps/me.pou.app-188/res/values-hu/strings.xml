@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Play Szolgáltatások telepítése</string>
+    <string name="common_google_play_services_install_text_phone">Az alkalmazás működéséhez a Google Play Szolgáltatások szükségesek, ezek nincsenek telepítve a telefonon.</string>
+    <string name="common_google_play_services_install_text_tablet">Az alkalmazás működéséhez a Google Play Szolgáltatások szükségesek, ezek nincsenek telepítve a táblagépen.</string>
+    <string name="common_google_play_services_install_button">Play Szolgáltatások telepítése</string>
+    <string name="common_google_play_services_enable_title">Google Play Szolgáltatások aktiválása</string>
+    <string name="common_google_play_services_enable_text">Az alkalmazás csak akkor fog működni, ha engedélyezi a Google Play Szolgáltatásokat.</string>
+    <string name="common_google_play_services_enable_button">Play Szolgáltatások aktiválása</string>
+    <string name="common_google_play_services_update_title">Play Szolgáltatások frissítése</string>
+    <string name="common_google_play_services_update_text">Az alkalmazás csak akkor fog működni, ha frissíti a Google Play Szolgáltatásokat.</string>
+    <string name="common_google_play_services_network_error_title">Hálózati hiba</string>
+    <string name="common_google_play_services_network_error_text">A Google Play Szolgáltatásokhoz történő kapcsolódáshoz adatkapcsolat szükséges.</string>
+    <string name="common_google_play_services_invalid_account_title">Érvénytelen fiók</string>
+    <string name="common_google_play_services_invalid_account_text">A megadott fiók nem létezik ezen az eszközön. Kérjük, válasszon másik fiókot.</string>
+    <string name="common_google_play_services_unknown_issue">Ismeretlen hiba a Google Play Szolgáltatásokban.</string>
+    <string name="common_google_play_services_unsupported_title">Google Play Szolgáltatások</string>
+    <string name="common_google_play_services_unsupported_text">A Google Play Szolgáltatásokat, amelyre egyes alkalmazások támaszkodnak, nem támogatja az eszköz. Segítségért forduljon az eszköz gyártójához.</string>
+    <string name="common_google_play_services_unsupported_date_text">Az eszközön beállított dátum helytelen. Kérjük, ellenőrizze azt.</string>
+    <string name="common_google_play_services_update_button">Frissítés</string>
+    <string name="common_signin_button_text">Belépés</string>
+    <string name="common_signin_button_text_long">Google-bejelentkezés</string>
+    <string name="auth_client_using_bad_version_title">Egy alkalmazás a Play Szolgáltatások rossz verzióját akarta használni.</string>
+    <string name="auth_client_needs_enabling_title">Egy alkalmazás kéri a Google Play Szolgáltatások engedélyezését.</string>
+    <string name="auth_client_needs_installation_title">Egy alkalmazás kéri a Google Play Szolgáltatások telepítését.</string>
+    <string name="auth_client_needs_update_title">Egy alkalmazás kéri a Google Play Szolgáltatások frissítését.</string>
+    <string name="auth_client_play_services_err_notification_msg">Google Play szolgáltatási hiba</string>
+    <string name="auth_client_requested_by_msg">Igénylő: %1$s</string>
+    <string name="welcome">Üdvözlünk a Pou-ban ^_^</string>
+    <string name="welcome_txt">"Pou a kis urlényed, ami IMÁD enni és játszani!
+
+Húzd az ételt Pou szájához, hogy megetethesd!
+
+Próbáld ki!"</string>
+    <string name="kitchen">Konyha</string>
+    <string name="kitchen_tip">"Etesd meg Pou-t úgy, hogy a szájához húzod az ételt!
+
+Látogass el a Boltba, hogy vehess még több ételt, ami a Hutoben lesz elraktározva!"</string>
+    <string name="bathroom">Fürdőszoba</string>
+    <string name="bathroom_tip">"Amikor Pou koszos, mosd meg ot szappannal és vízzel!
+
+Testreszabhatja őket a boltban!"</string>
+    <string name="lab">Labor</string>
+    <string name="lab_tip">"Ha Pou beteg, használj Gyógyító Italt!
+
+Kísérletezz még több vagány Itallal a Boltból!"</string>
+    <string name="gameroom">Játszó Szoba</string>
+    <string name="gameroom_tip">"Amikor Pou szomorú, játssz vele úgy, hogy eldobod neki a labdát, vagy játssz valamelyik Játékkal!
+
+Játssz valamelyikkel, ha pénzt szeretnél keresni!"</string>
+    <string name="bedroom">Hálószoba</string>
+    <string name="bedroom_tip">"Amikor Pou álmos, kattints a Lámpára, hogy kikapcsold!
+
+Nézz be a Gardróbba, hogy választhass Pou-nak ruhákat! Venni is tudsz neki még a Boltból!"</string>
+    <string name="adult_needs">Pou-nak felnottnek kell lennie ahhoz, hogy ezt viselni tudja!</string>
+    <string name="adult_use">Várj, amíg Pou felno, vagy használj egy Felnott Italt most! (Adult Potion)</string>
+    <string name="wallpapers">Hátterek</string>
+    <string name="wallpapers_tip">"Az összes Szoba Hátterét megváltoztathatod!
+
+Nézz be a Boltba, hogy megnézhesd, mit tudsz változtatni a szobákban!"</string>
+    <string name="food">Étel</string>
+    <string name="food_tip">"Pou nem szereti, ha mindig ugyanazt adod neki enni.
+
+Ügyelj arra is, hogy ne etesd túl Pou-t. Meghízhat tole!"</string>
+    <string name="fat">Kövér</string>
+    <string name="fat_tip">"Ha Pou meghízik, várd meg míg ismét normális lesz, vagy sportolj vele játékokat játszva a Játszó Szobában!
+
+Vagy használj egy Zsírégeto Italt a Laborból!"</string>
+    <string name="too_tired">Túl fáradt</string>
+    <string name="too_tired_text">Pou túl fáradt ahhoz, hogy játsszon! Hagyd aludni ot, vagy használj egy Energia Italt.</string>
+    <string name="cancel">Kilépés</string>
+    <string name="yes">Igen</string>
+    <string name="no">Nem</string>
+    <string name="login">Belépés</string>
+    <string name="enter_your_email">Add meg az e-mail címedet</string>
+    <string name="email_note">Ahhoz, hogy játszani az előző Pou, adja meg a korábbi e-mail.</string>
+    <string name="email_hint">tiéd@email.hu</string>
+    <string name="email_used">Sajnáljuk, ez az e-mail már egy másik fiókhoz meg van adva. Próbálj egy másikat.</string>
+    <string name="new_user">Szia, új Pou ^_^</string>
+    <string name="confirm_email">Ez az e-mail címed?</string>
+    <string name="choose_your_nickname">Válassz Becenevet</string>
+    <string name="nickname_info">A barátaid megjegyezhetik a Pou-d becenevét! Késobb ezt meg is változtathatod.</string>
+    <string name="nickname_taken">Sajnáljuk, ezt a becenevet más már használja. Próbálj egy másikat.</string>
+    <string name="nickname_invalid">"Sajnáljuk, a becenév nem elérheto.
+Például: pou_123 (space nélkül)
+Kezdd betuvel, 3–15 maximum"</string>
+    <string name="enter_your_password">Írd be a Jelszavad</string>
+    <string name="enter_new_password">Írj be egy új jelszót</string>
+    <string name="password_check">E-mail</string>
+    <string name="password_sent">Elküldtünk egy új jelszót #-nak</string>
+    <string name="password_resend_button">Új jelszót kérek</string>
+    <string name="password_incorrect">Helytelen jelszó. Nézd meg #-ot és próbáld újra</string>
+    <string name="password_incorrect_old">A régi jelszavad helytelen</string>
+    <string name="password_changed">Jelszó megváltoztatva</string>
+    <string name="update_title">Frissítened kell</string>
+    <string name="update_text">Sajnáljuk, de frissítened kell az alkalmazást a folytatáshoz.</string>
+    <string name="update_wait">Ha nem látod a frissítést, akkor várj néhány napig.</string>
+    <string name="logout_title">Kilépsz? *_*</string>
+    <string name="logout_info">Játszhatsz ismét ezzel a Pou-val, ha megadod az e-mail címedet</string>
+    <string name="friends">Barátok</string>
+    <string name="friends_tip">"Mgelátogathatod a többi Pou-t is!
+
+Kattints a kicsi Pou ikonra, és válaszd ki a Barátokat!"</string>
+    <string name="enter_the_nickname">Írd be a beceneved</string>
+    <string name="enter_the_email">Írd be az e-mail címet</string>
+    <string name="friend_not_found">Nem található ilyen barát</string>
+</resources>

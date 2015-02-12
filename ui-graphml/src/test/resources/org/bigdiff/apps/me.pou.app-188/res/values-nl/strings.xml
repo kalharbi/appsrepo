@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Google Play-services ophalen</string>
+    <string name="common_google_play_services_install_text_phone">Deze app kan niet worden uitgevoerd zonder Google Play-services die ontbreken op uw telefoon.</string>
+    <string name="common_google_play_services_install_text_tablet">Deze app kan niet worden uitgevoerd zonder Google Play-services die ontbreken op uw tablet.</string>
+    <string name="common_google_play_services_install_button">Google Play-services ophalen</string>
+    <string name="common_google_play_services_enable_title">Google Play-services inschakelen</string>
+    <string name="common_google_play_services_enable_text">Deze app werkt niet, tenzij u Google Play-services inschakelt.</string>
+    <string name="common_google_play_services_enable_button">Google Play-services inschak.</string>
+    <string name="common_google_play_services_update_title">Google Play-services bijwerken</string>
+    <string name="common_google_play_services_update_text">Deze app kan niet worden uitgevoerd, tenzij u Google Play-services bijwerkt.</string>
+    <string name="common_google_play_services_network_error_title">Netwerkfout</string>
+    <string name="common_google_play_services_network_error_text">Er is een gegevensverbinding nodig om verbinding te kunnen maken met Google Play-services.</string>
+    <string name="common_google_play_services_invalid_account_title">Ongeldig account</string>
+    <string name="common_google_play_services_invalid_account_text">Het gespecificeerde account bestaat niet op dit apparaat. Kies een ander account.</string>
+    <string name="common_google_play_services_unknown_issue">Onbekend probleem met Google Play-services.</string>
+    <string name="common_google_play_services_unsupported_title">Google Play-services</string>
+    <string name="common_google_play_services_unsupported_text">Google Play-services, dat vereist is voor een aantal van uw applicaties, wordt niet ondersteund door uw apparaat. Neem contact op met de fabrikant voor ondersteuning.</string>
+    <string name="common_google_play_services_unsupported_date_text">De datum op het apparaat lijkt onjuist. Controleer de datum op het apparaat.</string>
+    <string name="common_google_play_services_update_button">Bijwerken</string>
+    <string name="common_signin_button_text">Inloggen</string>
+    <string name="common_signin_button_text_long">Inloggen met Google</string>
+    <string name="auth_client_using_bad_version_title">Onjuiste versie van Google Play-services wordt gebruikt.</string>
+    <string name="auth_client_needs_enabling_title">Google Play-services moet zijn ingeschakeld voor een applicatie.</string>
+    <string name="auth_client_needs_installation_title">Google Play-services moet zijn geïnstalleerd voor een applicatie.</string>
+    <string name="auth_client_needs_update_title">Google Play-services moet worden geüpdatet voor een applicatie.</string>
+    <string name="auth_client_play_services_err_notification_msg">Fout met Google Play-services</string>
+    <string name="auth_client_requested_by_msg">Aangevraagd door %1$s</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Welkom bij Pou ^_^</string>
+    <string name="welcome_txt">"Pou is jouw buitenaardse huisdier, die dol is op eten en spelen!
+
+Sleep voedsel naar Pou's mond om hem eten te geven!
+
+Probeer het nu!"</string>
+    <string name="kitchen">Keuken</string>
+    <string name="kitchen_tip">"Sleep voedsel naar Pou's mond om hem eten te geven!
+
+Ga naar de winkel om meer eten te kopen. Het wordt gelijk in de koelkast gelegd!"</string>
+    <string name="bathroom">Badkamer</string>
+    <string name="bathroom_tip">"Als Pou smerig is, was hem met zeep en water!
+
+U kunt hen aanpassen in de winkel!"</string>
+    <string name="lab">Lab</string>
+    <string name="lab_tip">"Als Pou ziek is, gebruik dan een gezondheidsdrankje!
+
+Probeer ook andere leuke drankjes uit de winkel!"</string>
+    <string name="gameroom">Speelkamer</string>
+    <string name="gameroom_tip">"Als Pou verdrietig is, speel dan met hem door met de bal te gooien, of door spelletjes te spelen!
+
+Je moet ook spelletjes spelen om munten te verzamelen!"</string>
+    <string name="bedroom">Slaapkamer</string>
+    <string name="bedroom_tip">"Als Pou moe wordt, tik dan op de lamp om hem uit te doen!
+
+Kijk in de kast om Pou andere kleren aan te trekken! In de winkel kan je meer kopen!"</string>
+    <string name="adult_needs">Pou moet volwassen zijn om dit te dragen!</string>
+    <string name="adult_use">Wacht tot Pou volwassen wordt, of gebruik nu een Volwassen-drankje!</string>
+    <string name="wallpapers">Behang</string>
+    <string name="wallpapers_tip">"Je kan elke kamer voorzien van een ander behang!
+
+Kijk in de winkel om te zien wat je in elke kamer aan kan passen!"</string>
+    <string name="food">Eten</string>
+    <string name="food_tip">"Pou houdt er niet van om steeds het zelfde te eten te krijgen.
+
+Pas ook op om hem niet te veel eten te geven, dan wordt Pou te dik!"</string>
+    <string name="fat">Vet</string>
+    <string name="fat_tip">"Als Pou te dik wordt, wacht dan tot hij weer slank wordt of laat hem afvallen door spelletjes te spelen in de speelkamer!
+
+Of gebruik een anti-vet-drankje in het lab!"</string>
+    <string name="locked">Niet beschikbaar!</string>
+    <string name="locked_text">Dit voorwerp is nog niet beschikbaar! Je kan wachten tot het beschikbaar komt, of koop het vrij voor # munten.</string>
+    <string name="not_enough_coins">Niet genoeg munten!</string>
+    <string name="coins_to_buy">je hebt nog # munten nodig om dit te kopen.</string>
+    <string name="coins_to_unlock">je hebt nog # munten nodig om dit vrij te kopen.</string>
+    <string name="coins_collect_buy">Speel spelletjes om munten te verzamelen, of koop nu meer munten!</string>
+    <string name="too_tired">Te moe!</string>
+    <string name="too_tired_text">Pou is te moe om te spelen! Laat hem slapen, of gebruik een enrgie-drankje.</string>
+    <string name="game1_desc">Geef Pou te eten! Pas op dat je geen eten mist of hem de verkeerde dingen voert!</string>
+    <string name="game2_desc">Probeer zo ver mogelijk omhoog te springen via de platforms zonder te vallen!</string>
+    <string name="game3_desc">Pou valt graag! Pas op dat je geen wolken raakt!</string>
+    <string name="game4_desc">"Combineer 3 Pou's van dezelfde kleur op een rij voordat je tijd op is!"</string>
+    <string name="game5_desc">"Tik op de verdrietige Pou's! Pas op dat je niet de vrolijke Pou's aantikt!"</string>
+    <string name="game6_desc">"Onthoud de volgorde van de geluiden! Tik de Pou's aan in de goede volgorde!"</string>
+    <string name="game7_desc">"Schiet met Pou om alle Pou's weg te krijgen! Pas op dat je niet de bodem bereikt!"</string>
+    <string name="game_ate_bad">Pou heeft iets verkeerds gegeten!</string>
+    <string name="game_missed_x">Je hebt # gemist!</string>
+    <string name="game_fell">Je bent gevallen!</string>
+    <string name="game_hit_x_clouds">Je hebt # wolken geraakt!</string>
+    <string name="game_time_up">Tijd is om!</string>
+    <string name="game_tapped_x_happy">"\# vrolijke Pou's aangetikt!"</string>
+    <string name="game_no_space">Geen ruimte meer!</string>
+    <string name="cancel">Annuleren</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
+    <string name="login">Inloggen</string>
+    <string name="enter_your_email">Voer je emailadres in</string>
+    <string name="email_note">Voer je vorige emailadres in om met je vorige Pou te spelen.</string>
+    <string name="email_hint">Jouw@email.com</string>
+    <string name="email_used">Sorry, emailadres is al in gebruik voor andere account. Probeer het nog eens.</string>
+    <string name="new_user">Hallo nieuwe Pou ^_^</string>
+    <string name="confirm_email">Is dit jouw emailadres?</string>
+    <string name="choose_your_nickname">Kies je bijnaam</string>
+    <string name="nickname_info">"Vrienden kunnen jouw Pou's naam onthouden! Je kan hem later nog wijzigen."</string>
+    <string name="nickname_taken">Sorry, deze bijnaam is al bezet. Probeer een andere.</string>
+    <string name="nickname_invalid">"Sorry, bijnaam is niet geldig.
+Voorbeeld: pou_123 (geen spatie)
+Begin met een letter, 3–15 max"</string>
+    <string name="enter_your_password">Voer je wachtwoord in</string>
+    <string name="enter_new_password">Voer een nieuw wachtwoord in</string>
+    <string name="password_check">Email</string>
+    <string name="password_sent">We hebben een nieuw wachtwoord gestuurd naar #</string>
+    <string name="password_resend_button">Stuur me een nieuw wachtwoord</string>
+    <string name="password_incorrect">Wachtwoord klopt niet. Controleer # en probeer het opnieuw</string>
+    <string name="password_incorrect_old">Oude wachtwoord klopt niet</string>
+    <string name="password_changed">Wachtwoord gewijzigd</string>
+    <string name="update_title">Je moet een update uitvoeren</string>
+    <string name="update_text">Sorry, Je moet de app voortdurend updaten.</string>
+    <string name="update_wait">Als je de update nog niet kan zien, wacht dan een paar dagen.</string>
+    <string name="logout_title">Uitloggen? *_*</string>
+    <string name="logout_info">Je kan weer met deze Pou spelen door je emailadres in te voeren</string>
+    <string name="friends">Vrienden</string>
+    <string name="friends_tip">"Je kan andere Pou's bezoeken!
+
+Tik op het kleine Pou-symbool en selecteer je vrienden!"</string>
+    <string name="enter_the_nickname">Voer de bijnaam</string>
+    <string name="enter_the_email">Voer emailadres in</string>
+    <string name="friend_not_found">Vriend niet gevonden</string>
+</resources>

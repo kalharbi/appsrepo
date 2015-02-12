@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">‏الحصول على خدمات Google Play</string>
+    <string name="common_google_play_services_install_text_phone">‏لن يتم تشغيل هذا التطبيق بدون خدمات Google Play، والتي لا تتوفر في هاتفك.</string>
+    <string name="common_google_play_services_install_text_tablet">‏لن يتم تشغيل هذا التطبيق بدون خدمات Google Play، والتي لا تتوفر في جهازك اللوحي.</string>
+    <string name="common_google_play_services_install_button">‏الحصول على خدمات Google Play</string>
+    <string name="common_google_play_services_enable_title">‏تمكين خدمات Google Play</string>
+    <string name="common_google_play_services_enable_text">‏لن يعمل هذا التطبيق ما لم يتم تمكين خدمات Google Play.</string>
+    <string name="common_google_play_services_enable_button">‏تمكين خدمات Google Play</string>
+    <string name="common_google_play_services_update_title">‏تحديث خدمات Google Play</string>
+    <string name="common_google_play_services_update_text">‏لن يتم تشغيل هذا التطبيق ما لم تحدِّث خدمات Google Play.</string>
+    <string name="common_google_play_services_network_error_title">خطأ في الشبكة</string>
+    <string name="common_google_play_services_network_error_text">‏يتطلب الاتصال بخدمات Google Play وجود اتصال بيانات.</string>
+    <string name="common_google_play_services_invalid_account_title">حساب غير صالح</string>
+    <string name="common_google_play_services_invalid_account_text">الحساب الذي تمّ تحديده غير موجود على الجهاز. يُرجى اختيار حساب آخر.</string>
+    <string name="common_google_play_services_unknown_issue">‏حدثت مشكلة غير معروفة في خدمات Google Play.</string>
+    <string name="common_google_play_services_unsupported_title">‏خدمات Google Play</string>
+    <string name="common_google_play_services_unsupported_text">‏خدمات Google Play التي تستجيب لها بعض تطبيقاتك لا تعمل على جهازك. يُرجى الاتصال بجهة التصنيع للحصول على المساعدة.</string>
+    <string name="common_google_play_services_unsupported_date_text">يبدو أن التاريخ على الجهاز غير صحيح. الرجاء التحقق من التاريخ على الجهاز.</string>
+    <string name="common_google_play_services_update_button">تحديث</string>
+    <string name="common_signin_button_text">تسجيل الدخول</string>
+    <string name="common_signin_button_text_long">‏تسجيل الدخول باستخدام Google</string>
+    <string name="auth_client_using_bad_version_title">‏يحاول أحد التطبيقات استخدام إصدار غير صالح من خدمات Google Play.</string>
+    <string name="auth_client_needs_enabling_title">‏يتطلب أحد التطبيقات تمكين خدمات Google Play.</string>
+    <string name="auth_client_needs_installation_title">‏يتطلب أحد التطبيقات تثبيت خدمات Google Play.</string>
+    <string name="auth_client_needs_update_title">‏يتطلب أحد التطبيقات تحديث خدمات Google Play.</string>
+    <string name="auth_client_play_services_err_notification_msg">‏خطأ في خدمات Google Play</string>
+    <string name="auth_client_requested_by_msg">تم الطلب عن طريق %1$s</string>
+    <string name="app_name">Pou بو</string>
+    <string name="welcome">^_^ مرحبا بكم في بو</string>
+    <string name="welcome_txt">"بو هو صديقك الصغير، يحب أن يأكل ويلعب!
+
+جر الطعام إلى فمه ليأكل!
+
+جربها الآن!"</string>
+    <string name="kitchen">مطبخ</string>
+    <string name="kitchen_tip">"جر الطعام إلى فم بو ليأكل!
+
+قم بزيارة المتجر لشراء المزيد من الطعام الذي سيتم تخزينه في الثلاجة!"</string>
+    <string name="bathroom">حمام</string>
+    <string name="bathroom_tip">"عندما يصبح بو قذر، قم بتنظيفه بالصابون والماء!
+
+يمكنك تخصيصهم من متجر!"</string>
+    <string name="lab">مختبر</string>
+    <string name="lab_tip">"إذا بو أصبح مريضا، استخدام جرعة الصحة (Health Potion)!
+
+قم بتجربة الجرع الأخرى الرائعة من المتجر!"</string>
+    <string name="gameroom">غرفة الألعاب</string>
+    <string name="gameroom_tip">"عندما يصبح بو حزيناً. إلعب معه من خلال رمي الكرة، أو عن طريق لعب بعض الألعاب!
+
+يجب أن تلعب الألعاب لجمع القطع النقدية!"</string>
+    <string name="bedroom">غرفة نوم</string>
+    <string name="bedroom_tip">"عندما يصبح بو نعسان، اضغط على المصباح لإطفائه!
+
+راجع الخزانة لتغيير ملابس بو! يمكنك شراء المزيد في المتجر!"</string>
+    <string name="adult_needs">بو يجب أن يكون راشدا لارتداء هذا!</string>
+    <string name="adult_use">انتظر حتى يكبر، أو استخدم جرعة تكبير الحجم الآن! (Adult Potion)</string>
+    <string name="wallpapers">ورق الحائط</string>
+    <string name="wallpapers_tip">"يمكنك تخصيص خلفية كل غرفة!
+
+راجع المتجر لمعرفة ما يمكنك تخصيصه في كل غرفة!"</string>
+    <string name="food">الغذاء</string>
+    <string name="food_tip">"بو لا يحب عندما تغذيه نفس الطعام مرارا وتكرارا.
+
+أيضا احرص على عدم إطعام بو أكثر من اللازم. يمكن أن يصبح بدينا!"</string>
+    <string name="fat">بدانة</string>
+    <string name="fat_tip">"إذا بو يصبح بدينا، انتظر منه العودة الى طبيعتهأو قم ممارسة اللعب في غرفة الألعاب!
+
+أو استخدم جرعة Fat Burner في المختبر!"</string>
+    <string name="too_tired">منهك</string>
+    <string name="too_tired_text">"بو متعب جدا للعب!
+إما اسمح له النوم، أو استخدم جرعة الطاقة (Energizer Potion)."</string>
+    <string name="cancel">إلغاء</string>
+    <string name="yes">نعم</string>
+    <string name="no">كلا</string>
+    <string name="login">دخول</string>
+    <string name="enter_your_email">أدخل بريدك الإلكتروني</string>
+    <string name="email_note">للعب مع بو السابق الخاص بك، أدخل بريدك الإلكتروني السابق.</string>
+    <string name="email_hint">your@email.com</string>
+    <string name="email_used">آسف، يتم استخدام هذا البريد الإلكتروني لحساب آخر. حاول مرة أخرى.</string>
+    <string name="new_user">^_^ مرحباً أيها البو الجديد</string>
+    <string name="confirm_email">هذا هو البريد الإلكتروني الخاص بك؟</string>
+    <string name="choose_your_nickname">اختر اللقب</string>
+    <string name="nickname_info">يمكن للأصدقاء حفظ اللقب الخاص بك! يمكنك تغييره لاحقا.</string>
+    <string name="nickname_taken">آسف، يتم استخدام هذا اللقب لحساب آخر. حاول مرة أخرى.</string>
+    <string name="nickname_invalid">"عذرا، اللقب غير صالح.
+مثلا: pou_123 (لا توجد مساحة)
+إبدأ بحرف، 3–15 أحرف"</string>
+    <string name="enter_your_password">أدخل كلمة المرور</string>
+    <string name="enter_new_password">إدخال كلمة مرور جديدة</string>
+    <string name="password_check">Email</string>
+    <string name="password_sent">أرسلنا لك كلمة سر جديدة ل#</string>
+    <string name="password_resend_button">ارسل لي كلمة سر جديدة</string>
+    <string name="password_incorrect">كلمة مرور غير صحيحة. تحقق من # وحاول مرة أخرى</string>
+    <string name="password_incorrect_old">كلمة المرور القديمة غير صحيحة</string>
+    <string name="password_changed">تم تغيير كلمة المرور بنجاح</string>
+    <string name="update_title">يجب عليك تحديث</string>
+    <string name="update_text">عذرا، يجب أن تقوم بتحديث برنامج للمتابعة.</string>
+    <string name="update_wait">إذا كنت لا تستطيع رؤية التحديث الآن ثم انتظر بضعة أيام.</string>
+    <string name="logout_title">*_* تسجيل الخروج؟</string>
+    <string name="logout_info">يمكنك أن تلعب مرة أخرى مع هذا بو عن طريق إدخال البريد الإلكتروني الخاص بك</string>
+    <string name="friends">زيارة الأصدقاء</string>
+    <string name="friends_tip">لزيارة الأصدقاء، اضغط على أيقونة الصغيرة بو واختر أصدقاء.</string>
+    <string name="enter_the_nickname">أدخل اللقب</string>
+    <string name="enter_the_email">أدخل البريد الإلكتروني</string>
+    <string name="friend_not_found">لم يتم العثور على صديق</string>
+</resources>

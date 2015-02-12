@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Hent Google Play-tjenester</string>
+    <string name="common_google_play_services_install_text_phone">Denne app kan ikke køre uden Google Play-tjenester, som mangler på din telefon.</string>
+    <string name="common_google_play_services_install_text_tablet">Denne app kan ikke køre uden Google Play-tjenester, som mangler på din tablet.</string>
+    <string name="common_google_play_services_install_button">Hent Google Play-tjenester</string>
+    <string name="common_google_play_services_enable_title">Aktivér Google Play-tjenester</string>
+    <string name="common_google_play_services_enable_text">Denne app virker ikke, medmindre du aktiverer Google Play-tjenester.</string>
+    <string name="common_google_play_services_enable_button">Aktivér Google Play-tjenester</string>
+    <string name="common_google_play_services_update_title">Opdater Google Play-tjenester</string>
+    <string name="common_google_play_services_update_text">Denne app kan ikke køre, medmindre du opdaterer Google Play-tjenester.</string>
+    <string name="common_google_play_services_network_error_title">Netværksfejl</string>
+    <string name="common_google_play_services_network_error_text">Der kræves en dataforbindelse for at oprette forbindelse til Google Play-tjenester.</string>
+    <string name="common_google_play_services_invalid_account_title">Ugyldig konto</string>
+    <string name="common_google_play_services_invalid_account_text">Den angivne konto findes ikke på denne enhed. Vælg en anden konto.</string>
+    <string name="common_google_play_services_unknown_issue">Ukendt problem med Google Play-tjenester.</string>
+    <string name="common_google_play_services_unsupported_title">Google Play-tjenester</string>
+    <string name="common_google_play_services_unsupported_text">Google Play-tjenester, som nogle af dine applikationer er afhængige af, understøttes ikke af din enhed. Kontakt producenten for at få hjælp.</string>
+    <string name="common_google_play_services_unsupported_date_text">Datoen på enheden ser ud til at være forkert. Husk at kontrollere datoen på enheden.</string>
+    <string name="common_google_play_services_update_button">Opdater</string>
+    <string name="common_signin_button_text">Log ind</string>
+    <string name="common_signin_button_text_long">Log ind med Google</string>
+    <string name="auth_client_using_bad_version_title">En applikation forsøgte at bruge en defekt version af Google Play.</string>
+    <string name="auth_client_needs_enabling_title">En applikation kræver, at Google Play er aktiveret.</string>
+    <string name="auth_client_needs_installation_title">En applikation kræver, at Google Play er installeret.</string>
+    <string name="auth_client_needs_update_title">En applikation kræver en opdatering af Google Play.</string>
+    <string name="auth_client_play_services_err_notification_msg">Fejl i Google Play-tjenester</string>
+    <string name="auth_client_requested_by_msg">Anmodning fra %1$s</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Velkommen til Pou ^_^</string>
+    <string name="welcome_txt">"Pou er din husdyrs rumvæsen der Elsker at spise og spille!
+
+Træk mad til Pou's mund for at fodre den!
+
+Prøv det nu!"</string>
+    <string name="kitchen">Køkken</string>
+    <string name="kitchen_tip">"Fodre Pou ved at trække mad mod dens mund!
+
+Besøg Butikken for at købe mere mad, som vil blive gemt i Køleskabet!"</string>
+    <string name="bathroom">Badeværelse</string>
+    <string name="bathroom_tip">"Når Pou er beskidt, vask den med sæbe og vand!
+
+Du kan tilpasse dem fra butikken!"</string>
+    <string name="lab">Laboratoriet</string>
+    <string name="lab_tip">"Hvis Pou er syg, brug en Livs Drik!
+
+Eksperimentere med andre seje Drikke fra Butikken!"</string>
+    <string name="gameroom">Spil Rummet</string>
+    <string name="gameroom_tip">"Når Pou er trist, leg med den ved at kaste bolden, eller ved at spille nogle Spil!
+
+Du bør spille Spil for at samle Mønter!"</string>
+    <string name="bedroom">Soveværelset</string>
+    <string name="bedroom_tip">"Når Pou er søvnig, tryk på Lampen for at slukke den!
+
+Kig i Skabet for at skifte Pou's tøj! Du kan købe mere i Butikken!"</string>
+    <string name="adult_needs">Pou skal være Voksen for at gå med dette!</string>
+    <string name="adult_use">Vent til Pou vokser op, eller brug en Voksen Drik nu!</string>
+    <string name="wallpapers">Tapet</string>
+    <string name="wallpapers_tip">"Du kan tilpasse hvert Rum's tapet!
+
+Tjek i Butikken for at se hvad du kan tilpasse hvert Rum med!"</string>
+    <string name="food">Mad</string>
+    <string name="food_tip">"Pou bryder sig ikke om at du fodre den med det samme mad igen og igen.
+
+Være også opmærksom på ikke at overfodre Pou. Den kan blive fed!"</string>
+    <string name="fat">Fedt</string>
+    <string name="fat_tip">"Hvis Pou bliver fed, vent til at den bliver normal igen eller træn den ved at spille spil i Spil Rummet!
+
+Eller brug en Fedt Brænderings Drik i Laboratoriet!"</string>
+    <string name="locked">Låst!</string>
+    <string name="locked_text">Denne ting er låst! Du kan enten vente indtil du oplåser den, eller oplås den nu for # mønter.</string>
+    <string name="not_enough_coins">Ikke nok mønter!</string>
+    <string name="coins_to_buy">Du skal bruge # mønter mere for at købe dette.</string>
+    <string name="coins_to_unlock">Du skal bruge # mønter mere for at oplåse dette.</string>
+    <string name="coins_collect_buy">Spil spil for at samle mønter, eller køb flere mønter nu!</string>
+    <string name="too_tired">For træt!</string>
+    <string name="too_tired_text">Pou er for træt til at spille! Enten lad den sove, eller brug en Energi Drik.</string>
+    <string name="cancel">Fortryd</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    <string name="login">Log ind</string>
+    <string name="enter_your_email">Indtast Din Email</string>
+    <string name="email_note">For at spille med din tidligere Pou, indtast din tidligere email.</string>
+    <string name="email_hint">din@email.dk</string>
+    <string name="email_used">Beklager, emailen er allerede blevet brugt til en anden bruger. Prøv igen.</string>
+    <string name="new_user">Hej, Nye Pou ^_^</string>
+    <string name="confirm_email">Er dette din email?</string>
+    <string name="choose_your_nickname">Vælg Dit Brugernavn</string>
+    <string name="nickname_info">"Venner kan huske din Pou's brugernavn! Du kan ændre det senere."</string>
+    <string name="nickname_taken">Beklager, brugernavn allerede taget. Prøv igen.</string>
+    <string name="nickname_invalid">"Beklager, brugernavn ikke mulig.
+F.eks: Pou_123 (ingen mellemrum)
+Start med bogstaver, 3–15 max."</string>
+    <string name="enter_your_password">Indtast Din Adgangskode</string>
+    <string name="enter_new_password">Indtast en ny adgangskode</string>
+    <string name="password_check">Email</string>
+    <string name="password_sent">Vi sender dig en ny adgangskode til #</string>
+    <string name="password_resend_button">Send mig en ny adgangskode</string>
+    <string name="password_incorrect">Forkert adgangskode. Check # og prøv igen</string>
+    <string name="password_incorrect_old">Gamle adgangskode forkert</string>
+    <string name="password_changed">Adgangskode ændret</string>
+    <string name="update_title">Du Skal Opdatere</string>
+    <string name="update_text">Beklager, du skal opdatere appen for at fortsætte.</string>
+    <string name="update_wait">Hvis du ikke kan se opdateringen nu, vent et par dage.</string>
+    <string name="logout_title">Log ud? *_*</string>
+    <string name="logout_info">Du kan spille igen med denne Pou ved at indtaste din email</string>
+    <string name="friends">Venner</string>
+    <string name="friends_tip">"Du kan besøge andre Pous!
+
+Tryk på det lille Pou ikon og vælg Venner!"</string>
+    <string name="enter_the_nickname">Indtast Brugernavn</string>
+    <string name="enter_the_email">Indtast Email</string>
+    <string name="friend_not_found">Ven Ikke Fundet</string>
+</resources>

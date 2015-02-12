@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Installa Google Play Services</string>
+    <string name="common_google_play_services_install_text_phone">"L'app non funzionerà senza Google Play Services, non presente sul tuo telefono."</string>
+    <string name="common_google_play_services_install_text_tablet">"L'app non funzionerà senza Google Play Services, non presente sul tuo tablet."</string>
+    <string name="common_google_play_services_install_button">Installa Google Play Services</string>
+    <string name="common_google_play_services_enable_title">Attiva Google Play Services</string>
+    <string name="common_google_play_services_enable_text">"L'app non funzionerà se non attivi Google Play Services."</string>
+    <string name="common_google_play_services_enable_button">Attiva Google Play Services</string>
+    <string name="common_google_play_services_update_title">Aggiorna Google Play Services</string>
+    <string name="common_google_play_services_update_text">"L'app non funzionerà se non aggiorni Google Play Services."</string>
+    <string name="common_google_play_services_network_error_title">Errore di rete</string>
+    <string name="common_google_play_services_network_error_text">È necessaria una connessione dati per connettersi a Google Play Services.</string>
+    <string name="common_google_play_services_invalid_account_title">Account non valido</string>
+    <string name="common_google_play_services_invalid_account_text">"L'account specificato non esiste su questo dispositivo. Scegli un altro account."</string>
+    <string name="common_google_play_services_unknown_issue">Problema sconosciuto con Google Play Services.</string>
+    <string name="common_google_play_services_unsupported_title">Google Play Services</string>
+    <string name="common_google_play_services_unsupported_text">La piattaforma Google Play Services, su cui sono basate alcune delle tue applicazioni, non è supportata dal dispositivo in uso. Per assistenza, contatta il produttore.</string>
+    <string name="common_google_play_services_unsupported_date_text">La data sul dispositivo sembra sbagliata. Controllala.</string>
+    <string name="common_google_play_services_update_button">Aggiorna</string>
+    <string name="common_signin_button_text">Accedi</string>
+    <string name="common_signin_button_text_long">Accedi con Google</string>
+    <string name="auth_client_using_bad_version_title">"Un'app ha tentato di usare una versione non valida di Play Services."</string>
+    <string name="auth_client_needs_enabling_title">"Un'applicazione richiede l'attivazione di Google Play Services."</string>
+    <string name="auth_client_needs_installation_title">"Un'applicazione richiede l'installazione di Google Play Services."</string>
+    <string name="auth_client_needs_update_title">"Un'applicazione richiede un aggiornamento di Google Play Services."</string>
+    <string name="auth_client_play_services_err_notification_msg">Errore Google Play Services</string>
+    <string name="auth_client_requested_by_msg">Richiesta da %1$s</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Benvenuti a Pou ^_^</string>
+    <string name="welcome_txt">"Pou è il tuo cuccciolo che ama mangiare e giocare!
+
+Trascinare il cibo fino alla bocca Pou per poter dargli a mangiare!
+
+Provalo subito!"</string>
+    <string name="kitchen">Cucina</string>
+    <string name="kitchen_tip">"Dare a mangiare a Pou, trascinando il cibo verso la sua bocca!
+
+Visita il negozio per comprare più cibo che verrà conservato in frigorifero!"</string>
+    <string name="bathroom">Stanza da Bagno</string>
+    <string name="bathroom_tip">"Quando Pou è sporco, pulirlo con il sapone ed acqua!
+
+Si possono personalizzare in negozio!"</string>
+    <string name="lab">Laboratorio</string>
+    <string name="lab_tip">"Se Pou è malato, utilizza il Kit Medico!
+
+Esperimenta con altre pozioni dal negozio!"</string>
+    <string name="gameroom">Sala Giochi</string>
+    <string name="gameroom_tip">"Quando Pou è triste, gioca con lui gettandogli la palla, o dallo a giocare con alcuni altri giochi!
+
+Si dovrebbe giocare Giochi per raccogliere le monete!"</string>
+    <string name="bedroom">Camera da letto</string>
+    <string name="bedroom_tip">"Quando Pou è assonnato, fa clic sulla lampada per spegnerla!
+
+Verifica l'armadio per cambiare i vestiti di Pou! È possibile acquistare di più in negozio!"</string>
+    <string name="adult_needs">Pou deve essere un adulto per indossare questa!</string>
+    <string name="adult_use">Aspetta fino a quando Pou cresce, o utilizza una pozione Adulto ora!</string>
+    <string name="wallpapers">Sfondi</string>
+    <string name="wallpapers_tip">"È possibile personalizzare sfondi di ogni stanza!
+
+Controlla il negozio per vedere cosa è possibile personalizzare in ogni camera!"</string>
+    <string name="food">Cibo</string>
+    <string name="food_tip">"A Pou, non piace lo stesso cibo più volte.
+
+Fa anche attenzione a l'ipernutrizione. Pou diventa grasso!"</string>
+    <string name="fat">Grasso</string>
+    <string name="fat_tip">"Se Pou diventa grasso, aspetta che lui torna alla normalità o l'esercizio da giocare nella sala da giochi!
+
+Oppure utilizza una pozione Fat Burner nel laboratorio!"</string>
+    <string name="locked">Bloccato!</string>
+    <string name="locked_text">Questo articolo è sotto chiave. Aspetta che si sblocca o aprilo subito con # monete.</string>
+    <string name="not_enough_coins">Monete Insufficienti!</string>
+    <string name="coins_to_buy">Hai bisogno di # monete di più per acquistare questo.</string>
+    <string name="coins_to_unlock">Hai bisogno di # monete di più per sbloccare questo.</string>
+    <string name="coins_collect_buy">Gioca per raccogliere le monete, o compra più monete ora!</string>
+    <string name="too_tired">Troppo Stanco!</string>
+    <string name="too_tired_text">Pou è troppo stanco per giocare! Lascialo dormire, non utilizzare una pozione Energizer.</string>
+    <string name="cancel">Cancellare</string>
+    <string name="yes">Sì</string>
+    <string name="no">No</string>
+    <string name="login">Accesso</string>
+    <string name="enter_your_email">Inserisci il tuo e-mail</string>
+    <string name="email_note">Per giocare con il tuo precedente Pou, metti il tuo indirizzo email precedente.</string>
+    <string name="email_hint">your@email.com</string>
+    <string name="email_used">Ci dispiace,il e-mail è già preso da un altro acconto. Prova di nuovo.</string>
+    <string name="new_user">Ciao, Nuovo Pou ^_^</string>
+    <string name="confirm_email">Riconferma il tuo e-mail</string>
+    <string name="choose_your_nickname">Scegli il tuo Nickname</string>
+    <string name="nickname_info">Gli amici possono memorizzare il tuo soprannome Pou. È possibile modificarlo in seguito.</string>
+    <string name="nickname_taken">Ci dispiace, soprannome già preso. Prova di nuovo.</string>
+    <string name="nickname_invalid">Ci dispiace, soprannome invalido.sempio: pou_123 (senza spazio)nizia con una lettera, 3–15 max</string>
+    <string name="enter_your_password">Inserisci il tuo password</string>
+    <string name="enter_new_password">Inserisci un nuovo password</string>
+    <string name="password_check">Email</string>
+    <string name="password_sent">Ti abbiamo inviato un nuovo password a #</string>
+    <string name="password_resend_button">Inviami un nuovo password</string>
+    <string name="password_incorrect">Password incorretto. Verificare # e riprovare</string>
+    <string name="password_incorrect_old">Vecchio password incorretto</string>
+    <string name="password_changed">Password modificato</string>
+    <string name="update_title">È necessario aggiornare</string>
+    <string name="update_text">"Ci dicpiace, è necessario aggiornare l'applicazione per continuare."</string>
+    <string name="update_wait">"Se non è possibile visualizzare l'aggiornamento ora, si deve aspettare qualche giorno."</string>
+    <string name="logout_title">Disconnettiti? *_*</string>
+    <string name="logout_info">Si può giocare di nuovo con questo Pou inserendo il tuo email</string>
+    <string name="friends">Amici</string>
+    <string name="friends_tip">"È possibile visitare altri Pou!
+
+Fa clic sulla piccola icona Pou quindi seleziona Amici!"</string>
+    <string name="enter_the_nickname">Inserisci il Nickname</string>
+    <string name="enter_the_email">"Inserisci l'email"</string>
+    <string name="friend_not_found">Pou introvabile</string>
+</resources>

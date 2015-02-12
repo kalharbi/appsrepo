@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Inštalovať služby Google Play</string>
+    <string name="common_google_play_services_install_text_phone">Na spustenie tejto aplikácie sa vyžadujú služby Google Play, ktoré v telefóne nemáte.</string>
+    <string name="common_google_play_services_install_text_tablet">Na spustenie tejto aplikácie sa vyžadujú služby Google Play, ktoré v tablete nemáte.</string>
+    <string name="common_google_play_services_install_button">Inštalovať služby Google Play</string>
+    <string name="common_google_play_services_enable_title">Povoliť služby Google Play</string>
+    <string name="common_google_play_services_enable_text">Táto aplikácia bude fungovať až po povolení služieb Google Play.</string>
+    <string name="common_google_play_services_enable_button">Povoliť služby Google Play</string>
+    <string name="common_google_play_services_update_title">Aktualizovať služby Google Play</string>
+    <string name="common_google_play_services_update_text">Túto aplikáciu bude možné spustiť až po aktualizácii služieb Google Play.</string>
+    <string name="common_google_play_services_network_error_title">Chyba siete</string>
+    <string name="common_google_play_services_network_error_text">Pripojenie k službám Google Play si vyžaduje dátové pripojenie.</string>
+    <string name="common_google_play_services_invalid_account_title">Neplatný účet</string>
+    <string name="common_google_play_services_invalid_account_text">Zadaný účet v tomto zariadení neexistuje. Vyberte iný účet.</string>
+    <string name="common_google_play_services_unknown_issue">Neznámy problém so službami Google Play.</string>
+    <string name="common_google_play_services_unsupported_title">Služby Google Play</string>
+    <string name="common_google_play_services_unsupported_text">Niektoré vaše aplikácie vyžadujú služby Google Play, ktoré vo vašom zariadení nie sú podporované. Ak potrebujete pomoc, kontaktujte výrobcu.</string>
+    <string name="common_google_play_services_unsupported_date_text">Dátum nastavený v zariadení sa zdá byť nesprávny. Skontrolujte ho.</string>
+    <string name="common_google_play_services_update_button">Aktualizovať</string>
+    <string name="common_signin_button_text">Prihlásiť sa</string>
+    <string name="common_signin_button_text_long">Prihlásiť sa do účtu Google</string>
+    <string name="auth_client_using_bad_version_title">Aplikácia sa pokúsila použiť nesprávnu verziu služieb Google Play.</string>
+    <string name="auth_client_needs_enabling_title">Aplikácia vyžaduje povolenie služieb Google Play.</string>
+    <string name="auth_client_needs_installation_title">Aplikácia vyžaduje inštaláciu služieb Google Play.</string>
+    <string name="auth_client_needs_update_title">Aplikácia vyžaduje aktualizáciu služieb Google Play.</string>
+    <string name="auth_client_play_services_err_notification_msg">Chyba služieb Google Play</string>
+    <string name="auth_client_requested_by_msg">Vyžiadané aplikáciou %1$s</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Vitajte Pou ^_^</string>
+    <string name="welcome_txt">"Pou je tvôj miláčik ktorý MILUJE papkať a hrať sa!
+
+Schmatnite jedlo do ruky, a nakŕmte svojho Pou!
+
+Skús to!"</string>
+    <string name="kitchen">Kuchyňa</string>
+    <string name="kitchen_tip">"Nakŕmte Poua priložením jedla k jeho úst!
+
+Navštívte obchod pre kúpu jedla, ktoré budú sa uložia do chladničky!"</string>
+    <string name="bathroom">Kúpeľňa</string>
+    <string name="bathroom_tip">"Ak je Pou špinavý, umyte ho voda a mydlo!
+
+Môžete prispôsobiť im v obchode!"</string>
+    <string name="lab">Laboratórium</string>
+    <string name="lab_tip">"Ak je Pou chorý, použite lektvar na zdravie!
+
+Experimentujte s ďalšími super lektvarmi z obchodu!"</string>
+    <string name="gameroom">Hracia miestnosť</string>
+    <string name="gameroom_tip">"Ak je Pou smutný, hoďte mu loptičku alebo si s ním zahrajte nejaké hry!
+
+Mali by ste sa s ním hrať hry pre zber mincí!"</string>
+    <string name="bedroom">Spálňa</string>
+    <string name="bedroom_tip">"Ak je Pou ospalý, dotknite sa lampy aby ste ju vypli!
+
+Pozrite si skryňu na zmenu Pouho oblečenia! V obchode si oblečenie ešte môžeťe dokúpiť!"</string>
+    <string name="hall">Hala</string>
+    <string name="hall_tip">Rozprávaj do mikrofónu, Pou ti bude odvrávať!</string>
+    <string name="adult_needs">Pou musí byť dospelý aby to mohol nosiť!</string>
+    <string name="adult_use">Počkajte, kým Pou vyrastie, alebo použite lektvar dospelosti!</string>
+    <string name="wallpapers">Tapety</string>
+    <string name="wallpapers_tip">"V každej izbe si môžete prispôsobiť tapetu!
+
+Pozrite si obchod aby ste videli ako si môžete prispôsobovať tapety izieb!"</string>
+    <string name="food">Jedlo</string>
+    <string name="food_tip">"Pou nemá rád, ak ho kŕmíte stále rovnakým jedlom.
+
+Dávajte si tiež pozor aby ste Poua neprepchali. Môže pribrať!"</string>
+    <string name="fat">Tuk</string>
+    <string name="fat_tip">"Ak Pou bude tučný, čakajte kým sa vráti k normálu, alebo zvýšte jeho výkon tým, že budete hrať hry v hracej miestnosti! 
+
+Alebo použite spaľovač tukov v laboratóriu!"</string>
+    <string name="locked">Zamknuté</string>
+    <string name="locked_text">Táto vec je zamknutá! Môžete počkať, až sa odomkne, alebo ho odomknúť teraz za # mincí.</string>
+    <string name="not_enough_coins">Nedostatok mincí!</string>
+    <string name="coins_to_buy">Potrebujete # mincí, aby ste si tento produkt mohli kúpiť.</string>
+    <string name="coins_to_unlock">Potrebujete # mincí, aby ste mohli odomknúť tento produkt.</string>
+    <string name="coins_collect_buy">Hrajte hry a zbierajte mince, alebo si kúpte mince teraz!</string>
+    <string name="too_tired">Príliš unavený</string>
+    <string name="too_tired_text">Pou je príliš unavený na hry! Buď ho nechaj spať alebo použi energetický lektvar.</string>
+    <string name="game1_desc">Kŕmte Pou! Dávajte si pozor aby ste ho nekŕmili zlými vecami!</string>
+    <string name="game2_desc">Ako vysoko Pou vyskáče? Snažte sa skočiť na čo najviac plošín bez pádu!</string>
+    <string name="game3_desc">Pou rád padá! Dávajte si pozor, aby ste sa nezrazili so žiadným oblakom!</string>
+    <string name="game4_desc">Zoraď troch alebo viacerých susediacich Pou rovnakej farby predtým než čas vyprší!</string>
+    <string name="game5_desc">Dotknite sa smutných Pou! Ale dávajte si pozor aby ste sa nedotkli šťastných!</string>
+    <string name="game6_desc">Zapamätajte si poradie zvukov! Dotknite sa Pouov v správnom poradí!</string>
+    <string name="game7_desc">Strelte Pou aby ste zhodili všetkých Pou! Dávajte si pozor aby ste nedosiahli dolnú časť!</string>
+    <string name="game8_desc">Zahrajte si s priateľmi klasickú Tic Tac Toe!</string>
+    <string name="game9_desc">Zoraď 4 Pou do riadku, stĺpca alebo diagonálne! Zahrajte si on-line s priateľmi!</string>
+    <string name="game10_desc">"Kde je Pou?
+Pod ktorou šálkou?"</string>
+    <string name="game_ate_bad">Pou zjedol zlú vec!</string>
+    <string name="game_missed_x">Zmeškal si #!</string>
+    <string name="game_fell">Ty si prehral!</string>
+    <string name="game_hit_x_clouds">Dotkol si sa # oblakov!</string>
+    <string name="game_time_up">Čas vypršal!</string>
+    <string name="game_tapped_x_happy">Dotknutých # šťastných Pou!</string>
+    <string name="game_no_space">Nieje viac miestností!</string>
+    <string name="game_nobody_wins">Nikto nevyhral!</string>
+    <string name="game_you_win">Vyhral si!</string>
+    <string name="game_x_wins">\# vyhral!</string>
+    <string name="game_your_turn">Si na rade!</string>
+    <string name="game_x_turn">\# je na rade!</string>
+    <string name="game_giveup">Vzdať sa? :(</string>
+    <string name="game_giveup_text">Chcete sa vzdať?</string>
+    <string name="game_giveup_lose">Ak tak urobíte, stratíte všetko!</string>
+    <string name="game_gaveup">Vzdali ste sa!</string>
+    <string name="game_wrong_pou">Nesprávny Pou!</string>
+    <string name="game_wrong_cup">Nesprávna šálka!</string>
+    <string name="pou_store">Obchod Pou</string>
+    <string name="pou_store_text">Chcete navštíviť obchod Pou, kde si môžete kúpiť skutočné veci, ako hrnčeky a tričká?</string>
+    <string name="cancel">Zrušiť</string>
+    <string name="yes">Áno</string>
+    <string name="no">Nie</string>
+    <string name="login">Prihlásiť sa</string>
+    <string name="enter_your_email">Zadajte Váš e-mail</string>
+    <string name="email_note">Ak chcete hrať s predchádzajúcou Pou, zadajte svoj predchádzajúci e-mail.</string>
+    <string name="email_hint">tvoj@email.com</string>
+    <string name="email_used">Je nám ľúto, tento email už používa na iný účet. Skúste to znova.</string>
+    <string name="new_user">Ahoj, Nový Pou ^_^</string>
+    <string name="confirm_email">Ste si istý, že je to vaša e-mailová adresa?</string>
+    <string name="login_error">Oh nie! Nastal problém s načítaním POU. Skúste to prosím znovu alebo nás kontaktujte.</string>
+    <string name="choose_your_nickname">Vyberte si užívateľské meno</string>
+    <string name="nickname_info">Priateľia si budú pamätať vaše meno. Môžete si ho neskôr aj zmeniť.</string>
+    <string name="nickname_taken">Je nám to ľúto, táto prezývka sa už používa. Skúste inú.</string>
+    <string name="nickname_invalid">"Je nám to ľúto, prezývka nie je platná.
+Vzor: pou_123 (bezmedzeri)
+Začínajte písmenami, 3–15 max"</string>
+    <string name="enter_your_password">Zadajte svoje heslo</string>
+    <string name="enter_new_password">Zadajte nové heslo</string>
+    <string name="password_check">Email</string>
+    <string name="password_sent">Poslali sme Vám nové heslo na #</string>
+    <string name="password_resend_button">Zašlite mi nové heslo</string>
+    <string name="password_incorrect">Nesprávne heslo. Skontrolujte # a skúste znovu</string>
+    <string name="password_incorrect_old">Staré heslo nie je správne</string>
+    <string name="password_changed">Heslo bolo zmenené</string>
+    <string name="password_memorize">Prosím zapamätajte si! ^_^</string>
+    <string name="update_title">Musíte aktualizovať</string>
+    <string name="update_text">Je nám ľúto, musíte si aktualizovať aplikáciu pre pokračovanie.</string>
+    <string name="update_wait">Ak sa vám nezobrazuje aktualizácia, počkajte niekoľko dní.</string>
+    <string name="logout_title">Odhlásiť sa? *_*</string>
+    <string name="logout_info">Môžete hrať znovu s týmto Pou po zadaní svojho e-mailu</string>
+    <string name="friends">Kamaráti</string>
+    <string name="friends_tip">"Môžete navštíviť ostatných Pouv!
+
+Dotknite sa malej ikonky Pou a potom si vyberte Priatelia!"</string>
+    <string name="enter_the_nickname">Vložte užívateľské meno</string>
+    <string name="enter_the_email">Zadajte Váš e-mail</string>
+    <string name="friend_not_found">Priateľ - Nenašiel sa</string>
+    <string name="msg_1">Hello #! ^_^</string>
+    <string name="msg_2">Ako sa máš?</string>
+    <string name="msg_3">Je mi fajn diky!</string>
+    <string name="msg_4">Si ňuňu! ^_^</string>
+    <string name="msg_5">Pekný dom!</string>
+    <string name="msg_6">Pekné šaty!</string>
+    <string name="msg_7">Super lopta!</string>
+    <string name="msg_8">Super vecičky!</string>
+    <string name="msg_9">Mám ťa rád! ^_^</string>
+    <string name="msg_10">Buďme priatelia!</string>
+    <string name="msg_11">Vďaka za sympatie!</string>
+    <string name="msg_12">Poďme sa hrať!</string>
+    <string name="msg_13">Gratulujem!</string>
+    <string name="msg_14">Díky! ^_^</string>
+    <string name="msg_15">Pekný deň!</string>
+    <string name="msg_16">Dobrú noc! Zzz</string>
+</resources>

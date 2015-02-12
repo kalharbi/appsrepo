@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Pobierz Usługi Google Play</string>
+    <string name="common_google_play_services_install_text_phone">Ta aplikacja nie będzie działać bez Usług Google Play, których nie masz na telefonie.</string>
+    <string name="common_google_play_services_install_text_tablet">Ta aplikacja nie będzie działać bez Usług Google Play, których nie masz na tablecie.</string>
+    <string name="common_google_play_services_install_button">Pobierz Usługi Google Play</string>
+    <string name="common_google_play_services_enable_title">Włącz Usługi Google Play</string>
+    <string name="common_google_play_services_enable_text">Ta aplikacja nie będzie działać, jeśli nie włączysz Usług Google Play.</string>
+    <string name="common_google_play_services_enable_button">Włącz Usługi Google Play</string>
+    <string name="common_google_play_services_update_title">Aktualizuj Usługi Google Play</string>
+    <string name="common_google_play_services_update_text">Ta aplikacja nie będzie działać, jeśli nie zaktualizujesz Usług Google Play.</string>
+    <string name="common_google_play_services_network_error_title">Błąd sieci</string>
+    <string name="common_google_play_services_network_error_text">Korzystanie z usług Google Play wymaga połączenia z internetem.</string>
+    <string name="common_google_play_services_invalid_account_title">Nieprawidłowe konto</string>
+    <string name="common_google_play_services_invalid_account_text">Podanego konta nie ma na tym urządzeniu. Wybierz inne konto.</string>
+    <string name="common_google_play_services_unknown_issue">Nieznany problem z Usługami Google Play.</string>
+    <string name="common_google_play_services_unsupported_title">Usługi Google Play</string>
+    <string name="common_google_play_services_unsupported_text">Usługi Google Play, od których zależy działanie niektórych aplikacji, nie są obsługiwane na Twoim urządzeniu. Skontaktuj się z producentem, by uzyskać pomoc.</string>
+    <string name="common_google_play_services_unsupported_date_text">Data ustawiona na urządzeniu wydaje się nieprawidłowa. Sprawdź datę ustawioną na urządzeniu.</string>
+    <string name="common_google_play_services_update_button">Aktualizuj</string>
+    <string name="common_signin_button_text">Zaloguj się</string>
+    <string name="common_signin_button_text_long">Zaloguj się przez Google</string>
+    <string name="auth_client_using_bad_version_title">Aplikacja próbowała skorzystać z nieprawidłowej wersji Usług Google Play.</string>
+    <string name="auth_client_needs_enabling_title">Aplikacja wymaga włączenia Usług Google Play.</string>
+    <string name="auth_client_needs_installation_title">Aplikacja wymaga zainstalowania Usług Google Play.</string>
+    <string name="auth_client_needs_update_title">Aplikacja wymaga aktualizacji Usług Google Play.</string>
+    <string name="auth_client_play_services_err_notification_msg">Błąd usług Google Play</string>
+    <string name="auth_client_requested_by_msg">Żądanie z aplikacji %1$s</string>
+    <string name="welcome">Witamy Pou! ^_^</string>
+    <string name="welcome_txt">"Pou jest Twoim pupilem, który uwielbia jeść i grać!
+
+Twój pupil jest głodny, nakarm go!
+
+Zaopiekuj się nim teraz."</string>
+    <string name="kitchen">Kuchnia</string>
+    <string name="kitchen_tip">"Nakarm Pou przeciągając jedzenie do jego ust!
+
+Odwiedź sklep, aby kupić więcej jedzenia, które będą przechowywane w lodówce!"</string>
+    <string name="bathroom">Łazienka</string>
+    <string name="bathroom_tip">"Kiedy Pou jest brudny, wyczyść go za pomocą mydła i wody.
+
+Można dostosować je w sklepie!"</string>
+    <string name="lab">Lab</string>
+    <string name="lab_tip">"Gdy Pou jest chory użyj mikstury leczącej
+
+Możesz eksperymentować także z innymi miksturami w sklepie."</string>
+    <string name="gameroom">Pokój Gier</string>
+    <string name="gameroom_tip">"Kiedy Pou jest smutny i znudzony, pobaw się z nim piłką, lub zagraj w gry!
+
+Graj w gry w sali gier, aby zdobyć monety!"</string>
+    <string name="bedroom">Sypialnia</string>
+    <string name="bedroom_tip">"Kiedy Pou jest zmęczony wyłacz lampkę, aby zasnął.
+
+Sprawdź Closet w celu zmiany ubrania swojego pupila. Można kupić więcej ubrań w sklepie!"</string>
+    <string name="adult_needs">Pou musi dorosły aby ubrać to!</string>
+    <string name="adult_use">Poczekaj aż urośnie albo użyj Mikstury Dojrzewania (Adult)!</string>
+    <string name="wallpapers">Tapeta</string>
+    <string name="wallpapers_tip">"Możesz dostosowac wygląd scian w każdym pokoju!
+
+Wejdź do sklepu i przejrzyj tapety na ściany."</string>
+    <string name="food">Jedzenie</string>
+    <string name="food_tip">"Pou nie lubi, kiedy jest karmiony ciągle tym samym jedzeniem.
+
+Należy także uważać, aby nie objadać Pou. Może przytyć!"</string>
+    <string name="fat">Gruby</string>
+    <string name="fat_tip">"Jeśli Pou staje gruby, czekaj aby schudnął, lub graj w gry!
+
+Możesz użyć mikstury odchudzającej (Fat Burner) w laboratorium!"</string>
+    <string name="locked">Zablokowane</string>
+    <string name="locked_text">Ten element jest zablokowany! Mozesz poczekac, az go odblokujesz, lub odblokowac go teraz za # monet.</string>
+    <string name="not_enough_coins">Za malo monet</string>
+    <string name="coins_to_buy">Potrzebujesz wiecej monet o # aby to kupic</string>
+    <string name="coins_to_unlock">Potrzebujesz wiecej monet o # aby to odblokowac</string>
+    <string name="coins_collect_buy">Graj w gry aby zbierac monety lub kup je teraz!</string>
+    <string name="too_tired">Zbyt Zmęczony</string>
+    <string name="too_tired_text">Pou jest zbyt zmęczony aby grać! Niech pójdzie spać albo użyj Mikstury Energii.</string>
+    <string name="game1_desc">Nakarm Pou! Pamietaj o tym, glodny Pou jest smutny!</string>
+    <string name="game2_desc">Jak wysoko skoczy Pou? Staraj sie skakac tak aby uniknac upadku!</string>
+    <string name="game3_desc">Pou lubi spadac! Uwazaj, unikaj chmur!</string>
+    <string name="game4_desc">Dopsuj trzy lub wiecej elementów tego samego koloru zanim uplynie czas!</string>
+    <string name="game5_desc">Dotknij smutnego Pou! Uwazaj, nie dotykaj tych szczesliwych!</string>
+    <string name="game6_desc">Zapamietaj sekwencje muzyki! Dotknij odpowiednich Pou!</string>
+    <string name="game7_desc">Rozbij wszystkie Pou! Uwazaj, nie dotknij dna!</string>
+    <string name="game8_desc">Zagraj z przyjaciólmi w Tic Tac Toe!</string>
+    <string name="game9_desc">Dopasuj 4 Pou w rzedzie, kolumnie lub po luku! Graj w sieci z przyjaciólmi!</string>
+    <string name="game10_desc">Gdzie jest Pou! Pod którym kubkiem?</string>
+    <string name="game_ate_bad">Pou zjadl cos zlego!</string>
+    <string name="game_missed_x">Nie trafiles #!</string>
+    <string name="game_fell">Spadles!</string>
+    <string name="game_hit_x_clouds">Uderzyles # w chmury!</string>
+    <string name="game_time_up">Czas minal!</string>
+    <string name="game_tapped_x_happy">Dotknales szczesliwego Pou!</string>
+    <string name="game_no_space">Brak miejsca</string>
+    <string name="game_nobody_wins">Nikt nie wygrywa</string>
+    <string name="game_you_win">Wygrales!</string>
+    <string name="game_x_wins">\# Wygranych</string>
+    <string name="game_your_turn">Twoja kolej</string>
+    <string name="game_x_turn">\# kolejka</string>
+    <string name="game_giveup">Poddajesz sie?</string>
+    <string name="game_giveup_text">Chcesz sie poddac?</string>
+    <string name="game_giveup_lose">Jesli tak, przegrasz tym razem.</string>
+    <string name="game_gaveup">Poddal sie</string>
+    <string name="game_wrong_pou">Zly Pou!</string>
+    <string name="game_wrong_cup">Zly kubek!</string>
+    <string name="pou_store">Sklep Pou</string>
+    <string name="pou_store_text">Czy chcesz odwiedzic sklep Pou, gdzie mozesz kupic kubki i koszulki?</string>
+    <string name="cancel">Anuluj</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="enter_your_email">Wpisz swój email</string>
+    <string name="email_note">Aby grać z poprzedniego Pou, podaj swój poprzedni adres e-mail.</string>
+    <string name="email_used">Przepraszamy, email jest już używany na innym koncie. Spróbuj jeszcze raz.</string>
+    <string name="new_user">Witam, nowy Pou!</string>
+    <string name="confirm_email">Czy to Twój email?</string>
+    <string name="choose_your_nickname">Wybierz nazwę</string>
+    <string name="nickname_info">Znajomi moga zapamiętać pseudonim Twojego Pou. Możesz go zmienić później.</string>
+    <string name="nickname_taken">Przepraszamy, nazwa zajęta. Spróbuj inną.</string>
+    <string name="nickname_invalid">"Wybrana nazwa nie może być używana.
+Przykład: pou_123 (bez spacji)
+ 3–15 znaków maksymalnie"</string>
+    <string name="enter_your_password">Wpisz swoje hasło</string>
+    <string name="enter_new_password">Wprowadź nowe hasło</string>
+    <string name="password_sent">Wysłaliśmy Ci nowe hasło na #</string>
+    <string name="password_resend_button">Wyślij mi nowe hasło</string>
+    <string name="password_incorrect">Błędne hasło. Sprawdź # i spróbuj ponownie</string>
+    <string name="password_incorrect_old">Stare hasło niepoprawne</string>
+    <string name="password_changed">Hasło zostało zmienione</string>
+    <string name="update_title">Aktualizuj</string>
+    <string name="update_text">Przepraszamy, musisz zaktualizować aplikację, aby kontynuować.</string>
+    <string name="update_wait">Jeśli nie możesz zobaczyć aktualizacji teraz to poczekaj kilka dni.</string>
+    <string name="logout_title">Wylogować?</string>
+    <string name="logout_info">Możesz grać ponownie tym Pou wpisując swój email</string>
+    <string name="friends">Przyjaciele</string>
+    <string name="friends_tip">"Możesz odwiedzić inne Pou!
+
+Wejdź do menu i wybierz zakładkę Friends."</string>
+    <string name="enter_the_nickname">Wpisz nazwę</string>
+    <string name="enter_the_email">Wpisz email</string>
+    <string name="friend_not_found">Podany znajomy nie został odnaleziony.</string>
+    <string name="msg_1">Witaj #! ^_^</string>
+    <string name="msg_2">Jak sie masz?</string>
+    <string name="msg_3">Dobrze, dziekuje!</string>
+    <string name="msg_4">Jestes slodki!</string>
+    <string name="msg_5">Ladny dom!</string>
+    <string name="msg_6">Fajne ubranie!</string>
+    <string name="msg_7">Super pilka!</string>
+    <string name="msg_8">Wspaniale osiagniecia!</string>
+    <string name="msg_9">Lubie Cie!</string>
+    <string name="msg_10">Zostanmy przyjaciólmi!</string>
+    <string name="msg_11">Dziekuje, ze mnie lubisz!</string>
+    <string name="msg_12">Zagrajmy razem!</string>
+    <string name="msg_13">Gratuluje!</string>
+    <string name="msg_14">Dziekuje!</string>
+    <string name="msg_15">Milego dnia!</string>
+    <string name="msg_16">Dobranoc! Zzz</string>
+</resources>

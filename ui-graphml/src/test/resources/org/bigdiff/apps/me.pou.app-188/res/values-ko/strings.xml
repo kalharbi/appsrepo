@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Google Play 서비스 설치</string>
+    <string name="common_google_play_services_install_text_phone">휴대전화에 Google Play 서비스가 설치되어 있어야 이 앱이 실행됩니다.</string>
+    <string name="common_google_play_services_install_text_tablet">태블릿에 Google Play 서비스가 설치되어 있어야 이 앱이 실행됩니다.</string>
+    <string name="common_google_play_services_install_button">Google Play 서비스 설치</string>
+    <string name="common_google_play_services_enable_title">Google Play 서비스 사용</string>
+    <string name="common_google_play_services_enable_text">Google Play 서비스를 사용하도록 설정해야 이 앱이 작동합니다.</string>
+    <string name="common_google_play_services_enable_button">Google Play 서비스 사용</string>
+    <string name="common_google_play_services_update_title">Google Play 서비스 업데이트</string>
+    <string name="common_google_play_services_update_text">Google Play 서비스를 업데이트해야만 이 앱이 실행됩니다.</string>
+    <string name="common_google_play_services_network_error_title">네트워크 오류</string>
+    <string name="common_google_play_services_network_error_text">Google Play 서비스에 연결하려면 데이터 연결이 필요합니다.</string>
+    <string name="common_google_play_services_invalid_account_title">올바르지 않은 계정</string>
+    <string name="common_google_play_services_invalid_account_text">지정한 계정이 이 기기에 존재하지 않습니다. 다른 계정을 선택하세요.</string>
+    <string name="common_google_play_services_unknown_issue">Google Play 서비스에 알 수 없는 문제가 발생했습니다.</string>
+    <string name="common_google_play_services_unsupported_title">Google Play 서비스</string>
+    <string name="common_google_play_services_unsupported_text">일부 사용자 애플리케이션에 필요한 Google Play 서비스가 사용자 기기에서 지원되지 않습니다. 기기 제조업체에 문의하시기 바랍니다.</string>
+    <string name="common_google_play_services_unsupported_date_text">기기의 날짜가 잘못된 것 같습니다. 기기의 날짜를 확인해 주세요.</string>
+    <string name="common_google_play_services_update_button">업데이트</string>
+    <string name="common_signin_button_text">로그인</string>
+    <string name="common_signin_button_text_long">Google 계정으로 로그인</string>
+    <string name="auth_client_using_bad_version_title">애플리케이션에서 잘못된 버전의 Google Play 서비스를 사용하려고 했습니다.</string>
+    <string name="auth_client_needs_enabling_title">Google Play 서비스를 사용하도록 설정해야 하는 애플리케이션입니다.</string>
+    <string name="auth_client_needs_installation_title">Google Play 서비스를 설치해야 하는 애플리케이션입니다.</string>
+    <string name="auth_client_needs_update_title">Google Play 서비스를 업데이트해야 하는 애플리케이션입니다.</string>
+    <string name="auth_client_play_services_err_notification_msg">Google Play 서비스 오류</string>
+    <string name="auth_client_requested_by_msg">%1$s에서 요청</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Pou에 오신 것을 환영합니다! ^_^</string>
+    <string name="welcome_txt">"포우는 먹는 것과 노는 것을 좋아하는 당신의 신기한 펫입니다!
+
+포우에게 음식을 먹이려면 포우의 입에 음식을 드래그 하세요.
+
+한번 해보세요!"</string>
+    <string name="kitchen">주방</string>
+    <string name="kitchen_tip">"포우의 입에 음식을 드래그 하세요!
+
+상점에서 음식을 더 사세요. 음식은 냉장고 안에 보관됩니다!"</string>
+    <string name="bathroom">욕실</string>
+    <string name="bathroom_tip">"포우가 더러워지면, 비누로 씻기세요!
+
+당신은 상점에서 그들을 사용자 정의 할 수 있습니다!"</string>
+    <string name="lab">실험실</string>
+    <string name="lab_tip">"만약 포우가 아프면, 회복약을 사용하세요!
+
+상점에서 다른 약품들을 실험해보세요!"</string>
+    <string name="gameroom">놀이방</string>
+    <string name="gameroom_tip">"포우가 기분이 나쁘면, 공을 던지거나 게임을 해서 놀아주세요!
+
+코인을 벌기 위해서 게임을 해야 합니다!"</string>
+    <string name="bedroom">침실</string>
+    <string name="bedroom_tip">"포우가 졸리면, 램프를 터치해서 꺼주세요!
+
+옷장에서 포우의 옷을 갈아입히세요! 상점에서 옷을 살 수 있습니다!"</string>
+    <string name="hall">복도</string>
+    <string name="hall_tip">마이크에 말을 해보세요. 포우가 따라할 겁니다!</string>
+    <string name="adult_needs">이것을 착용하려면 포우가 어른이 되어야 합니다!</string>
+    <string name="adult_use">포우가 다 클 때까지 기다리거나, 어른 포션을 먹이세요!</string>
+    <string name="wallpapers">벽지</string>
+    <string name="wallpapers_tip">"벽지로 방을 꾸밀 수 있습니다!
+
+상점에서 사용할 수 있는 벽지를 확인하세요!"</string>
+    <string name="food">음식</string>
+    <string name="food_tip">"포우는 같은 음식을 계속해서 먹는 것을 좋아하지 않습니다.
+
+또 포우가 과식하지 않도록 조심하세요. 살이 찔 수 있습니다!"</string>
+    <string name="fat">비만</string>
+    <string name="fat_tip">"포우가 비만이 되면, 살이 빠질 때까지 기다리거나 게임을 해서 운동을 시켜주세요!
+
+아니면 실험실에서 살 빠지는 약을 사용하세요!"</string>
+    <string name="locked">잠겨있습니다!</string>
+    <string name="locked_text">이 아이템은 잠겨있습니다! 열릴 때까지 기다리거나 코인으로 여세요.</string>
+    <string name="not_enough_coins">코인이 부족합니다!</string>
+    <string name="coins_to_buy">이 아이템을 사려면 코인이 더 필요합니다.</string>
+    <string name="coins_to_unlock">아이템을 열기 위해서 코인이 더 필요합니다.</string>
+    <string name="coins_collect_buy">게임을 해서 코인을 모으거나 코인을 사세요!</string>
+    <string name="too_tired">너무 지쳤어요!</string>
+    <string name="too_tired_text">너무 피곤해서 놀 수 없어요! 포우를 재우거나 에너지 포션을 사용하세요.</string>
+    <string name="game1_desc">포우에게 음식을 주세요! 음식을 놓치거나 음식이 아닌 것을 먹지 않도록 주의하세요!</string>
+    <string name="game2_desc">얼마나 높이 갈 수 있을까요? 떨어지지 않도록 주의하면서 발판을 밟아 올라가세요!</string>
+    <string name="game3_desc">포우는 낙하하는 것을 좋아합니다! 구름에 부딫히지 않도록 조심하세요!</string>
+    <string name="game4_desc">포우를 드래그해서 같은 색의 포우 3마리 이상이 이웃하도록 하세요!</string>
+    <string name="game5_desc">슬픈 표정의 포우를 터치하세요! 행복한 포우를 터치하지 않도록 조심하세요!</string>
+    <string name="game6_desc">소리를 순서대로 기억하세요! 소리를 낸 포우를 순서대로 터치하세요!</string>
+    <string name="game7_desc">포우를 쏘아 모든 포우를 터트리세요! 바닥에 닿지 않도록 주의하세요!</string>
+    <string name="game8_desc">친구들과 온라인으로 틱택토를 즐기세요! 3개의 O나 X를 먼저 그리는 사람이 이깁니다!</string>
+    <string name="game9_desc">네 마리의 포우를 세로나 대각선으로 줄지어 맞춰주세요! 친구와 온라인으로 즐기세요!</string>
+    <string name="game10_desc">"포우는 어디에 있을까요?
+어떤 컵에 있을까요?"</string>
+    <string name="game11_desc">이웃해 있는 3마리 이상의 포우를 빨리 터치하세요!</string>
+    <string name="game12_desc">모두 같은 색이 되도록 포우를 터치하세요!</string>
+    <string name="game13_desc">제한 시간 안에 같은 그림의 카드끼리 맞추세요!</string>
+    <string name="game_ate_bad">포우가 음식이 아닌 것을 먹었네요!</string>
+    <string name="game_missed_x">\#개를 놓쳤습니다!</string>
+    <string name="game_fell">추락했군요!</string>
+    <string name="game_hit_x_clouds">구름 #개에 부딫혔습니다!</string>
+    <string name="game_time_up">제한시간 끝!</string>
+    <string name="game_tapped_x_happy">행복한 포우 #마리를 건드렸군요!</string>
+    <string name="game_no_space">더 이상 공간이 없네요!</string>
+    <string name="game_nobody_wins">비겼습니다!</string>
+    <string name="game_you_win">이겼습니다!</string>
+    <string name="game_x_wins">\#가 이겼습니다</string>
+    <string name="game_your_turn">우리 차례입니다</string>
+    <string name="game_x_turn">\#의 차례입니다</string>
+    <string name="game_giveup">기권 :(</string>
+    <string name="game_giveup_text">기권하시겠습니까?</string>
+    <string name="game_giveup_lose">기권하시면 게임에서 지게 됩니다.</string>
+    <string name="game_gaveup">상대가 기권했습니다</string>
+    <string name="game_wrong_pou">잘못된 포우입니다!</string>
+    <string name="game_wrong_cup">틀린 컵입니다!</string>
+    <string name="pou_store">포우 상점</string>
+    <string name="pou_store_text">진짜 머그컵이나 티셔츠를 살 수 있는 포우 상점에 방문하시겠습니까?</string>
+    <string name="cancel">취소</string>
+    <string name="yes">네</string>
+    <string name="no">아니오</string>
+    <string name="login">로그인</string>
+    <string name="enter_your_email">귀하의 이메일 주소를 입력</string>
+    <string name="email_note">예전 포우를 데리고 오려면, 예전에 사용하던 이메일을 입력하세요</string>
+    <string name="email_hint">your@email.com</string>
+    <string name="email_used">이미 사용 중인 이메일입니다. 다시 시도하세요.</string>
+    <string name="new_user">안녕하세요, 새로운 포우입니다! ^_^</string>
+    <string name="confirm_email">이 이메일 주소를 사용하시겠습니까?</string>
+    <string name="login_error">이런, 포우를 불러오는 데 문제가 발생했습니다. 다시 시도하거나 저희에게 문의 주세요.</string>
+    <string name="choose_your_nickname">별명을 정하세요.</string>
+    <string name="nickname_info">친구들이 포우의 별명을 기억할 수 있습니다! 별명은 바꿀 수 있습니다.</string>
+    <string name="nickname_taken">이미 사용중인 별명입니다. 다시 시도하세요.</string>
+    <string name="nickname_invalid">유효하지 않은 닉네임입니다. 예) : pou_123(공백 없이) / 3–15자의 영어</string>
+    <string name="enter_your_password">비밀번호를 입력하세요.</string>
+    <string name="enter_new_password">새로운 비밀번호를 입력하세요.</string>
+    <string name="password_check">이메일</string>
+    <string name="password_sent">새로운 비밀번호를 전송하였습니다.</string>
+    <string name="password_resend_button">새로운 비밀번호를 전송해주세요.</string>
+    <string name="password_incorrect">잘못된 비밀번호입니다. 확인하시고 다시 시도하세요.</string>
+    <string name="password_incorrect_old">예전 비밀번호가 틀렸습니다.</string>
+    <string name="password_changed">비밀번호가 변경되었습니다.</string>
+    <string name="password_memorize">기억해두세요! ^_^</string>
+    <string name="update_title">업데이트를 해주세요.</string>
+    <string name="update_text">어플리케이션을 사용하기 위해 업데이트를 해주세요.</string>
+    <string name="update_wait">업데이트를 볼 수 없다면 몇 일 기다려 주세요.</string>
+    <string name="logout_title">로그아웃 하실 건가요? *_*</string>
+    <string name="logout_info">이메일 주소를 입력하시면 포우를 다시 돌볼 수 있습니다.</string>
+    <string name="friends">친구들</string>
+    <string name="friends_tip">"다른 포우들을 방문할 수 있습니다!
+
+작은 포우 아이콘을 터치하면 친구를 볼 수 있습니다!"</string>
+    <string name="enter_the_nickname">별명을 입력하세요.</string>
+    <string name="enter_the_email">이메일 주소를 입력하세요</string>
+    <string name="friend_not_found">사용자를 찾을 수 없습니다.</string>
+    <string name="msg_1">안녕하세요 #! ^_^</string>
+    <string name="msg_2">잘 지내나요?</string>
+    <string name="msg_3">전 잘 지냅니다!</string>
+    <string name="msg_4">귀여워요! ^_^</string>
+    <string name="msg_5">집이 멋지네요!</string>
+    <string name="msg_6">옷이 멋져요!</string>
+    <string name="msg_7">멋진 공이네요!</string>
+    <string name="msg_8">훌륭한 업적이네요!</string>
+    <string name="msg_9">당신이 좋아요! ^_^</string>
+    <string name="msg_10">우리 친구해요!</string>
+    <string name="msg_11">좋아해주셔서 감사해요!</string>
+    <string name="msg_12">같이 놀아요!</string>
+    <string name="msg_13">축하합니다!</string>
+    <string name="msg_14">감사합니다! ^_^</string>
+    <string name="msg_15">좋은 하루 보내세요!</string>
+    <string name="msg_16">안녕히 주무세요! Zzz</string>
+</resources>

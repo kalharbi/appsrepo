@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+<graph id="G" edgedefault="directed">
+<node id="1">
+<data key="version_name">1.4.43</data>
+<data key="labels">App</data>
+<data key="name">me.pou.app</data>
+<data key="version_code">188</data>
+</node>
+<node id="2">
+<data key="labels">Directory</data>
+<data key="directory_name">layout</data>
+</node>
+<edge id="3" source="1" target="2" label="HAS_DIR">
+</edge>
+<node id="4">
+<data key="file">dialog_email.xml</data>
+<data key="labels">File</data>
+</node>
+<edge id="5" source="2" target="4" label="HAS_FILE">
+</edge>
+<node id="6">
+<data key="android:paddingLeft">10.0dip</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="xmlns:android">http://schemas.android.com/apk/res/android</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:paddingRight">10.0dip</data>
+<data key="android:orientation">vertical</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="7" source="4" target="6" label="HAS_VIEW_GROUP">
+</edge>
+<node id="8">
+<data key="android:inputType">textEmailAddress</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/emailDialog_email</data>
+<data key="labels">VIEW</data>
+<data key="name">EditText</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="9" source="6" target="8" label="HAS_VIEW">
+</edge>
+<node id="10">
+<data key="android:layout_height">wrap_content</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:orientation">horizontal</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="11" source="6" target="10" label="HAS_VIEW_GROUP">
+</edge>
+<node id="12">
+<data key="android:text">OK</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/emailDialog_confirm</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="13" source="10" target="12" label="HAS_VIEW">
+</edge>
+<node id="14">
+<data key="android:text">Cancel</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/emailDialog_cancel</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="15" source="10" target="14" label="HAS_VIEW">
+</edge>
+<node id="16">
+<data key="file">dialog_input.xml</data>
+<data key="labels">File</data>
+</node>
+<edge id="17" source="2" target="16" label="HAS_FILE">
+</edge>
+<node id="18">
+<data key="android:paddingLeft">10.0dip</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="xmlns:android">http://schemas.android.com/apk/res/android</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:paddingRight">10.0dip</data>
+<data key="android:orientation">vertical</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="19" source="16" target="18" label="HAS_VIEW_GROUP">
+</edge>
+<node id="20">
+<data key="android:inputType">text</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/inputDialog_input</data>
+<data key="labels">VIEW</data>
+<data key="name">EditText</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="21" source="18" target="20" label="HAS_VIEW">
+</edge>
+<node id="22">
+<data key="android:layout_height">wrap_content</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:orientation">horizontal</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="23" source="18" target="22" label="HAS_VIEW_GROUP">
+</edge>
+<node id="24">
+<data key="android:text">OK</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/inputDialog_confirm</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="25" source="22" target="24" label="HAS_VIEW">
+</edge>
+<node id="26">
+<data key="android:text">Cancel</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/inputDialog_cancel</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="27" source="22" target="26" label="HAS_VIEW">
+</edge>
+<node id="28">
+<data key="file">dialog_password.xml</data>
+<data key="labels">File</data>
+</node>
+<edge id="29" source="2" target="28" label="HAS_FILE">
+</edge>
+<node id="30">
+<data key="android:paddingLeft">10.0dip</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="xmlns:android">http://schemas.android.com/apk/res/android</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:paddingRight">10.0dip</data>
+<data key="android:orientation">vertical</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="31" source="28" target="30" label="HAS_VIEW_GROUP">
+</edge>
+<node id="32">
+<data key="android:inputType">textPassword</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_password</data>
+<data key="labels">VIEW</data>
+<data key="name">EditText</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="33" source="30" target="32" label="HAS_VIEW">
+</edge>
+<node id="34">
+<data key="android:layout_height">wrap_content</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:orientation">horizontal</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="35" source="30" target="34" label="HAS_VIEW_GROUP">
+</edge>
+<node id="36">
+<data key="android:text">OK</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_confirm</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="37" source="34" target="36" label="HAS_VIEW">
+</edge>
+<node id="38">
+<data key="android:text">Cancel</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_cancel</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="39" source="34" target="38" label="HAS_VIEW">
+</edge>
+<node id="40">
+<data key="android:text">Send me a new password</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_resend</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="41" source="30" target="40" label="HAS_VIEW">
+</edge>
+<node id="42">
+<data key="file">dialog_password_new.xml</data>
+<data key="labels">File</data>
+</node>
+<edge id="43" source="2" target="42" label="HAS_FILE">
+</edge>
+<node id="44">
+<data key="android:paddingLeft">10.0dip</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="xmlns:android">http://schemas.android.com/apk/res/android</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:paddingRight">10.0dip</data>
+<data key="android:orientation">vertical</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="45" source="42" target="44" label="HAS_VIEW_GROUP">
+</edge>
+<node id="46">
+<data key="android:inputType">textPassword</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_password</data>
+<data key="labels">VIEW</data>
+<data key="name">EditText</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="47" source="44" target="46" label="HAS_VIEW">
+</edge>
+<node id="48">
+<data key="android:layout_height">wrap_content</data>
+<data key="labels">VIEW_GROUP</data>
+<data key="name">LinearLayout</data>
+<data key="android:orientation">horizontal</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="49" source="44" target="48" label="HAS_VIEW_GROUP">
+</edge>
+<node id="50">
+<data key="android:text">OK</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_confirm</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="51" source="48" target="50" label="HAS_VIEW">
+</edge>
+<node id="52">
+<data key="android:text">Cancel</data>
+<data key="android:layout_height">wrap_content</data>
+<data key="android:id">@id/passwordDialog_cancel</data>
+<data key="labels">VIEW</data>
+<data key="name">Button</data>
+<data key="android:layout_weight">0.5</data>
+<data key="android:layout_width">fill_parent</data>
+</node>
+<edge id="53" source="48" target="52" label="HAS_VIEW">
+</edge>
+</graph>
+</graphml>

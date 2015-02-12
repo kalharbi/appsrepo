@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_google_play_services_install_title">Baixa els serveis de Google Play</string>
+    <string name="common_google_play_services_install_text_phone">"Aquesta aplicació no s'executarà si el telèfon no té instal·lats els serveis de  Google Play."</string>
+    <string name="common_google_play_services_install_text_tablet">Aquesta aplicació no funcionarà si la tauleta no té instal·lats els serveis de Google Play.</string>
+    <string name="common_google_play_services_install_button">Baixa els serveis de Google Play</string>
+    <string name="common_google_play_services_enable_title">Activa els serveis de Google Play</string>
+    <string name="common_google_play_services_enable_text">Aquesta aplicació no funcionarà si no actives els serveis de Google Play.</string>
+    <string name="common_google_play_services_enable_button">Activa els serveis de Google Play</string>
+    <string name="common_google_play_services_update_title">Actualitza els serveis de Google Play</string>
+    <string name="common_google_play_services_update_text">"Aquesta aplicació no s'executarà si no actualitzes els serveis de Google Play."</string>
+    <string name="common_google_play_services_network_error_title">Error de xarxa</string>
+    <string name="common_google_play_services_network_error_text">Es requereix una connexió de dades per connectar amb els serveis de Google Play.</string>
+    <string name="common_google_play_services_invalid_account_title">Compte no vàlid</string>
+    <string name="common_google_play_services_invalid_account_text">El compte especificat no existeix en aquest dispositiu. Tria un compte diferent.</string>
+    <string name="common_google_play_services_unknown_issue">Error desconegut relacionat amb els serveis de Google Play.</string>
+    <string name="common_google_play_services_unsupported_title">Serveis de Google Play</string>
+    <string name="common_google_play_services_unsupported_text">El teu dispositiu no és compatible amb els serveis de Google Play, en què es basen les teves aplicacions. Per obtenir assistència, contacta amb el fabricant.</string>
+    <string name="common_google_play_services_unsupported_date_text">Sembla que la data del dispositiu no és correcta. Comprova-la.</string>
+    <string name="common_google_play_services_update_button">Actualitza</string>
+    <string name="common_signin_button_text">Inicia sessió</string>
+    <string name="common_signin_button_text_long">Inicia sessió amb Google</string>
+    <string name="auth_client_using_bad_version_title">Una aplic. ha intentat utilitzar una versió errònia de serveis de Play.</string>
+    <string name="auth_client_needs_enabling_title">"Una aplicació requereix que s'activin els serveis de Google Play."</string>
+    <string name="auth_client_needs_installation_title">"Una aplicació requereix que s'instal·lin els serveis de Google Play."</string>
+    <string name="auth_client_needs_update_title">"Una aplicació requereix que s'actualitzin els serveis de Google Play."</string>
+    <string name="auth_client_play_services_err_notification_msg">Error dels serveis de Google Play</string>
+    <string name="auth_client_requested_by_msg">Sol·licitada per %1$s</string>
+    <string name="app_name">Pou</string>
+    <string name="welcome">Benvingut a Pou ^_^</string>
+    <string name="welcome_txt">"Pou és la teva mascota alienígena que li encanta menjar i jugar!
+
+Arrossegueu menjar a la boca del Pou per tal d'alimentar-lo!
+
+Prova-ho ara!"</string>
+    <string name="kitchen">Cuina</string>
+    <string name="kitchen_tip">"Alimenti el Pou arrossegant cap a la seva boca menear!
+
+Visita la botiga per comprar més aliments es guardaran a la nevera!"</string>
+    <string name="bathroom">Bany</string>
+    <string name="bathroom_tip">"Quan el Pou està brut, neteja'l amb sabó i aigua!
+
+Vostè pot personalitzar a la botiga!"</string>
+    <string name="lab">Laboratori</string>
+    <string name="lab_tip">"Si Pou està malalt, utilitzar una Health Potion!
+
+Experimenti amb altres pocions a la botiga!"</string>
+    <string name="gameroom">Sala de jocs</string>
+    <string name="gameroom_tip">"Quan Pou ésta trist, juga amb ell llançant la pilota, o juga a alguns jocs!
+
+Has de jugar a Jocs per recollir les monedes!"</string>
+    <string name="bedroom">Dormitori</string>
+    <string name="bedroom_tip">"Quan Pou té son, toca el llum per apagar-lo!
+
+CRevisa l'armari per a canviar-li de roba! Pots comprar-ne més a la botiga!"</string>
+    <string name="adult_needs">"Pou ha de ser major d'edat per utilitzar això!"</string>
+    <string name="adult_use">Espereu que Pou creixca, o utilitza una Adult Potion ara!</string>
+    <string name="wallpapers">Fons</string>
+    <string name="wallpapers_tip">"Pot personalitzar cada fons d'habitació!
+
+Fes un cop d'ull a la botiga per veure el que pot personalitzar a cada habitació!"</string>
+    <string name="food">Menjar</string>
+    <string name="food_tip">"Al Pou no li agrada que li donen de menjar el mateix una i altra vegada.
+
+També vagi amb compte de no sobrealimentar-lo. Pot arribar a ser gros!"</string>
+    <string name="fat">Gros</string>
+    <string name="fat_tip">"Si Pou es fa gros, esperar que es torni a la normalitat o fes exercici jugant amb els jocs a la sala de jocs!
+
+Or Utilitza una poció per cremar greix al laboratori!"</string>
+    <string name="locked">Tancat!</string>
+    <string name="locked_text">Aquest article està bloquejat! Pot esperar fins que es desbloquegi, o desbloquejar-lo ara per # monedes.</string>
+    <string name="not_enough_coins">No hi prou monedes!</string>
+    <string name="coins_to_buy">Necessita # monedes per comprar aço.</string>
+    <string name="coins_to_unlock">Necessita # monedes per desbloquear aço.</string>
+    <string name="coins_collect_buy">Jugar per a recollir monedes, o compran més ara!</string>
+    <string name="too_tired">Massa cansat!</string>
+    <string name="too_tired_text">El Pou està massa cansat per jugar! Deixal dormir, o utiliza una Energizer Potion.</string>
+    <string name="game1_desc">Alimenta a Pou! Ten cura de no fallar o es menjarà cosses dolentes!</string>
+    <string name="game2_desc">Fins quina altura pot arribar el teu Pou? Intenta saltar per les plataformes sense caure!</string>
+    <string name="game3_desc">"A Pou l'hi agrada caure! Ten cura de no donar-li a ningun núvol!"</string>
+    <string name="game4_desc">Junta tres o mes Pous del mateix color abans que se acabi el tiemps!</string>
+    <string name="game5_desc">Toca els Pous tristos! Ten cura de no tocar a els Pous que estan contents!</string>
+    <string name="game6_desc">Memoritza la seqüencia del so! Toca els Pous en el ordre correcte segons el so de cada Pou!</string>
+    <string name="game7_desc">Dispara a Pous per fer explotar tots els Pous! Ten cura de que els Pous no arribin molt abaix!</string>
+    <string name="game8_desc">Juga amb un amic al clàsic Tic Tac Toe!</string>
+    <string name="game9_desc">Alínea 4 Pous en una fila, columna o diagonal! Juga online amb un amic!</string>
+    <string name="game_ate_bad">Pou ha menjat una cosa dolenta!</string>
+    <string name="game_missed_x">Has Fallat #!</string>
+    <string name="game_fell">Te has caigut!</string>
+    <string name="game_hit_x_clouds">Has donat # núvols!</string>
+    <string name="game_time_up">Se ha acabat el tiemps!</string>
+    <string name="game_tapped_x_happy">Has tocat # un Pou content!</string>
+    <string name="game_no_space">No hi ha mes espai!</string>
+    <string name="game_nobody_wins">Ningú guanya</string>
+    <string name="game_you_win">Tu guanyes!</string>
+    <string name="game_x_wins">\# guanyes</string>
+    <string name="game_your_turn">El teu turn</string>
+    <string name="game_x_turn">"\#'s turn"</string>
+    <string name="game_giveup">Et rendeixes? :(</string>
+    <string name="game_giveup_text">Vols rendir-te?</string>
+    <string name="game_giveup_lose">Si tu ho fas, tu perdràs aquesta vegada.</string>
+    <string name="game_gaveup">Rendició</string>
+    <string name="pou_store">Botiga del Pou</string>
+    <string name="pou_store_text">Vols visitar la botiga del Pou, on tu pots comprar coses reals com tasses i samarretes?</string>
+    <string name="cancel">Cancel·lar</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="login">Iniciar</string>
+    <string name="enter_your_email">Escriu el teu correu</string>
+    <string name="email_note">Per jugar amb el teu anterior Pou, introdueixi el teu correu anterior.</string>
+    <string name="email_hint">elteu@correu.com</string>
+    <string name="email_used">Ho sentim, aquest correu ja esta utilitzat per un altre compte. Intenteu-ho de nou.</string>
+    <string name="new_user">Benvingut, Nou Pou ^_^</string>
+    <string name="confirm_email">És aquest el teu correu?</string>
+    <string name="choose_your_nickname">Trieu el postre sobrenom</string>
+    <string name="nickname_info">Els amics poden memoritzar el sobrenom del teu Pou! El pots canviar més endavant.</string>
+    <string name="nickname_taken">Ho sentim, el sobrenom ja està en us. Intenteu-ho de nou.</string>
+    <string name="nickname_invalid">"Ho sentim, sobrenom no vàlid
+Exemple:. Pou_123 (sense espais)
+Comença smb una lletra, de 3–15 max"</string>
+    <string name="enter_your_password">Escriviu la contrasenya</string>
+    <string name="enter_new_password">Introduïu una nova contrasenya</string>
+    <string name="password_check">Correu</string>
+    <string name="password_sent">Li enviem una nova contrasenya a #</string>
+    <string name="password_resend_button">Envieu una nova contrasenya</string>
+    <string name="password_incorrect">Contrasenya incorrecta. Comprova # i torna a intentar-ho</string>
+    <string name="password_incorrect_old">Contrasenya antigua incorrecta</string>
+    <string name="password_changed">Contrasenya canviada</string>
+    <string name="update_title">Tens que actualizar</string>
+    <string name="update_text">"Ho sentim, deus d'actualitzar l'aplicacio per a continuar."</string>
+    <string name="update_wait">"Si no veis l'actualitzacio torna a intentar-ho o espera una dies."</string>
+    <string name="logout_title">Sortir? *_*</string>
+    <string name="logout_info">Pot jugar de nou amb aquest Pou introduint el seu correu</string>
+    <string name="friends">Amics</string>
+    <string name="friends_tip">"Pots visitar altres Pous!
+
+Toca el petit icono Pou, a continuació, seleccioneu amics!"</string>
+    <string name="enter_the_nickname">Escriu el sobrenom</string>
+    <string name="enter_the_email">Escriu el correu</string>
+    <string name="friend_not_found">Amic no trobat</string>
+</resources>
