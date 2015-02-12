@@ -13,19 +13,23 @@ public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
         CommandLineTool cmd = new CommandLineTool();
         cmd.parseCommandLine(args);
         File[] apkDirs = cmd.getApkDirs();
+        doGraphML(apkDirs);
+        logger.info("Error logs have been saved at: {}", cmd.getLogFilePath());
+        printExecutionTime(startTime);
+    }
+
+    public static void doGraphML(File[] apkDirs) {
         if (apkDirs == null || apkDirs.length == 0) {
             logger.error("No unpacked apk files found." +
                     " Please specify the directory that contains unpacked apk files.");
             return;
         }
-        long startTime = System.currentTimeMillis();
         AppLayoutsController appInfoController = new AppLayoutsController(apkDirs);
         appInfoController.createGraphML();
-        logger.info("Error logs have been saved at: {}", cmd.getLogFilePath());
-        printExecutionTime(startTime);
     }
 
     private static void printExecutionTime(long startTime) {
