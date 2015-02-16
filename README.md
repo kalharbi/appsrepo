@@ -29,13 +29,20 @@ The GraphML file can be imported into the tinkerpop stack or any graph databse (
 ### 8- [Android UI GraphDB Writer](ui-graphdb-writer/)
 This tool takes the input of the Android UI GraphML Writer (#7) as an input and loads it into the graph database (neo4j).
 
-### 9- [UI Delta](ui-diff/)
+### 9- [UI XML](ui-xml)
+A tool for parsing Android XML layout files and storing them in
+one XML file to simplify UI analysis. It resolves resource references (e.g.,
+```@string/cancel_btn```) and embeded layouts (e.g., using the ```<include/>``` and
+```<merge/>``` tags). The final xml file is saved inside the unpacked apk directory
+under a sub-directory named ui-xml.
+
+### 10- [UI Delta](ui-diff/)
 This tool extracts the views of Android apps from neo4j and computes the delta of Views between two app versions.
 
-### 10- [Tools](tools/)
+### 11- [Tools](tools/)
 Python & shell script tools for batch processing a list of apk files.
 
-### 11- [Shell](shell/)
+### 12- [Shell](shell/)
 An interactive shell to query the collection of apps using a Domain Specfic Language (DSL).
 
 - - -
