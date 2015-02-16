@@ -285,4 +285,165 @@ Example UI layout screens that one can search for:
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>
+<LinearLayout>
+  <LinearLayout>
+    <LinearLayout>
+      <ImageView />
+      <LinearLayout>
+        <TextView />
+      </LinearLayout>
+      <TextView />
+    </LinearLayout>
+  </LinearLayout>
+  <FrameLayout>
+    <FrameLayout>
+      <FrameLayout>
+        <FrameLayout>
+          <RelativeLayout>
+            <ImageView />
+          </RelativeLayout>
+          <View>
+            <View />
+          </View>
+          <RelativeLayout />
+        </FrameLayout>
+      </FrameLayout>
+    </FrameLayout>
+  </FrameLayout>
+</LinearLayout>
 ```
+
+![Information Body](https://cloud.githubusercontent.com/assets/2602786/6218719/6c738d7c-b5de-11e4-8ca7-03ba304610ed.png)
+
+6) Two-Column Tile View
+
+```
+<ListView>
+  <LinearLayout>
+    <FrameLayout>
+      <ImageView />
+      <TextView />
+      <TextView />
+    </FrameLayout>
+    <FrameLayout>
+      <ImageView />
+      <TextView />
+      <TextView />
+    </FrameLayout>
+  </LinearLayout>
+</ListView>
+```
+
+![Two-Column Tile View](https://cloud.githubusercontent.com/assets/2602786/6218812/967ddbb2-b5df-11e4-84dd-f3e2b42e772b.png)
+
+7) Timer Clock
+
+```
+<View>
+  <View />
+  <TextView />
+  <Button />
+  <ImageButton />
+</View>
+```
+
+![Timer Clock](https://cloud.githubusercontent.com/assets/2602786/6219835/e60f948e-b5eb-11e4-9048-0130f95d13c3.png)
+
+8) Information Cards
+
+```
+<FrameLayout>
+  <LinearLayout>
+    <LinearLayout>
+      <FrameLayout>
+        <ImageView />
+        <LinearLayout>
+          <TextView />
+          <TextView />
+        </LinearLayout>
+      </FrameLayout>
+    </LinearLayout>
+    <FrameLayout>
+      <View />
+    </FrameLayout>
+    <LinearLayout>
+      <FrameLayout>
+        <ImageView />
+        <LinearLayout>
+          <TextView />
+          <TextView />
+        </LinearLayout>
+      </FrameLayout>
+    </LinearLayout>
+    <FrameLayout>
+      <View />
+    </FrameLayout>
+    <RelativeLayout>
+      <ImageView />
+      <TextView />
+    </RelativeLayout>
+  </LinearLayout>
+</FrameLayout>
+```
+
+![Timer Clock](https://cloud.githubusercontent.com/assets/2602786/6219923/e6a08de4-b5ec-11e4-8e17-87127844aa43.png)
+
+9) Audio Cards
+
+```
+<LinearLayout>
+  <FrameLayout>
+    <RelativeLayout>
+      <LinearLayout>
+        <ImageView />
+        <TextView />
+      </LinearLayout>
+      <TextView />
+      <View />
+      <ImageView />
+      <View />
+      <TextView />
+      <TextView />
+      <TextView />
+      <TextView />
+      <TextView />
+      <TextView />
+      <TextView />
+      <FrameLayout>
+        <TextView />
+      </FrameLayout>
+    </RelativeLayout>
+  </FrameLayout>
+</LinearLayout>
+```
+
+![Audio Cards](https://cloud.githubusercontent.com/assets/2602786/6220064/a4a3e92a-b5ee-11e4-990d-0f0e13b6055a.png)
+
+10) Reminders Checklist
+
+```
+<EditText />
+<LinearLayout>
+  <ImageView />
+  <CheckBox />
+  <EditText />
+</LinearLayout>
+<LinearLayout>
+  <ImageView />
+  <CheckBox />
+  <EditText />
+</LinearLayout>
+<LinearLayout>
+  <ImageView />
+  <CheckBox />
+  <EditText />
+</LinearLayout>
+<LinearLayout>
+  <LinearLayout>
+    <ImageView />
+    <EditText />
+  </LinearLayout>
+</LinearLayout>
+```
+
+![Reminders Checklist](https://cloud.githubusercontent.com/assets/2602786/6220148/cffaa5ae-b5ef-11e4-8641-0b379c1a8210.png)
