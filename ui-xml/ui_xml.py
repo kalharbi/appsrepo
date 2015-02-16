@@ -146,7 +146,8 @@ class UIXML(object):
             " layout files and storing them in one XML file to simplify"
             " UI analysis. It resolves resource references"
             " (e.g., @string/cancel_btn) and embeded layouts (e.g., using the"
-            " <include/> and <merge/>" " tags).")
+            " <include/> and <merge/>" " tags). The final xml file is saved"
+            " inside the unpacked apk directory under a sub-directory named ui-xml.")
         
         # command line parser
         parser = OptionParser(

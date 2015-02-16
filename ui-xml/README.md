@@ -14,7 +14,8 @@ Usage: python ui_xml.py <root_unpacked_apk_directories> [options]
 DESCRIPTION: A tool for parsing Android xml layout files and storing them in
 one XML file to simplify UI analysis. It resolves resource references (e.g.,
 @string/cancel_btn) and embeded layouts (e.g., using the <include/> and
-<merge/> tags).
+<merge/> tags). The final xml file is saved inside the unpacked apk directory
+under a sub-directory named ui-xml.
 
 Options:
   --version            show program's version number and exit
