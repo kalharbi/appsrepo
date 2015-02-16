@@ -9,6 +9,7 @@ from helpers.resources_listing import ResourcesListing
 from layout_parser import LayoutParser
 from lxml import etree
 from xml.etree import ElementTree
+from lxml.etree import XMLSyntaxError
 
 class UIXML(object):
     
@@ -20,8 +21,11 @@ class UIXML(object):
         self.log.info('parsing %s', layout_file)
     
     def write_xml_file(self, xml_file, root):
+        tree = root.getroottree()
+        # Strip the merge tag
+        etree.strip_tags(tree, 'merge')
         with open(xml_file, 'w+') as f:
-            f.write(etree.tostring(root, pretty_print=True))
+            f.write(etree.tostring(tree, pretty_print=True, encoding='utf-8'))
             f.close()
     
     def start_main(self, source_dir):
@@ -80,10 +84,13 @@ class UIXML(object):
                 root.append(dir_element)
                 layout_files = ResourcesListing.get_all_layout_files(layout_dir)
                 for layout_file in layout_files:
+                    # Do not add layout files that start with <merge>
+                    if self.layout_starts_with_merge(layout_file):
+                        continue
                     file_element = etree.Element('File')
                     file_element.set('file_name', os.path.basename(layout_file))
                     dir_element.append(file_element)
-                    layout_tree = LayoutParser().parse(layout_file, apk_dir)
+                    layout_tree = LayoutParser(self.log).parse(layout_file, apk_dir)
                     if layout_tree is not None:
                         file_element.append(layout_tree.getroot())
             self.write_xml_file(ui_xml_file, root)
@@ -125,6 +132,15 @@ class UIXML(object):
             if(element.get('name') == attribute_name):
                 return element.text
     
+    def layout_starts_with_merge(self, layout_file):
+        try:
+            if etree.parse(layout_file).getroot().tag == 'merge':
+                return True
+        except XMLSyntaxError as e:
+            self.log.error('Invalid XML Syntax for %s. Error: %s', layout_file, 
+                           e.message)
+        return False
+
     def main(self, args):
         start_time = datetime.datetime.now()
         # Configure logging

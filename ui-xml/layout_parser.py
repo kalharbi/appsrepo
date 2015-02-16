@@ -4,23 +4,29 @@ from lxml import etree
 from xml.etree import ElementTree
 from lxml.etree import ParserError
 from lxml.etree import XMLSyntaxError
-
 class LayoutParser(object):
+    
+    def __init__(self, log):
+        self.log = log
         
     def start_parser(self, layout_file, apk_dir):
-        root = etree.parse(layout_file)
+        root = None
+        try:
+            root = etree.parse(layout_file)
+        except XMLSyntaxError as e:
+            self.log.error('Invalid XML Syntax for %s', layout_file)
+            return None
         for child in root.iter():
-            if child.tag == 'merge':
-                return
-            elif child.tag == 'include':
+            if child.tag == 'include':
                 embeded_layout = child.get('layout')
                 embeded_dir, embeded_file = embeded_layout[1:].split('/')
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
                 # Get the tree of the included layout
-                emebeded_tree = LayoutParser().parse(embeded_file_full_path,
+                emebeded_tree = LayoutParser(self.log).parse(embeded_file_full_path,
                                                                 apk_dir)
-                child.getparent().append(emebeded_tree.getroot())
+                if emebeded_tree is not None:
+                    child.getparent().append(emebeded_tree.getroot())
                 # Remove the include tag
                 child.getparent().remove(child)
             else:
