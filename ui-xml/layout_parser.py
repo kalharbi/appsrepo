@@ -13,8 +13,11 @@ class LayoutParser(object):
         root = None
         try:
             root = etree.parse(layout_file)
-        except XMLSyntaxError as e:
+        except XMLSyntaxError:
             self.log.error('Invalid XML Syntax for %s', layout_file)
+            return None
+        except IOError:
+            self.log.error('Failed to read layout file %s', layout_file)
             return None
         for child in root.iter():
             if child.tag == 'include':
@@ -22,18 +25,24 @@ class LayoutParser(object):
                 embeded_dir, embeded_file = embeded_layout[1:].split('/')
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
+                print("LayoutFile: " + layout_file)
+                print("embeded_file_full_path" + embeded_file_full_path)
                 # Get the tree of the included layout
                 emebeded_tree = LayoutParser(self.log).parse(embeded_file_full_path,
                                                                 apk_dir)
-                if emebeded_tree is not None:
+                if emebeded_tree is not None and child.getparent() is not None:
                     child.getparent().append(emebeded_tree.getroot())
-                # Remove the include tag
-                child.getparent().remove(child)
+                if child.getparent() is not None:
+                    # Remove the include tag
+                    child.getparent().remove(child)
             else:
                 attributes = dict(child.attrib)
                 for attr_name, attr_value in attributes.iteritems(): 
                     if '@' in attr_value:
-                        res_element = re.match(r'@(.*?)/',attr_value).group(1)
+                        pattern = re.match(r'@(.*?)/', attr_value)
+                        if pattern is None:
+                            continue
+                        res_element = pattern.group(1)
                         res_file_base_name = os.path.join(res_element + 's.xml')
                         res_file = os.path.join(apk_dir, 'res', 'values',
                                                 res_file_base_name)
