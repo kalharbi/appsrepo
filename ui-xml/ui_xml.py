@@ -136,9 +136,8 @@ class UIXML(object):
         try:
             if etree.parse(layout_file).getroot().tag == 'merge':
                 return True
-        except XMLSyntaxError as e:
-            self.log.error('Invalid XML Syntax for %s. Error: %s', layout_file, 
-                           e.message)
+        except XMLSyntaxError:
+            self.log.error('Invalid XML Syntax for %s', layout_file)
         return False
 
     def main(self, args):
