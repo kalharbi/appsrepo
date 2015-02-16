@@ -13,14 +13,16 @@ class LayoutParser(object):
             if child.tag == 'merge':
                 return
             elif child.tag == 'include':
-                embeded_layout = attrs.get('layout')
+                embeded_layout = child.get('layout')
                 embeded_dir, embeded_file = embeded_layout[1:].split('/')
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
+                # Get the tree of the included layout
+                emebeded_tree = LayoutParser().parse(embeded_file_full_path,
+                                                                apk_dir)
+                child.getparent().append(emebeded_tree.getroot())
                 # Remove the include tag
                 child.getparent().remove(child)
-                child.append(etree.Element(LayoutParser().parse(embeded_file_full_path,
-                                                                apk_dir)))
             else:
                 attributes = dict(child.attrib)
                 for attr_name, attr_value in attributes.iteritems(): 
