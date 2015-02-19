@@ -20,7 +20,10 @@ class APKFinder(object):
                 self.files_listing(file, ext_name, out_file)
             elif (os.path.splitext(file)[1].lower() == ext_name):
                 self.log.info('Found apk file %s', file)
-                out_file.write(os.path.abspath(file) + '\n')
+                try:
+                    out_file.write(os.path.abspath(file) + '\n')
+                except IOError:
+                    self.log.error("IOError in %s", file)
     
     def start_main(self, search_directory, target_apk_paths_file):
         out_file = open(target_apk_paths_file, 'w')
