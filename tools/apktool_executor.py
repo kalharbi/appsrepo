@@ -9,10 +9,14 @@ from multiprocessing import Pool
 import xml.etree.ElementTree as ET
 from optparse import OptionParser
 from subprocess import Popen, PIPE
+import ConfigParser
 
 
 log = logging.getLogger("apktool_executor")
 log.setLevel(logging.DEBUG) # The logger's level must be set to the "lowest" level.
+config = ConfigParser.ConfigParser()
+config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "config", "tools.conf"))
+aapt_path = config.get('tools', 'aapt')
 
 # pickled method defined at the top level of a module to be called by multiple processes.
 # Runs apktool and returns the directory of the unpacked apk file.
@@ -20,7 +24,7 @@ def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
     print("Running apktool on " + apk_file)
     apk_name = os.path.basename(os.path.splitext(apk_file)[0])
     target_dir = os.path.join(target_dir, apk_name)
-    
+    apk_version_info = get_apk_info(apk_file)
     # skip the target directory if it already exists
     if os.path.exists(target_dir):
         log.info("Target directory already exists")
@@ -44,7 +48,37 @@ def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
         log.info(out)
     if rc != 0:
         log.error('Failed to decode apk file: ' + apk_file + '\n' + err)
-    return target_dir
+    return target_dir, apk_version_info
+
+# Returns a tuple containing the package, version code, and version name.
+def get_apk_info(apk_path):
+    sub_process = None
+    out = None
+    err = None
+    try:
+        sub_process = Popen([aapt_path, 'dump', 'badging', apk_path], stdout=PIPE, stderr=PIPE)
+        out, err = sub_process.communicate()
+    except OSError:
+        print('Error: aapt tool is not defined in the config file at: ./config/tools.conf')
+        sys.exit(-1)
+    version_info = {}
+    if out:
+        for line in out.split('\n'):
+            segment = line.strip().split(":")
+            if(segment is not None and len(segment) > 0):
+                if(segment[0] == "package"):
+                    package_info = segment[1].strip().split(' ')
+                    for info_line in package_info:
+                        info = info_line.strip().split('=')
+                        if(info[0] == "name"):
+                            version_info['name'] = info[1].replace("'", "")
+                        elif(info[0] == 'versionCode'):
+                            version_info['version_code'] = info[1].replace("'", "")
+                        elif(info[0] == 'versionName'):
+                            version_info['version_name'] = info [1].replace("'", "")
+                    break
+    # Return a hash of version code and version name
+    return version_info
         
 class ApktoolExecutor(object):
     # Set the number of worker processes to the number of available CPUs.
@@ -61,16 +95,17 @@ class ApktoolExecutor(object):
         self.ordered = False
         self.use_custom_file_search = False
         self.path_file = None
+        self.apk_names_list_file = None
     
             
-    def start_main(self, apk_names_file, source_dir, target_dir):
+    def start_main(self, source_dir, target_dir):
         apk_paths = []
         # Create pool of worker processes
         pool = Pool(processes=self.processes)
         log.info('A pool of %i worker processes has been created', self.processes)
         # if the package names file is given
-        if apk_names_file:
-            with open(apk_names_file, 'r') as f:
+        if self.apk_names_list_file:
+            with open(self.apk_names_list_file, 'r') as f:
                 # skip the first line since it's the header 
                 # line [apk_name, download_count]
                 next(f)
@@ -90,8 +125,8 @@ class ApktoolExecutor(object):
         
         
         # If the apk path file is given
-        elif self.apk_path:
-            with open(self.apk_path, 'r') as f:
+        elif self.path_file:
+            with open(self.path_file, 'r') as f:
                 for line in f:
                     apk_paths.append(line)
         # If apk path file or package list file are not given, 
@@ -114,7 +149,12 @@ class ApktoolExecutor(object):
                                                           for apk_path in apk_paths]
                 for r in results:
                     if(r != None):
-                        log.info("APK file has been extracted at: " + r.get())
+                        target_dir, apk_version_info = r.get()
+                        apktool_file = os.path.join(target_dir, 'apktool.yml')
+                        if not os.path.exists(apktool_file):
+                            self.write_version_to_apktoolyml(apktool_file, 
+                                                             apk_version_info)
+                        log.info("APK file has been extracted at: " + target_dir)
                 # close the pool to prevent any more tasks from being 
                 # submitted to the pool.
                 pool.close()
@@ -129,7 +169,12 @@ class ApktoolExecutor(object):
         else:
             log.error('Failed to find apk files in %s', source_dir)
                         
-                
+    def write_version_to_apktoolyml(self, apktool_file, version_info):
+        with open(apktool_file, 'w') as f:
+            f.write('versionInfo:\n')
+            f.write("  versionCode: '" + version_info['version_code']+ "'\n")
+            f.write("  versionName: " + version_info['version_name']+ "\n")
+    
     def find_apk_file(self, apk_name, source_directory):
         if(not os.path.exists(source_directory)):
             log.error(source_directory + ' No such file or directory.')
@@ -159,26 +204,6 @@ class ApktoolExecutor(object):
             elif(os.path.splitext(file)[1].lower() == ext_name and 
                  apk_name.startswith(os.path.basename(os.path.splitext(file)[0]))):
                     self.apk_files.append(file)
-    
-    def get_apk_info(self, apk_dir):
-        """Return a tuple containing the package and version names."""
-        manifest_file = os.path.join(apk_dir, 'AndroidManifest.xml')
-        tree = ET.parse(manifest_file)
-        root = tree.getroot()
-        version_code = None
-        version_name = None
-        package_name = None
-        for name, value in root.attrib.items():
-            if(name == 'package'):
-                package_name = value
-            elif(name.endswith('versionCode')):
-                version_code = value
-            elif(name.endswith('versionName')):
-                version_name = value
-        if version_name:
-            return (package_name, version_name)
-        else:
-            return (package_name, version_code)
     
     @staticmethod
     # check apktool version.
@@ -277,10 +302,9 @@ class ApktoolExecutor(object):
         if options.path_file:
             self.path_file = option.path_file
         # Get apk file names
-        apk_names_file = None
         if options.apk_names_list_file:
             if os.path.isfile(options.apk_names_list_file):
-                apk_names_file = options.apk_names_list_file
+                self.apk_names_list_file = options.apk_names_list_file
             else:
                 sys.exit("Error: APK names list file " + options.apk_names_list_file + " does not exist.")
         # Check target directory
@@ -296,7 +320,7 @@ class ApktoolExecutor(object):
         else:
             sys.exit("Error: target directory " + args[1] + " does not exist.")
     
-        self.start_main(apk_names_file, source_dir, target_dir)
+        self.start_main(source_dir, target_dir)
      
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
