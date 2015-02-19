@@ -89,23 +89,27 @@ class UIXML(object):
                     file_element= self.add_file_element(dir_element, layout_file)
                     self.add_layout_elements(file_element, layout_file, apk_dir)
             # Add res/xml/ directory which contains various XML configuration files
-            xml_dir = os.path.abspath(os.path.join(apk_dir, 'res', 'xml'))
-            if os.path.exists(xml_dir) and len(os.listdir(xml_dir)) > 0:
-                dir_element = self.add_directory_element(root, xml_dir)
-                xml_files = []
-                for x in os.listdir(xml_dir):
-                    x = os.path.join(xml_dir, x)
-                    if os.path.isfile(x):
-                        xml_files.append(x)
-                for xml_file in xml_files:
-                    if self.layout_starts_with_merge(xml_file):
-                        continue
-                    file_element= self.add_file_element(dir_element, xml_file)
-                    self.add_layout_elements(file_element, xml_file, apk_dir)
-
+            self.do_directory(apk_dir, ['res', 'xml'], root)
+            # Add res/menu
+            self.do_directory(apk_dir, ['res', 'menu'], root)        
             self.write_xml_file(ui_xml_file, root)
             self.log.info('UI XML has been written to %s' %(ui_xml_file))
-        
+    
+    def do_directory(self, apk_dir, sub_dirs, root):
+        xml_dir = os.path.abspath(os.path.join(apk_dir, sub_dirs[0], sub_dirs[1]))
+        if os.path.exists(xml_dir) and len(os.listdir(xml_dir)) > 0:
+            dir_element = self.add_directory_element(root, xml_dir)
+            xml_files = []
+            for x in os.listdir(xml_dir):
+                x = os.path.join(xml_dir, x)
+                if os.path.isfile(x):
+                    xml_files.append(x)
+            for xml_file in xml_files:
+                if self.layout_starts_with_merge(xml_file):
+                    continue
+                file_element= self.add_file_element(dir_element, xml_file)
+                self.add_layout_elements(file_element, xml_file, apk_dir)
+                    
     def add_directory_element(self, root, dir_name):
         dir_element = etree.Element('Directory')
         dir_element.set('directory_name', os.path.basename(dir_name))

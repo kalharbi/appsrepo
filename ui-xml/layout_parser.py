@@ -8,7 +8,7 @@ class LayoutParser(object):
     
     def __init__(self, log):
         self.log = log
-        
+
     def start_parser(self, layout_file, apk_dir):
         root = None
         try:
@@ -22,11 +22,19 @@ class LayoutParser(object):
         for child in root.iter():
             if child.tag == 'include':
                 embeded_layout = child.get('layout')
+                if embeded_layout is None:
+                    d = dict(child.attrib)
+                    for k,v in d.items():
+                        if '/' in v and '@' in v:
+                            pattern = re.match(r'@(.*?)/', v)
+                            if pattern is not None:
+                                dir_name = pattern.group(1)
+                                if os.path.exists(os.path.join(apk_dir, 'res', dir_name)):
+                                    embeded_layout = v
+                                    break
                 embeded_dir, embeded_file = embeded_layout[1:].split('/')
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
-                print("LayoutFile: " + layout_file)
-                print("embeded_file_full_path" + embeded_file_full_path)
                 # Get the tree of the included layout
                 emebeded_tree = LayoutParser(self.log).parse(embeded_file_full_path,
                                                                 apk_dir)
@@ -53,14 +61,12 @@ class LayoutParser(object):
                             if ref_value is not None and len(ref_value) > 0:
                                 child.set(attr_name, ' '.join(ref_value))
         return root
-                
-        
+
     # Search for a string resource value in an xml file such as strings.xml
-    @staticmethod
-    def find_attr_value(xml_file, element_name, attribute_name):
+    def find_attr_value(self, xml_file, element_name, attribute_name):
         try:
             if not os.path.exists(xml_file):
-                print('Error: Resource file does not exist, ' + xml_file)
+                self.log.warning('Warning: Resource file %s does not exist, ', xml_file)
                 return []
             tree = etree.parse(xml_file)
             if attribute_name is not None:
@@ -68,7 +74,7 @@ class LayoutParser(object):
                 return tree.xpath(xpath_query,
                   namespaces={'android': "http://schemas.android.com/apk/res/android"})
         except (ParserError, XMLSyntaxError) as e:
-            print("Error in file: %s", xml_file)
+            self.log.error("XML parsing error occured while parsing file: %s", xml_file)
         return []
     
     def parse(self, layout_file, apk_dir):
