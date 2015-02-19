@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import os.path
 import datetime
 import logging
@@ -79,24 +80,49 @@ class UIXML(object):
                           apk_dir, len(layout_dirs))
             count += 1
             for layout_dir in layout_dirs:
-                dir_element = etree.Element('Directory')
-                dir_element.set('directory_name', os.path.basename(layout_dir))
-                root.append(dir_element)
+                dir_element = self.add_directory_element(root, layout_dir)
                 layout_files = ResourcesListing.get_all_layout_files(layout_dir)
                 for layout_file in layout_files:
                     # Do not add layout files that start with <merge>
                     if self.layout_starts_with_merge(layout_file):
                         continue
-                    file_element = etree.Element('File')
-                    file_element.set('file_name', os.path.basename(layout_file))
-                    dir_element.append(file_element)
-                    layout_tree = LayoutParser(self.log).parse(layout_file, apk_dir)
-                    if layout_tree is not None:
-                        file_element.append(layout_tree.getroot())
+                    file_element= self.add_file_element(dir_element, layout_file)
+                    self.add_layout_elements(file_element, layout_file, apk_dir)
+            # Add res/xml/ directory which contains various XML configuration files
+            xml_dir = os.path.abspath(os.path.join(apk_dir, 'res', 'xml'))
+            if os.path.exists(xml_dir) and len(os.listdir(xml_dir)) > 0:
+                dir_element = self.add_directory_element(root, xml_dir)
+                xml_files = []
+                for x in os.listdir(xml_dir):
+                    x = os.path.join(xml_dir, x)
+                    if os.path.isfile(x):
+                        xml_files.append(x)
+                for xml_file in xml_files:
+                    if self.layout_starts_with_merge(xml_file):
+                        continue
+                    file_element= self.add_file_element(dir_element, xml_file)
+                    self.add_layout_elements(file_element, xml_file, apk_dir)
+
             self.write_xml_file(ui_xml_file, root)
             self.log.info('UI XML has been written to %s' %(ui_xml_file))
         
-        
+    def add_directory_element(self, root, dir_name):
+        dir_element = etree.Element('Directory')
+        dir_element.set('directory_name', os.path.basename(dir_name))
+        root.append(dir_element)
+        return dir_element
+
+    def add_file_element(self, dir_element, layout_file):
+        file_element = etree.Element('File')
+        file_element.set('file_name', os.path.basename(layout_file))
+        dir_element.append(file_element)
+        return file_element
+
+    def add_layout_elements(self, file_element, layout_file, apk_dir):
+        layout_tree = LayoutParser(self.log).parse(layout_file, apk_dir)
+        if layout_tree is not None:
+            file_element.append(layout_tree.getroot())
+
     def get_app_info_from_manifest(self, manifest_file):
         tree = etree.parse(manifest_file)
         root = tree.getroot()
