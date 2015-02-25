@@ -12,14 +12,14 @@ from xml.etree import ElementTree
 from lxml.etree import XMLSyntaxError
 
 class UIXML(object):
-    
+
     def __init__(self):
         self.log = logging.getLogger("ui_xml")
         self.log.setLevel(logging.DEBUG)
-        
+
     def parse_file(self, layout_file):
         self.log.info('parsing %s', layout_file)
-    
+
     def write_xml_file(self, xml_file, root):
         tree = root.getroottree()
         # Strip the merge tag
@@ -27,18 +27,27 @@ class UIXML(object):
         with open(xml_file, 'w+') as f:
             f.write(etree.tostring(tree, pretty_print=True, encoding='utf-8'))
             f.close()
-    
+
     def start_main(self, source_dir):
+        # Create formatter
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(message)s')
+        # Create console logger and set its formatter and level
+        logging_console = logging.StreamHandler(sys.stdout)
+        logging_console.setFormatter(formatter)
+        logging_console.setLevel(logging.DEBUG)
+        # Add the console logger
+        self.log.addHandler(logging_console)
         count = 1
         # Iterate over the unpacked apk files in the source directory.
-        for apk_dir in [os.path.join(source_dir, d) for d in 
+        for apk_dir in [os.path.join(source_dir, d) for d in
                         os.listdir(source_dir)]:
             self.log.info('Parsing %s', apk_dir)
             package_name = None
             version_name = None
             version_code = None
             if not os.path.exists(os.path.join(apk_dir, 'AndroidManifest.xml')):
-                self.log.error('AndroidManifest.xml is missing in %s . ' + 
+                self.log.error('AndroidManifest.xml is missing in %s . ' +
                           'Unable to find package and version info.', apk_dir)
                 continue
             version_name, version_code, package_name = self.get_app_info_from_manifest(
@@ -75,7 +84,7 @@ class UIXML(object):
                 self.log.error('no res directory in %s', apk_dir)
                 continue
             layout_dirs = ResourcesListing.get_all_layout_dirs(apk_dir)
-            self.log.info("%i - APK %s has %i layout directories", count, 
+            self.log.info("%i - APK %s has %i layout directories", count,
                           apk_dir, len(layout_dirs))
             count += 1
             for layout_dir in layout_dirs:
@@ -95,8 +104,8 @@ class UIXML(object):
                         file_element.append(layout_tree.getroot())
             self.write_xml_file(ui_xml_file, root)
             self.log.info('UI XML has been written to %s' %(ui_xml_file))
-        
-        
+
+
     def get_app_info_from_manifest(self, manifest_file):
         tree = etree.parse(manifest_file)
         root = tree.getroot()
@@ -104,7 +113,7 @@ class UIXML(object):
         version_code = root.get('versionCode')
         version_name = root.get('versionName')
         return version_name, version_code, package_name
-    
+
     def get_app_versions_from_yaml(self, yaml_file):
         # Read apktool.yaml to get the version code and name values
         try:
@@ -123,15 +132,15 @@ class UIXML(object):
             self.log.error("Error in apktool yaml file:", exc)
         except AttributeError as exc:
             self.log.error("sdk versions info is missing", exc)
-            
-    def get_version_name_from_strings_xml(self, strings_xml_file, 
+
+    def get_version_name_from_strings_xml(self, strings_xml_file,
                                           attribute_name):
         tree = ET.parse(strings_xml_file)
         root = tree.getroot()
         for element in root.findall('string'):
             if(element.get('name') == attribute_name):
                 return element.text
-    
+
     def layout_starts_with_merge(self, layout_file):
         try:
             if etree.parse(layout_file).getroot().tag == 'merge':
@@ -141,29 +150,21 @@ class UIXML(object):
         return False
 
     def main(self, args):
+        print(len(args))
         start_time = datetime.datetime.now()
         # Configure logging
         logging_file = None
         logging_level = logging.ERROR
-        # Create formatter
-        formatter = logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s')
-        # Create console logger and set its formatter and level
-        logging_console = logging.StreamHandler(sys.stdout)
-        logging_console.setFormatter(formatter)
-        logging_console.setLevel(logging.DEBUG)
-        # Add the console logger
-        self.log.addHandler(logging_console)
 
         usage_info = "python %prog <root_unpacked_apk_directories> [options]"
-        
+
         description_paragraph = ("DESCRIPTION: A tool for parsing Android xml"
             " layout files and storing them in one XML file to simplify"
             " UI analysis. It resolves resource references"
             " (e.g., @string/cancel_btn) and embeded layouts (e.g., using the"
             " <include/> and <merge/>" " tags). The final xml file is saved"
             " inside the unpacked apk directory under a sub-directory named ui-xml.")
-        
+
         # command line parser
         parser = OptionParser(
             usage=usage_info, description = description_paragraph,
@@ -172,10 +173,10 @@ class UIXML(object):
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option("-v", "--verbose", dest="verbose", default=0,
                           action="count", help="increase verbosity.")
-        
+
         (options, args) = parser.parse_args()
         if len(args) != 1:
-            parser.error("incorrect number of arguments.")
+            parser.error("incorrect number of arguments. " + str(len(args)))
         if options.log_file:
             logging_file = logging.FileHandler(options.log_file, mode='a',
                                                encoding='utf-8', delay=False)
@@ -185,18 +186,18 @@ class UIXML(object):
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
-                
+
         # Check if directory exists
         if os.path.isdir(args[0]):
             source_dir = os.path.abspath(args[0])
         else:
             sys.exit("Error: source directory " + args[0] + " does not exist.")
-            
+
         self.start_main(args[0])
 
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
         print("======================================================")
-    
+
 if __name__ == '__main__':
     UIXML().main(sys.argv[1:])
