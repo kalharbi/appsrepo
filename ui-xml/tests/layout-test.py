@@ -10,10 +10,12 @@ from ui_xml import UIXML
 global trueAppNodes
 global trueDirectoryNodes
 global trueFileNodes
+global trueLayoutNodes
 
 trueAppNodes = 1
 trueDirectoryNodes = 10
 trueFileNodes = 313
+trueLayoutNodes = 868
 
 class TestSetup():
   def start(self, xml_path):
@@ -31,8 +33,9 @@ class TestSetup():
     appNodes = results_df.loc[('com.endomondo.android', '120'), 'app_nodes']
     directoryNodes = results_df.loc[('com.endomondo.android', '120'), 'directory_nodes']
     fileNodes = results_df.loc[('com.endomondo.android', '120'), 'file_nodes']
+    layoutNodes = results_df.loc[('com.endomondo.android', '120'), 'layout_nodes']
 
-    return appNodes, directoryNodes, fileNodes
+    return appNodes, directoryNodes, fileNodes, layoutNodes
 
   def get_immediate_subdirectories(self, a_dir):
     return [name for name in os.listdir(a_dir)
@@ -49,9 +52,8 @@ class TestSetup():
     for l in layouts:
       search = '//' + l
       layoutTag = tree.xpath(search)
-      for i in layoutTag:
-        for j in i.iterdescendants():
-          layout += 1
+      layout += len(layoutTag)
+
 
     # App, Directory, and Files
     for appNode in app:
@@ -67,11 +69,12 @@ class TestSetup():
     return results_df
 
 class UIXMLTest(unittest.TestCase):
-  def __init__(self, testname, appNodes, directoryNodes, fileNodes):
+  def __init__(self, testname, appNodes, directoryNodes, fileNodes, layoutNodes):
     super(UIXMLTest, self).__init__(testname)
     self.appNodes = appNodes
     self.directoryNodes = directoryNodes
     self.fileNodes = fileNodes
+    self.layoutNodes = layoutNodes
 
   def test_appNode(self):
     true = trueAppNodes
@@ -88,12 +91,18 @@ class UIXMLTest(unittest.TestCase):
     count = self.fileNodes
     self.assertEqual(true, count)
 
+  def test_layoutNode(self):
+    true = trueLayoutNodes
+    count = self.layoutNodes
+    self.assertEqual(true, count)
+
 
 if __name__ == '__main__':
-  appNodes, directoryNodes, fileNodes = TestSetup().start("/Users/Jackson/dev/appsrepo/ui-xml/tests/data/")
+  appNodes, directoryNodes, fileNodes, layoutNodes = TestSetup().start("/Users/Jackson/dev/appsrepo/ui-xml/tests/data/")
   suite = unittest.TestSuite()
-  suite.addTest(UIXMLTest("test_appNode", appNodes, directoryNodes, fileNodes))
-  suite.addTest(UIXMLTest("test_directoryNode", appNodes, directoryNodes, fileNodes))
-  suite.addTest(UIXMLTest("test_fileNode", appNodes, directoryNodes, fileNodes))
+  suite.addTest(UIXMLTest("test_appNode", appNodes, directoryNodes, fileNodes, layoutNodes))
+  suite.addTest(UIXMLTest("test_directoryNode", appNodes, directoryNodes, fileNodes, layoutNodes))
+  suite.addTest(UIXMLTest("test_fileNode", appNodes, directoryNodes, fileNodes, layoutNodes))
+  suite.addTest(UIXMLTest("test_layoutNode", appNodes, directoryNodes, fileNodes, layoutNodes))
 
   unittest.TextTestRunner().run(suite)
