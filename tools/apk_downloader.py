@@ -376,5 +376,13 @@ class ApkDownloader(object):
         print("======================================================")
 
 
+def ensure_shell_command_is_installed(command):
+    import subprocess
+    return_code = subprocess.call(command, shell=True)
+    if return_code !=0:
+        sys.exit('Error: The shell command "' + command + '" is not installed on ' +
+                 'the local server')
+
 if __name__ == '__main__':
+    ensure_shell_command_is_installed("sshpass")
     ApkDownloader().main(sys.argv[1:]) 
