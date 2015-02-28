@@ -358,10 +358,8 @@ class ApkDownloader(object):
             'This tool will establish an ssh connection to the remote server.')
         print(
             'Remote server connection information is required to issue rsync commands:')
-        self.remote_host_name = 'guitar03.cs.umd.edu'
-        #raw_input('Enter the remote server name: ')
-        self.remote_user_name = 'khalid'
-        #raw_input('Enter the user name for the remote server: ')
+        self.remote_host_name = raw_input('Enter the remote server name: ')
+        self.remote_user_name = raw_input('Enter the user name for the remote server: ')
         self.remote_pw = getpass.getpass('Enter the password for the remote server: ')
         try:
             self.connect_to_ssh()
