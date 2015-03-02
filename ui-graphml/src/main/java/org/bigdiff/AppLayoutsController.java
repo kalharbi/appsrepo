@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class AppLayoutsController {
                 String graphMLFileName = packageName + "-" + versionCode + ".graphml";
                 File graphmlFile = new File(apkDir, Constants.UI_GRAPHML_DIR + File.separator +
                         graphMLFileName);
-                if (graphmlFile.exists()){
-                    if(!graphmlFile.delete()){
+                if (graphmlFile.exists()) {
+                    if (!graphmlFile.delete()) {
                         logger.error("Failed to delete existing graphml file {}",
                                 graphmlFile.getAbsoluteFile());
                         continue;
@@ -61,45 +62,81 @@ public class AppLayoutsController {
                 String appNodeId = Integer.toString(sequenceId.incrementAndGet());
                 createAppNode(graphMLWriter, packageName, versionCode, versionName,
                         appNodeId);
-
-                // List all layout directories
-                File[] layoutDirs = getLayoutDirs(apkDir);
-                // create directory and file nodes
-                for (File layoutDir : layoutDirs) {
-                    Collection<File> layoutFiles = getLayoutFiles(layoutDir);
-                    if (layoutFiles != null) {
-                        // Create directory node
-                        String dirNodeId = Integer.toString(sequenceId.incrementAndGet());
-                        String edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
-                        createDirNode(graphMLWriter, layoutDir.getName(), appNodeId,
-                                dirNodeId, edgeNodeId);
-                        for (File layoutFile : layoutFiles) {
-                            // Create File node
-                            String fileNodeId = Integer.toString(sequenceId.incrementAndGet());
-                            edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
-                            createFileNode(graphMLWriter, layoutFile.getName(), dirNodeId, fileNodeId, edgeNodeId);
-                            // Parse Layout file
-                            LayoutParser layoutParser = new LayoutParser(layoutFile, graphMLWriter, sequenceId, fileNodeId);
-                            layoutParser.parse();
-                        }
-                    } else {
-                        logger.info("No layout files found in {} ", apkDir.getAbsolutePath());
-                    }
-                }
+                doLayoutDirs(appNodeId, graphMLWriter, apkDir);
+                doOtherDirs(appNodeId, graphMLWriter, apkDir, "xml", "XMLDir");
+                doOtherDirs(appNodeId, graphMLWriter, apkDir, "menu", "MenuDir");
+                logger.info("GraphML has been written at {}",
+                        graphmlFile.getAbsolutePath());
                 if (graphMLWriter != null) {
                     graphMLWriter.closeWrite();
                 }
-                logger.info("GraphML has been written at {}",
-                        graphmlFile.getAbsolutePath());
-
             } else {
                 logger.error("Unable to find package name and version values for {}",
                         apkDir.getAbsolutePath());
             }
             count++;
         }
-
     }
+
+    private void doLayoutDirs(String appNodeId, GraphMLWriter graphMLWriter, File apkDir) {
+        // List all layout directories
+        File[] layoutDirs = getLayoutDirs(apkDir);
+        // create directory and file nodes
+        for (File layoutDir : layoutDirs) {
+            Collection<File> layoutFiles = getXMLFiles(layoutDir);
+            if (layoutFiles != null) {
+                // Create directory node
+                String dirNodeId = Integer.toString(sequenceId.incrementAndGet());
+                String edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
+                createDirNode(graphMLWriter, layoutDir.getName(), appNodeId,
+                        dirNodeId, edgeNodeId, "LayoutDir");
+                for (File layoutFile : layoutFiles) {
+                    // Create File node
+                    String fileNodeId = Integer.toString(sequenceId.incrementAndGet());
+                    edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
+                    createFileNode(graphMLWriter, layoutFile.getName(), dirNodeId, fileNodeId, edgeNodeId);
+                    // Parse Layout file
+                    LayoutParser layoutParser = new LayoutParser(layoutFile, graphMLWriter, sequenceId, fileNodeId);
+                    layoutParser.parse();
+                }
+            } else {
+                logger.info("No layout files found in {} ", apkDir.getAbsolutePath());
+            }
+        }
+    }
+
+    private void doOtherDirs(String appNodeId, GraphMLWriter graphMLWriter, File apkDir,
+                           String dirName, String DirlabelName) {
+        // List all layout directories
+        File resDir = new File(apkDir, "res");
+        File xmlDir = new File(resDir, dirName);
+        if (xmlDir.exists()) {
+            Collection<File> layoutFiles = getXMLFiles(xmlDir);
+            if (layoutFiles != null) {
+                // Create directory node
+                String dirNodeId = Integer.toString(sequenceId.incrementAndGet());
+                String edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
+                createDirNode(graphMLWriter, xmlDir.getName(), appNodeId,
+                        dirNodeId, edgeNodeId, DirlabelName);
+                for (File layoutFile : layoutFiles) {
+                    // Create File node
+                    String fileNodeId = Integer.toString(sequenceId.incrementAndGet());
+                    edgeNodeId = Integer.toString(sequenceId.incrementAndGet());
+                    createFileNode(graphMLWriter, layoutFile.getName(), dirNodeId, fileNodeId, edgeNodeId);
+                    // Parse Layout file
+                    LayoutParser layoutParser = new LayoutParser(layoutFile, graphMLWriter, sequenceId, fileNodeId);
+                    layoutParser.parse();
+                }
+            } else {
+                logger.info("No layout files found in {} ", apkDir.getAbsolutePath());
+            }
+
+            if (graphMLWriter != null) {
+                graphMLWriter.closeWrite();
+            }
+        }
+    }
+
 
     /**
      * Returns layout directories
@@ -125,19 +162,19 @@ public class AppLayoutsController {
     }
 
     /**
-     * Returns all layout files in the given layout directory
+     * Returns all XML files in the given layout directory
      *
-     * @param layoutDir the layout directory
-     * @return a collection of the layout files in the given layout directory
+     * @param sourceDir the layout directory
+     * @return a collection of the XML files in the given  directory
      */
-    private Collection<File> getLayoutFiles(File layoutDir) {
-        Collection<File> layoutFiles = FileUtils.listFiles(layoutDir,
+    private Collection<File> getXMLFiles(File sourceDir) {
+        Collection<File> layoutFiles = FileUtils.listFiles(sourceDir,
                 new String[]{"xml", "XML"}, false);
         if (layoutFiles != null && layoutFiles.size() > 0) {
             return layoutFiles;
         } else {
             logger.info("No layout file found in {}",
-                    layoutDir.getAbsolutePath());
+                    sourceDir.getAbsolutePath());
         }
         return null;
     }
@@ -154,10 +191,10 @@ public class AppLayoutsController {
 
     // Create Resource Directory Node
     private void createDirNode(GraphMLWriter graphMLWriter, String directoryName,
-                               String parenNodeId, String dirNodeId, String edgeId) {
+                               String parenNodeId, String dirNodeId, String edgeId, String resName) {
         Map<Object, Object> mapDir = new HashMap<Object, Object>();
         mapDir.put("directory_name", directoryName);
-        mapDir.put("labels", "Directory");
+        mapDir.put("labels", "Directory,"+ resName);
         graphMLWriter.writeNode(dirNodeId, mapDir);
         graphMLWriter.writeEdge(edgeId, parenNodeId, dirNodeId, "HAS_DIR",
                 null);
@@ -167,7 +204,7 @@ public class AppLayoutsController {
     private void createFileNode(GraphMLWriter graphMLWriter, String fileName,
                                 String parenNodeId, String fileNodeId, String edgeId) {
         Map<Object, Object> mapFile = new HashMap<Object, Object>();
-        mapFile.put("file", fileName);
+        mapFile.put("file_name", fileName);
         mapFile.put("labels", "File");
         graphMLWriter.writeNode(fileNodeId, mapFile);
         graphMLWriter
