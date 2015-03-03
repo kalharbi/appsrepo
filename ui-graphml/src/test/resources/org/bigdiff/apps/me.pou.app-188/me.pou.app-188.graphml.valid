@@ -8,14 +8,14 @@
 <data key="version_code">188</data>
 </node>
 <node id="2">
-<data key="labels">Directory</data>
+<data key="labels">LayoutDir</data>
 <data key="directory_name">layout</data>
 </node>
 <edge id="3" source="1" target="2" label="HAS_DIR">
 </edge>
 <node id="4">
-<data key="file">dialog_email.xml</data>
 <data key="labels">File</data>
+<data key="file_name">dialog_email.xml</data>
 </node>
 <edge id="5" source="2" target="4" label="HAS_FILE">
 </edge>
@@ -73,8 +73,8 @@
 <edge id="15" source="10" target="14" label="HAS_VIEW">
 </edge>
 <node id="16">
-<data key="file">dialog_input.xml</data>
 <data key="labels">File</data>
+<data key="file_name">dialog_input.xml</data>
 </node>
 <edge id="17" source="2" target="16" label="HAS_FILE">
 </edge>
@@ -132,8 +132,8 @@
 <edge id="27" source="22" target="26" label="HAS_VIEW">
 </edge>
 <node id="28">
-<data key="file">dialog_password.xml</data>
 <data key="labels">File</data>
+<data key="file_name">dialog_password.xml</data>
 </node>
 <edge id="29" source="2" target="28" label="HAS_FILE">
 </edge>
@@ -201,8 +201,8 @@
 <edge id="41" source="30" target="40" label="HAS_VIEW">
 </edge>
 <node id="42">
-<data key="file">dialog_password_new.xml</data>
 <data key="labels">File</data>
+<data key="file_name">dialog_password_new.xml</data>
 </node>
 <edge id="43" source="2" target="42" label="HAS_FILE">
 </edge>
@@ -258,6 +258,48 @@
 <data key="android:layout_width">fill_parent</data>
 </node>
 <edge id="53" source="48" target="52" label="HAS_VIEW">
+</edge>
+<node id="54">
+<data key="labels">XMLDir</data>
+<data key="directory_name">xml</data>
+</node>
+<edge id="55" source="1" target="54" label="HAS_DIR">
+</edge>
+<node id="56">
+<data key="labels">File</data>
+<data key="file_name">analytics.xml</data>
+</node>
+<edge id="57" source="54" target="56" label="HAS_FILE">
+</edge>
+<node id="58">
+<data key="labels">VIEW_GROUP</data>
+<data key="name">resources</data>
+</node>
+<edge id="59" source="56" target="58" label="HAS_VIEW_GROUP">
+</edge>
+<node id="60">
+<data key="labels">VIEW</data>
+<data key="name">integer</data>
+</node>
+<edge id="61" source="58" target="60" label="HAS_VIEW">
+</edge>
+<node id="62">
+<data key="labels">VIEW</data>
+<data key="name">bool</data>
+</node>
+<edge id="63" source="58" target="62" label="HAS_VIEW">
+</edge>
+<node id="64">
+<data key="labels">VIEW</data>
+<data key="name">screenName</data>
+</node>
+<edge id="65" source="58" target="64" label="HAS_VIEW">
+</edge>
+<node id="66">
+<data key="labels">VIEW</data>
+<data key="name">string</data>
+</node>
+<edge id="67" source="58" target="66" label="HAS_VIEW">
 </edge>
 </graph>
 </graphml>
