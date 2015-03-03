@@ -128,7 +128,11 @@ class ApktoolExecutor(object):
         elif self.path_file:
             with open(self.path_file, 'r') as f:
                 for line in f:
-                    apk_paths.append(line)
+                    line = line.strip()
+                    if(os.path.exists(line)):
+                        apk_paths.append(line)
+                    else:
+                        log.error('No such file: %s', line)
         # If apk path file or package list file are not given, 
         # run apktool on each apk file in the source directory.
         else:
@@ -300,7 +304,7 @@ class ApktoolExecutor(object):
         if options.custom_search:
             self.use_custom_file_search = True
         if options.path_file:
-            self.path_file = option.path_file
+            self.path_file = options.path_file
         # Get apk file names
         if options.apk_names_list_file:
             if os.path.isfile(options.apk_names_list_file):
