@@ -62,6 +62,7 @@ public class LayoutParser {
                     .newInstance();
             final DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
             final Document doc = docBuilder.parse(this.layoutFile);
+            doc.getDocumentElement().normalize();
 
             /* Parse the layout root element
             The root element can be either a ViewGroup, a View, or a <merge> element.
@@ -136,7 +137,7 @@ public class LayoutParser {
                 String currentId = Integer.toString(this.sequenceId.incrementAndGet());
                 ((Element) n).setAttribute(tmpId, currentId);
 
-                if (n.hasChildNodes()) {
+                if (n.hasChildNodes() && !areChildrenTextNodes(n)) {
                     Map<Object, Object> attributes = getElementAttributes((Element) n);
                     createNode(currentId, Constants.VIEW_GROUP, name,
                             attributes);
@@ -152,6 +153,23 @@ public class LayoutParser {
                 }
             }
         }
+    }
+
+    private boolean areChildrenTextNodes(final Node node){
+        boolean childrenAreTextNodes = false;
+        final NodeList children = ((Element) node).getChildNodes();
+        for(int i =0; i< children.getLength(); i++){
+            final Node n = children.item(i);
+            if(n.getNodeType() == Node.TEXT_NODE){
+                childrenAreTextNodes = true;
+            }
+            else if(n.getNodeType() == Node.ELEMENT_NODE){
+                childrenAreTextNodes = false;
+                break;
+            }
+        }
+        return childrenAreTextNodes;
+
     }
 
     /**
@@ -247,7 +265,7 @@ public class LayoutParser {
                                 value.replace("@" + resName + "/", ""));
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("Failed to find the resource value named: {} referenced in {}", value,
+                    logger.warn("Failed to find the resource value named: {} referenced in {}", value,
                             this.layoutFile.getAbsolutePath());
                     continue;
                 }
@@ -339,7 +357,7 @@ public class LayoutParser {
                     value = searchAllResourcesValues(valuesDir, resName,
                             value.replace("@" + resName + "/", ""));
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("Failed to find the resource file for {}", value, e);
+                    logger.warn("Failed to find the resource file for {}", value, e);
                 }
             }
         }
