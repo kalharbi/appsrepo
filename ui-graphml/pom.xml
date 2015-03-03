@@ -54,6 +54,12 @@
             <version>2.0.0.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <scm>
         <url>https://github.com/appsrepo</url>
