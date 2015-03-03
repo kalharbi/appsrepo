@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +105,7 @@ public class AppLayoutsController {
     }
 
     private void doOtherDirs(String appNodeId, GraphMLWriter graphMLWriter, File apkDir,
-                           String dirName, String DirlabelName) {
+                             String dirName, String DirlabelName) {
         // List all layout directories
         File resDir = new File(apkDir, "res");
         File xmlDir = new File(resDir, dirName);
@@ -129,10 +128,6 @@ public class AppLayoutsController {
                 }
             } else {
                 logger.info("No layout files found in {} ", apkDir.getAbsolutePath());
-            }
-
-            if (graphMLWriter != null) {
-                graphMLWriter.closeWrite();
             }
         }
     }
@@ -194,7 +189,7 @@ public class AppLayoutsController {
                                String parenNodeId, String dirNodeId, String edgeId, String resName) {
         Map<Object, Object> mapDir = new HashMap<Object, Object>();
         mapDir.put("directory_name", directoryName);
-        mapDir.put("labels", "Directory,"+ resName);
+        mapDir.put("labels", resName);
         graphMLWriter.writeNode(dirNodeId, mapDir);
         graphMLWriter.writeEdge(edgeId, parenNodeId, dirNodeId, "HAS_DIR",
                 null);
