@@ -21,14 +21,14 @@ aapt_path = config.get('tools', 'aapt')
 # pickled method defined at the top level of a module to be called by multiple processes.
 # Runs apktool and returns the directory of the unpacked apk file.
 def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
-    print("Running apktool on " + apk_file)
+    log.info("Running apktool on " + apk_file)
     apk_name = os.path.basename(os.path.splitext(apk_file)[0])
     target_dir = os.path.join(target_dir, apk_name)
     apk_version_info = get_apk_info(apk_file)
     # skip the target directory if it already exists
     if os.path.exists(target_dir):
-        log.info("Target directory already exists")
-        return
+        log.warn("Target directory already exists")
+        return None, None
         
     args = ['apktool', 'd', apk_file, '-o', target_dir]
     if framework_dir:
@@ -48,6 +48,7 @@ def run_apktool(apk_file, target_dir, framework_dir, tag, no_src, no_res):
         log.info(out)
     if rc != 0:
         log.error('Failed to decode apk file: ' + apk_file + '\n' + err)
+        return None, None
     return target_dir, apk_version_info
 
 # Returns a tuple containing the package, version code, and version name.
@@ -152,11 +153,11 @@ class ApktoolExecutor(object):
                                                           self.no_src, self.no_res))
                                                           for apk_path in apk_paths]
                 for r in results:
-                    if(r != None):
+                    if r is not None:
                         target_dir, apk_version_info = r.get()
-                        apktool_file = os.path.join(target_dir, 'apktool.yml')
                         if not target_dir or not apk_version_info:
                             continue
+                        apktool_file = os.path.join(target_dir, 'apktool.yml')
                         if not os.path.exists(apktool_file):
                             self.write_version_to_apktoolyml(apktool_file, 
                                                              apk_version_info)
