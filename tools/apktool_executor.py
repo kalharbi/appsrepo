@@ -155,6 +155,8 @@ class ApktoolExecutor(object):
                     if(r != None):
                         target_dir, apk_version_info = r.get()
                         apktool_file = os.path.join(target_dir, 'apktool.yml')
+                        if not target_dir or not apk_version_info:
+                            continue
                         if not os.path.exists(apktool_file):
                             self.write_version_to_apktoolyml(apktool_file, 
                                                              apk_version_info)
