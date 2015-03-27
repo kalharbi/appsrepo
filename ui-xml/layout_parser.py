@@ -21,8 +21,8 @@ class LayoutParser(object):
             return None
         for child in root.iter():
             if child.tag == 'include':
-                embeded_layout = child.get('layout')
-                if embeded_layout is None:
+                embedded_layout = child.get('layout')
+                if embedded_layout is None:
                     d = dict(child.attrib)
                     for k,v in d.items():
                         if '/' in v and '@' in v:
@@ -30,9 +30,13 @@ class LayoutParser(object):
                             if pattern is not None:
                                 dir_name = pattern.group(1)
                                 if os.path.exists(os.path.join(apk_dir, 'res', dir_name)):
-                                    embeded_layout = v
+                                    embedded_layout = v
                                     break
-                embeded_dir, embeded_file = embeded_layout[1:].split('/')
+                if embedded_layout is None:
+                    self.log.warning('The <include> tag of %s has no included' +
+                                     ' layout file.', layout_file)
+                    return None
+                embeded_dir, embeded_file = embedded_layout[1:].split('/')
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
                 # Get the tree of the included layout
