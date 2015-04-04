@@ -128,11 +128,15 @@ class UIXML(object):
             file_element.append(layout_tree.getroot())
 
     def get_app_info_from_manifest(self, manifest_file):
-        tree = etree.parse(manifest_file)
-        root = tree.getroot()
-        package_name = root.get('package')
-        version_code = root.get('versionCode')
-        version_name = root.get('versionName')
+        version_name = version_code = package_name = None
+        try:
+            tree = etree.parse(manifest_file)
+            root = tree.getroot()
+            package_name = root.get('package')
+            version_code = root.get('versionCode')
+            version_name = root.get('versionName')
+        except XMLSyntaxError:
+            self.log.error('Invalid XML in the AndroidManifest file %s', manifest_file)
         return version_name, version_code, package_name
     
     def get_app_versions_from_yaml(self, yaml_file):
