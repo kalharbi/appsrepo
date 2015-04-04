@@ -36,7 +36,13 @@ class LayoutParser(object):
                     self.log.warning('The <include> tag of %s has no included' +
                                      ' layout file.', layout_file)
                     return None
-                embeded_dir, embeded_file = embedded_layout[1:].split('/')
+                embeded_dir = embeded_file = None
+                if '/' in embedded_layout:
+                    embeded_dir, embeded_file = embedded_layout[1:].split('/')
+                else:
+                    embeded_dir = os.path.basename(os.path.dirname(layout_file))
+                    embeded_file = embedded_layout
+
                 embeded_file_full_path = os.path.join(apk_dir, 'res', embeded_dir, 
                                                       embeded_file + '.xml')
                 # Get the tree of the included layout
