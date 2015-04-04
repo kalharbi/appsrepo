@@ -140,7 +140,8 @@ class UIXML(object):
         return version_name, version_code, package_name
     
     def get_app_versions_from_yaml(self, yaml_file):
-        # Read apktool.yaml to get the version code and name values
+        # Parse apktool.yaml to get the version code and name values
+        version_code = version_name = None
         try:
             self.log.info("Processing file %s.", yaml_file)
             if not os.path.isfile(yaml_file):
@@ -152,11 +153,11 @@ class UIXML(object):
             version_code = doc.get('versionInfo', None).get('versionCode', None)
             version_name = doc.get('versionInfo', None).get(
                 'versionName', None)
-            return version_code, version_name
         except yaml.YAMLError:
             self.log.error("Error in apktool yaml file: %s", yaml_file)
         except AttributeError:
             self.log.error("sdk versions info is missing in yaml file: %s", yaml_file)
+        return version_code, version_name
             
     def get_version_name_from_strings_xml(self, strings_xml_file, 
                                           attribute_name):
