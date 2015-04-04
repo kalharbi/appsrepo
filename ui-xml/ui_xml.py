@@ -153,10 +153,10 @@ class UIXML(object):
             version_name = doc.get('versionInfo', None).get(
                 'versionName', None)
             return version_code, version_name
-        except yaml.YAMLError as exc:
-            self.log.error("Error in apktool yaml file:", exc)
-        except AttributeError as exc:
-            self.log.error("sdk versions info is missing", exc)
+        except yaml.YAMLError:
+            self.log.error("Error in apktool yaml file: %s", yaml_file)
+        except AttributeError:
+            self.log.error("sdk versions info is missing in yaml file: %s", yaml_file)
             
     def get_version_name_from_strings_xml(self, strings_xml_file, 
                                           attribute_name):
