@@ -34,7 +34,7 @@ def run_grep(smali_text_file, search_word):
     return (smali_text_file, False)
 
 
-class SmaliApiMethodsFinder(object):
+class GrepInputSmaliTextFiles(object):
     # Set the number of worker processes to the number of available CPUs.
     processes = multiprocessing.cpu_count()
 
@@ -74,7 +74,7 @@ class SmaliApiMethodsFinder(object):
                         file_name = os.path.basename(file_name)
                         package_name = file_name.rsplit('-', 1)[0]
                         version_code = \
-                        file_name.rsplit('.smali.txt')[0].rsplit('-')[1]
+                            file_name.rsplit('.smali.txt')[0].rsplit('-')[1]
                         result_file.write(
                             package_name + ',' + version_code + ',' + str(
                                 found) + '\n')
@@ -87,7 +87,7 @@ class SmaliApiMethodsFinder(object):
                 result_file.close()
             except KeyboardInterrupt:
                 print(
-                'got ^C while worker processes have outstanding work. Terminating the pool and stopping the worker processes immediately without completing outstanding work..')
+                    'got ^C while worker processes have outstanding work. Terminating the pool and stopping the worker processes immediately without completing outstanding work..')
                 pool.terminate()
                 print('pool has been terminated.')
         else:
@@ -114,7 +114,8 @@ class SmaliApiMethodsFinder(object):
             usage="python %prog [options] search_word " +
                   "smali_methods_text_files_dir target_dir",
             version="%prog 1.1",
-            description='Grep for words in text files. This tool recursively ' +
+            description='Grep. Searches for words in text files. ' +
+                        'This tool recursively ' +
                         'searches for words in smali text files generated ' +
                         'the smali_api_methods tool.')
         parser.add_option("-p", "--processes", dest="processes", type="int",
@@ -171,4 +172,4 @@ class SmaliApiMethodsFinder(object):
 
 
 if __name__ == '__main__':
-    SmaliApiMethodsFinder().main(sys.argv[1:])
+    GrepInputSmaliTextFiles().main(sys.argv[1:])
