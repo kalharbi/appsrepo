@@ -3,7 +3,7 @@
 The goal of this tool is to extract Android API methods and user's defined methods from .smali files.
 The results are saved at [apk-name]/methods
 
-## smali\_api\_methods
+## smali\_invoked\_methods
 This tool recursively searches for invoke- methods calls and store them in one
 text file.
 
@@ -11,7 +11,7 @@ text file.
 
 
 ```
-Usage: python smali_api_methods.py unpacked_apk_dir target_dir [options]
+Usage: python smali_invoked_methods.py unpacked_apk_dir target_dir [options]
 
 Options:
   --version             show program's version number and exit
