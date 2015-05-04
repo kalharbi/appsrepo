@@ -2,7 +2,7 @@
 Indexing apps' smali invoked methods in Apache Solr.
 
 This tool takes a directory of text files that contains smali invoked methods
-and index them with Solr Cell using Apache Tika via HTTP POST request. Smali
+and indexes them with Solr Cell using Apache Tika via HTTP POST request. Smali
 text files must be named as packageName-versionCode.smali.txt (e.g., com.android.app-123.smali.txt)
 
 ## Before Running the tool

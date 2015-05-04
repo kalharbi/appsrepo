@@ -40,7 +40,7 @@ under a sub-directory named ui-xml.
 This tool extracts the views of Android apps from neo4j and computes the delta of Views between two app versions.
 
 ### 11- [Smali Solr Indexer](smali-solr-indexer/)
-This tool index smali invoked methods text files in Apache Solr.
+This tool indexes smali invoked methods text files in Apache Solr.
 
 
 ### 12- [Tools](tools/)
