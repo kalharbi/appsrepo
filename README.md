@@ -39,10 +39,14 @@ under a sub-directory named ui-xml.
 ### 10- [UI Delta](ui-diff/)
 This tool extracts the views of Android apps from neo4j and computes the delta of Views between two app versions.
 
-### 11- [Tools](tools/)
+### 11- [Smali Solr Indexer](smali-solr-indexer/)
+This tool index smali invoked methods text files in Apache Solr.
+
+
+### 12- [Tools](tools/)
 Python & shell script tools for batch processing a list of apk files.
 
-### 12- [Shell](shell/)
+### 13- [Shell](shell/)
 An interactive shell to query the collection of apps using a Domain Specfic Language (DSL).
 
 - - -
