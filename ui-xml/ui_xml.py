@@ -29,7 +29,7 @@ class UIXML(object):
             f.write(etree.tostring(tree, pretty_print=True, encoding='utf-8'))
             f.close()
     
-    def start_main(self, source_dir):
+    def start_main(self, source_dir, target_dir):
         count = 1
         # Iterate over the unpacked apk files in the source directory.
         for apk_dir in [os.path.join(source_dir, d) for d in 
@@ -58,9 +58,11 @@ class UIXML(object):
                 if not version_code or not version_name:
                     self.log.error('Failed to find app version for %s', apk_dir)
                     continue
-            ui_xml_dir = os.path.abspath(os.path.join(apk_dir, 'ui-xml'))
-            if not os.path.exists(ui_xml_dir):
-                os.makedirs(ui_xml_dir)
+            ui_xml_dir = target_dir
+            if target_dir is None:
+                ui_xml_dir = os.path.abspath(os.path.join(apk_dir, 'ui-xml'))
+                if not os.path.exists(ui_xml_dir):
+                    os.makedirs(ui_xml_dir)
             ui_xml_file = os.path.join(ui_xml_dir, package_name + '-' +
                           version_code + '.xml')
             root = etree.Element('App')
@@ -197,7 +199,8 @@ class UIXML(object):
             " UI analysis. It resolves resource references"
             " (e.g., @string/cancel_btn) and embeded layouts (e.g., using the"
             " <include/> and <merge/>" " tags). The final xml file is saved"
-            " inside the unpacked apk directory under a sub-directory named ui-xml.")
+            " inside the unpacked apk directory under a sub-directory named ui-xml"
+            " or to a target directory using the -o option")
         
         # command line parser
         parser = OptionParser(
@@ -207,6 +210,11 @@ class UIXML(object):
                           help="write logs to FILE.", metavar="FILE")
         parser.add_option("-v", "--verbose", dest="verbose", default=0,
                           action="count", help="increase verbosity.")
+        parser.add_option("-o", "--output", dest="target_dir",
+                          help="The name of the directory that the output files get " +
+                          "written to. Default is to write files " +
+                          "inside the unpacked apk directory under a sub-directory named ui-xml.",
+                          metavar="FILE")
         
         (options, args) = parser.parse_args()
         if len(args) != 1:
@@ -220,14 +228,21 @@ class UIXML(object):
         if options.verbose:
             levels = [logging.ERROR, logging.INFO, logging.DEBUG]
             logging_level = levels[min(len(levels) - 1, options.verbose)]
-                
-        # Check if directory exists
+
+        # Check if source and target directories exist
+        source_dir = target_dir = None
+        if options.target_dir:
+            if os.path.exists(options.target_dir):
+                target_dir = os.path.abspath(options.target_dir)
+            else:
+                sys.exit("Error: target directory " + options.target_dir + " does not exist.")
+
         if os.path.isdir(args[0]):
             source_dir = os.path.abspath(args[0])
         else:
             sys.exit("Error: source directory " + args[0] + " does not exist.")
             
-        self.start_main(args[0])
+        self.start_main(source_dir, target_dir)
 
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
