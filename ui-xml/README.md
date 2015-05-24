@@ -15,13 +15,18 @@ DESCRIPTION: A tool for parsing Android xml layout files and storing them in
 one XML file to simplify UI analysis. It resolves resource references (e.g.,
 @string/cancel_btn) and embeded layouts (e.g., using the <include/> and
 <merge/> tags). The final xml file is saved inside the unpacked apk directory
-under a sub-directory named ui-xml.
+under a sub-directory named ui-xml or to a target directory using the -o
+option
 
 Options:
-  --version            show program's version number and exit
-  -h, --help           show this help message and exit
-  -l FILE, --log=FILE  write logs to FILE.
-  -v, --verbose        increase verbosity.
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         increase verbosity.
+  -o FILE, --output=FILE
+                        The name of the directory that the output files get
+                        written to. Default is to write files inside the
+                        unpacked apk directory under a sub-directory named ui-xml.
 ```
 
 ### Example
