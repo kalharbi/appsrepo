@@ -6,6 +6,7 @@ import logging
 import yaml
 from optparse import OptionParser
 from lxml import etree
+from lxml.etree import XMLSyntaxError
 
 
 class CopyManifest(object):
@@ -67,17 +68,20 @@ class CopyManifest(object):
     def parse_manifest(self, manifest_file):
         self.log.info('Parsing Manifest file %s', manifest_file)
         package_name = version_info = sdk_info = None
-        tree = etree.parse(manifest_file)
-        root = tree.getroot()
-        apktool_yml = os.path.join(os.path.abspath(manifest_file + '/../'),
-                                   'apktool.yml')
+        root = None
         try:
+            tree = etree.parse(manifest_file)
+            root = tree.getroot()
             package_name = tree.getroot().attrib['package']
             version_code = root.attrib['versionCode']
             version_name = root.attrib['versionName']
             version_info = (version_name, version_code)
         except KeyError:
             pass
+        except XMLSyntaxError:
+            pass
+        apktool_yml = os.path.join(os.path.abspath(manifest_file + '/../'),
+                      'apktool.yml')
         if os.path.exists(apktool_yml):
             sdk_info, version_info_yml = self.get_info_from_apktoolyml(
                 apktool_yml)
