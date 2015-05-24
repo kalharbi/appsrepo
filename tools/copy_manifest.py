@@ -72,14 +72,14 @@ class CopyManifest(object):
         try:
             tree = etree.parse(manifest_file)
             root = tree.getroot()
-            package_name = tree.getroot().attrib['package']
+            package_name = root.attrib['package']
             version_code = root.attrib['versionCode']
             version_name = root.attrib['versionName']
             version_info = (version_name, version_code)
         except KeyError:
             pass
         except XMLSyntaxError:
-            pass
+            return None, None, None
         apktool_yml = os.path.join(os.path.abspath(manifest_file + '/../'),
                       'apktool.yml')
         if os.path.exists(apktool_yml):
