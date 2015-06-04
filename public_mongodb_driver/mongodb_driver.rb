@@ -21,7 +21,8 @@ class MongodbDriver
                "    write_apps_description\n" + 
                "    write_whats_new_section_by_package_name -k <file_names_of_packages>\n" +
                "    find_version_code -k <file_names_of_packages>\n" +
-               "    find_app_info -k <file_names_of_packages_and_code_versions>\n" +
+               "    find_some_app_info -k <file_names_of_packages_and_code_versions>\n" +
+               "    find_all_app_info -k <file_names_of_packages_and_code_versions>\n" +
                "    find_top_apps_with_multiple_versions\n" +
                "    find_reviews -k <file_names_of_packages>\n" +
                '    find_apps_by_category -g "category_name"'
@@ -253,7 +254,7 @@ class MongodbDriver
   end
   
   # Find additional info for a list of package names and version code values
-  def find_app_info
+  def find_some_app_info
     opts = "{:fields => ['t', 'n', 'vern', 'cat', 'rate', 'dct', 'dtp', 'crt', 'per'], :timeout => false}"
     # Write results to  file
     filename = File.join(@out_dir, "additional_info.csv")
@@ -303,6 +304,27 @@ class MongodbDriver
     @@log.info("The result has been saved at: #{filename}")
   end
   
+  def find_all_app_info()
+    opts = {:limit => 1, :fields => {"_id" => 0} }
+    File.open(@package_names_file, 'r').each_with_index do |line, index|
+      next if index == 0 or line.chomp.empty? #skips empty line or the first line that contains the header info (apk_name, download_count)
+      items = line.split(',')
+      package_name = items[0]
+      version_code = items[1].strip
+      filename = File.join(@out_dir, package_name + "-" + version_code + ".json")
+      query = {:n => package_name, :verc => version_code}
+      doc = @collection.find(query, opts).first
+      if doc
+        out_file = File.open(filename, 'w')
+        @@log.info("Writing app info for #{package_name}-#{version_code}")
+        out_file.write(JSON.pretty_generate(doc))
+        out_file.close()
+      end
+    end
+  end
+          
+      
+    
   # Find top/bottom apps that use any of the given permissions.
   def find_top_bottom_apps_in_any_permission
     collection_name = nil
@@ -861,12 +883,22 @@ class MongodbDriver
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
       end
-    elsif(cmd.eql? "find_app_info")
+    elsif(cmd.eql? "find_some_app_info")
       if(@package_names_file.nil?)
         puts "Error: Please use the -k option to specify the file that contains package names and version code values."
         abort(@@usage)
       elsif File.file?(@package_names_file)
-        find_app_info
+        find_some_app_info
+      else
+        puts "Error: package names file #{@package_names_file} does not exist."
+        exit
+      end
+    elsif(cmd.eql? "find_all_app_info")
+      if(@package_names_file.nil?)
+        puts "Error: Please use the -k option to specify the file that contains package names and version code values."
+        abort(@@usage)
+      elsif File.file?(@package_names_file)
+        find_all_app_info
       else
         puts "Error: package names file #{@package_names_file} does not exist."
         exit
@@ -926,7 +958,7 @@ class MongodbDriver
         opts.on('-d','--database <database>', 'The name of the database that holds the public collection in MongoDB.', 'Default value is apps') do |dbname|
           @db_name = dbname
         end
-        opts.on('-c','--database <database>', 'The name of the public collection in MongoDB.', 'Default value is public') do |dbcollection|
+        opts.on('-c','--collection <database>', 'The name of the public collection in MongoDB.', 'Default value is public') do |dbcollection|
           @db_collection_name = dbcollection
         end
         opts.on('-P','--permission <name>', 'One valid Android permission name that the application uses,or a', 'list of comma separated permissions that the app may use (inclusive disjunction).') do |per_name|
@@ -995,8 +1027,10 @@ class MongodbDriver
       cmd = "write_apps_description"
     elsif(args[0].eql? "find_version_code")
       cmd = "find_version_code"
-    elsif(args[0].eql? "find_app_info")
-      cmd = "find_app_info"
+    elsif(args[0].eql? "find_some_app_info")
+      cmd = "find_some_app_info"
+    elsif(args[0].eql? "find_all_app_info")
+      cmd = "find_all_app_info"
     elsif(args[0].eql?"find_top_apps_with_multiple_versions")
       cmd = "find_top_apps_with_multiple_versions"
     elsif(args[0].eql? "find_reviews")

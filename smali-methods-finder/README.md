@@ -3,12 +3,25 @@
 The goal of this tool is to extract Android API methods and user's defined methods from .smali files.
 The results are saved at [apk-name]/methods
 
-## Usage:
+## smali\_invoked\_methods
+This tool recursively searches for invoke- methods calls and store them in one
+text file.
 
-    smali_methods_finder.rb dir_to_unpacked_apks [OPTIONS]
-    -h, --help                       Show this help message and exit.
-    
-    -l, --log <log_file,[level]>     Write logs to the specified file with the given logging level such as error or info. The default logging level is info.
-    
-    -f <find_app_methods | find_invoked_api_methods>,
-        --find                       The running mode. It must be one of the following: find_app_methods or find_invoked_api_methods. The default mode is to find both user's declared methods and Android API methods.
+### Usage:
+
+
+```
+Usage: python smali_invoked_methods.py unpacked_apk_dir target_dir [options]
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -p PROCESSES, --processes=PROCESSES
+                        the number of worker processes to use. Default is the
+                        number of CPU cores.
+  -l FILE, --log=FILE   write logs to FILE.
+  -v, --verbose         Increase verbosity.
+  -d DEPTH_VALUE, --depth=DEPTH_VALUE
+                        The depth of the child directories to scan for
+                        AndroidManifest.xml files. Default is: 1
+```
