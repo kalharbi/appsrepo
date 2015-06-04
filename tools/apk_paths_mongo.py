@@ -82,45 +82,49 @@ class APKPathsMongo(object):
         except InvalidName:
             sys.exit("ERROR: Invalid database name")
 
-    def insert_apk_paths(self, source_directory, apk_paths_collection):
+    def insert_apk_path(self, apk_file, apk_paths_collection):
+        if not os.path.exists(apk_file):
+            self.error("APK file: %s does not exist", apk_file)
+            return
+        self.log.info('Found apk file %s', apk_file)
+        app_info = self.get_apk_info(apk_file)
+        if app_info is None or app_info["package_name"] is None \
+                or app_info["version_code"] is None:
+            self.log.error(
+                'Failed to find version info for APK file %s',
+                apk_file)
+            return
+
+        if self.document_exists(apk_paths_collection,
+                                app_info["package_name"],
+                                app_info["version_code"]):
+            self.log.info("APK file for package %s, version code: %s "
+                          + "already exists.",
+                          app_info["package_name"],
+                          app_info["version_code"])
+            return
+        else:
+            # insert the path to mongodb collection
+            doc = {'n': app_info["package_name"],
+                   'verc': app_info["version_code"],
+                   'vern': app_info["version_name"],
+                   'size': self.get_file_size(apk_file),
+                   'path': apk_file}
+            doc_id = apk_paths_collection.insert(doc)
+            self.log.info("A new document (Id: %s) containing " +
+                          "metadata for  %s. has been inserted " +
+                          "in collection: %s",
+                          doc_id, apk_file, self.collection_name)
+
+    def get_apk_paths(self, source_directory, apk_paths_collection):
         for item in os.listdir(source_directory):
             file = os.path.join(source_directory, item)
             if os.path.isdir(file):
                 self.log.info('searching for apk files in ' + file)
-                self.insert_apk_paths(file)
+                self.get_apk_paths(file)
             elif os.path.splitext(file)[1].lower() == ".apk":
                 apk_file = os.path.abspath(file)
-                self.log.info('Found apk file %s', apk_file)
-                app_info = self.get_apk_info(apk_file)
-                if app_info is None or app_info["package_name"] is None \
-                        or app_info["version_code"] is None:
-                    self.log.error(
-                        'Failed to find version info for APK file %s',
-                        apk_file)
-                    continue
-
-                if self.document_exists(apk_paths_collection,
-                                        app_info["package_name"],
-                                        app_info["version_code"]):
-                    self.log.info("APK file for package %s, version code: %s "
-                                  + "already exists.",
-                                  app_info["package_name"],
-                                  app_info["version_code"])
-                    continue
-                try:
-                    # insert the path to mongodb collection
-                    doc = {'n': app_info["package_name"],
-                           'verc': app_info["version_code"],
-                           'vern': app_info["version_name"],
-                           'size': self.get_file_size(apk_file),
-                           'path': apk_file}
-                    doc_id = apk_paths_collection.insert(doc)
-                    self.log.info("A new document (Id: %s) containing " +
-                                  "metadata for  %s. has been inserted " +
-                                  "in collection: %s",
-                                  doc_id, apk_file, self.collection_name)
-                except IOError:
-                    self.log.error("IOError in %s", file)
+                self.insert_apk_path(apk_file, apk_paths_collection)
 
     @staticmethod
     def document_exists(apk_collection, package_name, version_code):
@@ -153,7 +157,7 @@ class APKPathsMongo(object):
         self.log.addHandler(logging_console)
 
         # command line parser
-        parser = OptionParser(usage="%prog [options] search_directory ",
+        parser = OptionParser(usage="%prog [options] {apk_directory | apk_paths_file}",
                               description="%prog -- Recursively searches for apk files in" \
                                           "search_directory and writes their absoulte paths. package names, " \
                                           "version codes to a collection named apk_paths.",
@@ -169,12 +173,18 @@ class APKPathsMongo(object):
             logging_file.setLevel(logging_level)
             logging_file.setFormatter(formatter)
             self.log.addHandler(logging_file)
-        if not os.path.isdir(args[0]):
-            sys.exit("Error: search directory " + args[0] + " does not exist.")
+        input_source = os.path.abspath(args[0])
+        if not os.path.exists(input_source):
+            sys.exit("Error: " + input_source + " does not exist.")
 
         apks_collection = self.connect_mongodb()
-
-        self.insert_apk_paths(args[0], apks_collection)
+        if os.path.isfile(input_source):
+            with open(input_source, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    self.insert_apk_path(line, apks_collection)
+        elif os.path.isdir(input_source):
+            self.get_apk_paths(input_source, apks_collection)
 
         print("======================================================")
         print("Finished after " + str(datetime.datetime.now() - start_time))
