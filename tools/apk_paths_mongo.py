@@ -88,11 +88,13 @@ class APKPathsMongo(object):
             return
         self.log.info('Found apk file %s', apk_file)
         app_info = self.get_apk_info(apk_file)
-        if app_info is None or app_info["package_name"] is None \
-                or app_info["version_code"] is None:
-            self.log.error(
-                'Failed to find version info for APK file %s',
-                apk_file)
+        try:
+            if not app_info or app_info["package_name"] is None \
+                    or app_info["version_code"] is None:
+                raise Exception('Version info is not available')
+        except (KeyError, Exception):
+            self.log.error('Failed to find version info for APK file %s',
+                           apk_file)
             return
 
         if self.document_exists(apk_paths_collection,
