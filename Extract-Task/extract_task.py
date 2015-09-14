@@ -36,13 +36,19 @@ ui_xml_log = config.get('logs', 'ui_xml_log')
 manifest_log = config.get('logs', 'manifest_log')
 code_log = config.get('logs', 'code_log')
 
+if not os.path.exists(apktool_out):
+    try:
+        os.mkdir(apktool_out)
+    except OSError:
+        print("Failed to create " + apktool_out)
+        sys.exit(1)
 
 def ensure_config_exists(config_name, config_value):
     if not os.path.exists(config_value):
         print("Error: in config: " + config_name +
               "=" + config_value +
               " path does not exist.")
-        sys.exit(-1)
+        sys.exit(1)
 
 
 # Ensure that the path values in the config file do exist.
