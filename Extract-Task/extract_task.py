@@ -81,7 +81,7 @@ def connect_mongodb():
 def write_new_apk_paths(out_file, apk_path_collection):
     """ Write un extracted apk files to a tmp file. """
     f = open(out_file, 'w')
-    for doc in apk_path_collection.find({done_field_name: False}):
+    for doc in apk_path_collection.find({done_field_name: False}, limit=10000):
         f.write(doc[path_field_name] + os.linesep)
     for doc in apk_path_collection.find({done_field_name:
                                         {"$exists": False}}):
@@ -137,9 +137,15 @@ def update_apk_paths_collection(apk_path_collection, apk_paths_file):
     with open(apk_paths_file, 'r') as f:
         lines = f.readlines()
         for line in lines:
-            if '.apk' not in line:
+            line = line.strip()
+            file_path, file_extension = path.splitext(line)
+            if file_extension != '.apk':
                 continue
-            package_name, version_code = os.path.basename(line).split('.apk')[0].split('-')
+            app_name = os.path.basename(file_path).split("-")
+            if len(app_name) !=2:
+                continue
+            package_name = app_name[0]
+            version_code = app_name[1]
             apk_path_collection.find_one_and_update(
                 {'n': package_name, 'verc': version_code},
                 {'$set': {done_field_name: True}})
