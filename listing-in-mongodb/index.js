@@ -1,15 +1,15 @@
 var Promise = require("bluebird");
 var using = Promise.using;
 var _ = require("lodash");
+var path = require("path");
 var fs = Promise.promisifyAll(require("fs"));
 var mongodb = Promise.promisifyAll(require("mongodb"));
 var MongoClient = mongodb.MongoClient;
 var MongoError = mongodb.MongoError;
-var directory = "/Users/khalid/android-apps/listing";
 var config = require("./config");
 var sourceConfig = config.sourceDB;
 var targetConfig = config.targetDB;
-var targetUrl = "mongodb://" + targetConfig.host + ":" + targetConfig.port + "/" + targetConfig.db;
+var targetUrl = "mongodb://" + targetConfig.user + ":" + targetConfig.pw + "@" + targetConfig.host + ":" + targetConfig.port + "/" + targetConfig.db;
 var sourceUrl = "mongodb://" + sourceConfig.host + ":" + sourceConfig.port + "/" + sourceConfig.db;
 
 function getConnection(url) {
@@ -17,9 +17,9 @@ function getConnection(url) {
 }
 
 function insert(sourceDB, targetDB) {
-  return fs.readdirAsync(directory)
+  return fs.readdirAsync(config.DATASET_PATH)
     .map(function(filename) {
-      return fs.readFileAsync(directory + "/" + filename, "utf8")
+      return fs.readFileAsync(path.join(config.DATASET_PATH, filename), "utf8")
         .then(function(content) {
           var app = JSON.parse(content);
           var id = app['n'] + "-" + app['verc'];
