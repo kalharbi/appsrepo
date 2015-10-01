@@ -21,6 +21,7 @@ class GetDownload(object):
     DOWNLOAD_COUNT_TEXT_XPATH = ['//div[@itemprop="numDownloads"]/text()']
     RATING_COUNT_XPATH = ['//span[@class="reviews-num"]/text()']
     RATING_XPATH = ['//div[@class="score-container-star-rating"]/div/@aria-label']
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
     def start_main(self, package_names_file, target_file):
         with open(target_file, 'w') as out_file:
@@ -31,7 +32,7 @@ class GetDownload(object):
                     package_name = arr[0]
                     app = self.get_app(package_name.strip())
                     if app is not None:
-                        out_file.write(app + "\n")
+                        out_file.write(app + ",\n")
             out_file.write("]" + "\n")
 
     def get_app(self, package_name):
@@ -48,12 +49,10 @@ class GetDownload(object):
                     return None
                 rating_count_text = self.get_property(tree,
                                                       self.RATING_COUNT_XPATH)
-                print("Rating count text " + rating_count_text)
                 rating_count = 0
                 if rating_count_text != '':
                     rating_count = locale.atoi(rating_count_text)
                 rating_text = self.get_property(tree, self.RATING_XPATH)
-                print("Rating text " + rating_text)
                 rating = 0
                 if rating_text != '':
                     rating = float(rating_text.split()[1])
