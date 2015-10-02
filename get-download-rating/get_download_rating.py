@@ -12,6 +12,8 @@ from requests.exceptions import ConnectionError
 from requests.exceptions import HTTPError
 from requests.exceptions import Timeout
 from requests.exceptions import ReadTimeout
+from requests.exceptions import ChunkedEncodingError
+from requests.exceptions import RequestException
 from optparse import OptionParser
 
 class GetDownload(object):
@@ -77,6 +79,9 @@ class GetDownload(object):
         except (ConnectionError, HTTPError, Timeout, ReadTimeout) as e:
             self.log.error("Network error while requesting the html page for" +
                            " %s message: %s", package_name, e)
+            return None
+        except (ChunkedEncodingError, RequestException) as e:
+            self.log.error("HTTP request error", e)
             return None
 
     @staticmethod
