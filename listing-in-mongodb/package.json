@@ -1,16 +1,18 @@
 {
   "name": "listing-in-mongodb",
   "version": "1.0.0",
-  "description": "",
+  "description": "Read JSON files that contain the listing details information and insert them into a MongoDB collection.",
   "main": "index.js",
+  "dependencies": {
+    "bluebird": "^2.10.2",
+    "graceful-fs": "^4.1.2",
+    "lodash": "^3.10.1",
+    "mongodb": "^2.0.46"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "bluebird": "^2.10.1",
-    "lodash": "^3.10.1",
-    "mongodb": "^2.0.43"
-  }
+  "license": "ISC"
 }
